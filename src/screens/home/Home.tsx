@@ -1,42 +1,75 @@
 import {View, Text, Image, TouchableOpacity, FlatList} from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import {Avatar} from 'react-native-paper';
 import images from '../../constants/images';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import { gql, useQuery } from '@apollo/client';
+import { Get_Top_RatedWorkers, Get_Worker_By_Service } from '../../graphql/worker';
+import { useSelector } from 'react-redux';
 
 const Home = () => {
+
+  const [topRatedWorker , setTopRatedWorker] = useState([])
+  const [worker , setWorker] = useState([])
+
+  const [service,setService] = useState<string>("Plumber")
+
+  const services = [
+    'Electrician',
+    'Plumber',
+    'Carpenter',
+    'Handyman',
+    'Painter',
+    'HVAC Technician',
+    'Landscaper/Gardener',
+    'Cleaning Service',
+    'Roofing Specialist',
+    'Flooring Specialist',
+    'Locksmith',
+    'Pest Control',
+    'Appliance Repair Technician',
+    'Interior Designer',
+    'Moving and Packing Service',
+    'Home Security Specialist',
+    'Renovation Contractor',
+    'Masonry/Bricklayer',
+    'Window and Door Installation/Repair',
+    'Pool Maintenance/Repair',
+  ]
+
+  const  { userData , token }  = useSelector((state : any )=> state?.user)
+  // console.log(`http://192.168.87.213:3000/uploads/${userData.profile}` , ">>>>>>")
+
+  const { loading, error, data :gqlData , fetchMore } = useQuery(Get_Top_RatedWorkers, { variables : { first : 10 , after : null}});
+  const { loading : loading2 , error : error2, data :gqlData2 } = useQuery(Get_Worker_By_Service);
+
+  // console.log(gqlData);
+  // console.log(gqlData2);
+  
   const data = [
     {id: '1', title: 'Electrician'},
     {id: '2', title: 'Plumber'},
     {id: '3', title: 'carpainter'},
-    {id: '4', title: 'Developer'},
-    {id: '5', title: 'Service'},
-    {id: '6', title: 'Service'},
-    {id: '7', title: 'Service'},
-    {id: '8', title: 'Service'},
-    {id: '9', title: 'Service'},
-    {id: '10', title: 'Service'},
-    {id: '11', title: 'Service'},
-    {id: '12', title: 'Service'},
   ];
 
   const renderItem = ({item}: {item: any}) => (
-    <View
-      className=" rounded-full py-2 px-4 mx-1  my-3 bg-[#312651]"
-      style={{
-        shadowColor: '#000',
-        shadowOffset: {
-          width: 0,
-          height: 4,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-      }}>
-      <Text className="text-base font-semibold text-gray-100">
-        {item.title}
+    <TouchableOpacity
+    onPress={()=> setService(item)}
+      className={`rounded-full py-2 px-4 mx-1  my-3 bg-${item === service ? "[#312651]" : "white"} shadow shadow-[#312651]`}
+      // style={{
+      //   shadowColor: '#000',
+      //   shadowOffset: {
+      //     width: 0,
+      //     height: 4,
+      //   },
+      //   shadowOpacity: 0.25,
+      //   shadowRadius: 3.84,
+      //   elevation: 5,
+      // }}
+      >
+      <Text className={`text-base font-semibold text-gray-100 text-${item === service ? "white" : "[#312651]"}`}>
+        {item}
       </Text>
-    </View>
+    </TouchableOpacity>
   );
 
   const renderList = ({item}: {item: any}) => (
@@ -101,17 +134,18 @@ const Home = () => {
       }}>
       <View className="py-3  overflow-hidden">
         <View className="flex-row gap-4 items-center px-4 rounded-2xl overflow-hidden">
-          <View className="w-16 h-16 rounded-full  overflow-hidden shadow-2xl drop-shadow-2xl shadow-black">
+          <View className="w-16 h-16 rounded-full   overflow-hidden ">
             <Image
-              source={images.Male}
+              // source={images.Male}
+              source={{ uri : `http://192.168.87.213:3000/uploads/${userData.profile}`}}
               className="w-full h-full"
-              resizeMode="contain"
+              resizeMode="cover"
             />
           </View>
           <View className="">
             <Text className="text-xs text-[#312651]">Welcome</Text>
             <Text className="text-base font-bold text-[#312651]">
-              John Nicolas
+              {userData.name}
             </Text>
           </View>
         </View>
@@ -134,8 +168,8 @@ const Home = () => {
       </View>
       <View className="py-2 flex-row">
         <FlatList
-          data={data}
-          keyExtractor={item => item.id}
+          data={services}
+          keyExtractor={item => item}
           renderItem={renderItem}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
@@ -144,7 +178,7 @@ const Home = () => {
       <View className=" ">
         <FlatList
           data={data}
-          keyExtractor={item => item.id}
+          keyExtractor={(item) => item.id}
           renderItem={renderList}
           contentContainerStyle={{paddingBottom: 900}}
         />

@@ -26,6 +26,10 @@ import {PaperProvider} from 'react-native-paper';
 // } from 'react-native/Libraries/NewAppScreen';
 import Route from './src/navigation/Route';
 import {NavigationContainer} from '@react-navigation/native';
+import {ApolloClient, ApolloProvider, InMemoryCache} from '@apollo/client';
+import { Provider } from 'react-redux';
+import { store } from './src/service/store';
+import FlashMessage from 'react-native-flash-message';
 
 // import {PaperProvider} from 'react-native-paper';
 
@@ -59,6 +63,12 @@ import {NavigationContainer} from '@react-navigation/native';
 //   );
 // }
 
+const client = new ApolloClient({
+  uri: 'http://192.168.52.213:3000/graphql',
+  cache: new InMemoryCache(),
+});
+
+
 function App(): React.JSX.Element {
   // const isDarkMode = useColorScheme() === 'dark';
 
@@ -66,11 +76,16 @@ function App(): React.JSX.Element {
   //   backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   // };
   return (
-    <PaperProvider>
-      <NavigationContainer>
-        <Route />
-      </NavigationContainer>
-    </PaperProvider>
+    <Provider store={store}>
+    <ApolloProvider client={client}>
+      <PaperProvider>
+        <NavigationContainer>
+          <Route />
+          <FlashMessage position="bottom"/>
+        </NavigationContainer>
+      </PaperProvider>
+    </ApolloProvider>
+    </Provider>
   );
 }
 
