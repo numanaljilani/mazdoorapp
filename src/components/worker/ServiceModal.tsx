@@ -1,10 +1,13 @@
-import {StyleSheet, Modal, View, ActivityIndicator, TouchableOpacity, FlatList} from 'react-native';
+import {StyleSheet, Modal, View, TouchableOpacity, FlatList} from 'react-native';
 import React, {useState} from 'react';
 import { memo } from 'react';
 import { Text } from 'react-native-paper';
+import { useSelector } from 'react-redux';
 
-const ServiceModal = ({data , setSericeModal  , setServcie} : { data : string[],setSericeModal : any , setServcie : any }) => {
 
+const ServiceModal = ({data ,  setSericeModal  , setServcie} : {data : any ,setSericeModal : any , setServcie : any }) => {
+  const { language } = useSelector((state: any) => state?.user);
+  console.log(data)
   return (
     <Modal
       transparent={true}
@@ -22,12 +25,12 @@ const ServiceModal = ({data , setSericeModal  , setServcie} : { data : string[],
           renderItem={({item})=> (  <TouchableOpacity onPress={()=>{
             setServcie(item)
             setSericeModal(false)}} className='py-3  px-5 border-b border-gray-200'>
-          <Text className='text-lg font-semibold text-[#312651]'>{item}</Text>
+          <Text className='text-lg font-semibold text-[#312651]'>{language ? item.hindi :item.english}</Text>
        </TouchableOpacity>)}
           contentContainerStyle={{paddingBottom: 10}}
         />
        <TouchableOpacity className="  py-3 bg-[#312651] mx-2 rounded-lg" onPress={()=>setSericeModal(false)}>
-        <Text className="text-center text-lg text-white">Cancel</Text>
+        <Text className="text-center text-lg text-white">{language ? `रद्द करना` :`Cancel`}</Text>
        </TouchableOpacity>
         </View>
       </View>

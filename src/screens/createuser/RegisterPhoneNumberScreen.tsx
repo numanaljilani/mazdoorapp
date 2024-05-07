@@ -5,12 +5,16 @@ import images from '../../constants/images';
 import {useRegisterPhoneNumberMutation} from '../../service/api/userApi';
 import { showMessage } from 'react-native-flash-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setToken, setUser } from '../../service/slice/userSlice';
 import ActivityIndicatorComponent from '../../components/common/ActivityIndicatorComponent';
 
 
 const RegisterPhoneNumberScreen = ({navigation}: any) => {
+
+  
+  const {language} = useSelector((state: any) => state?.user);
+
   const [number, setPhoneNumber] = useState<string>('');
   const dispatch = useDispatch();
   const [RegisterPhone, {data, isSuccess, isLoading, error, isError}] =
@@ -93,10 +97,10 @@ const RegisterPhoneNumberScreen = ({navigation}: any) => {
     <View className=" py-11 flex-1 bg-white px-6">
       <View className="mt-10 -mb-6 z-10">
         <Text className="text-4xl font-semibold leading-relaxed text-[#312651]">
-          Welcome To
+        {language ? `मज़दूर में आपका` :`Welcome to`}
         </Text>
         <Text className="text-4xl font-semibold leading-relaxed text-[#FF7754]">
-          Mazdoor
+        {language ? `स्वागत है`:`Mazdur`}
         </Text>
       </View>
       {/* <View className="h-1/3  ">
@@ -108,17 +112,19 @@ const RegisterPhoneNumberScreen = ({navigation}: any) => {
       </View> */}
       <View className="mt-11">
         <Text className=" text-sm leading-5">
-          Connect with skilled workers easily. Find the right talent through our
-          user-friendly login for labor seekers
+        {language
+            ? 'दक्ष कामगारों से आसानी से जुड़ें और हमारे यूजर-फ्रेंडली लॉगिन के माध्यम से उन्हें खोजें।'
+            : `Connect with skilled workers easily. Find the right talent through our
+          user-friendly login for labor seekers`}
         </Text>
       </View>
       <View className="">
-        <InputText label="Phone" value={number} setData={setPhoneNumber} keyboard={false} />
+        <InputText label={language ? `फ़ोन`:"Phone"} value={number} setData={setPhoneNumber} keyboard={false} />
         <TouchableOpacity
           className="bg-[#312651] w-full py-3 rounded-xl mt-5"
           onPress={handleRegister}>
           <Text className="text-white text-center text-lg font-medium">
-            Continue
+            {language ? `जारी रखना` : `Continue`}
           </Text>
         </TouchableOpacity>
 
@@ -126,7 +132,7 @@ const RegisterPhoneNumberScreen = ({navigation}: any) => {
           onPress={()=> navigation.navigate('Login') }
           className="border-[#312651] border-2 w-full py-3 rounded-xl mt-5">
           <Text className="text-[#312651] text-center text-lg font-medium">
-            Back To Login
+            {language ? `लॉगिन पर वापस जाएं`:`Back To Login`}
           </Text>
         </TouchableOpacity>
       </View>

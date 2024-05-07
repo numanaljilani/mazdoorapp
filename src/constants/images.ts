@@ -4,4 +4,7 @@ export default {
   Google: require('../assets/images/google.png'),
   Male: require('../assets/images/male.jpg'),
   Register: require('../assets/images/register.jpg'),
+  OnBoardinImage2: require('../assets/images/onboarding2.png'),
+  Facebook: require('../assets/images/facebook.png'),
+  logo: require('../assets/images/Mazdur-logo.png'),
 };

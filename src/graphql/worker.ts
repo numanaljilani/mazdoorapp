@@ -1,20 +1,30 @@
 import { gql } from '@apollo/client';
 
 export const Get_Top_RatedWorkers = gql`
-query  topRatedWorkers($take : Float!  $skip : Float! )  {
+mutation  topRatedWorkers($take : Float!  $skip : Float! )  {
   topRatedWorkers(take : $take  skip: $skip){
     name
-    phone
     address
     occupation
+    cost
+    unit
+    profile
+    _id
   }
 }
 `;
 
 export const Get_Worker_By_Service = gql`
-query{
-    getWorkerByService{
-      name
-      phone
-    }
-  }`;
+query getWorkerByService($occupation : String!
+  $take : Float!
+  $skip : Float!
+
+){
+  getWorkerByService(occupation : $occupation take : $take skip : $skip){
+    name  
+    address
+    occupation  
+    profile
+    _id
+  } 
+}`;

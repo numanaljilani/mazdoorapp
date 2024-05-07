@@ -4,12 +4,14 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
+  Image,
+  useColorScheme,
 } from 'react-native';
 import React, {useState} from 'react';
 
 import InputText from '../../components/Input/InputText';
 import icons from '../../constants/icons';
-import { useMutation} from '@apollo/client';
+import {useMutation} from '@apollo/client';
 
 import ActivityIndicatorComponent from '../../components/common/ActivityIndicatorComponent';
 import {loginMutation} from '../../graphql/auth';
@@ -17,130 +19,174 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {setToken, setUser} from '../../service/slice/userSlice';
 import {useDispatch, useSelector} from 'react-redux';
 import {showMessage} from 'react-native-flash-message';
+import Button from '../../components/common/Button';
+import images from '../../constants/images';
+import SocialAuth from '../../components/SocialAuth/SocialAuth';
 
 const Login = ({navigation}: {navigation: any}) => {
+  const colorScheme = useColorScheme();
+  console.log(colorScheme);
   const [phone, setPhone] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<any>();
+  const [secure, setSecure] = useState<boolean>(false);
   const dispatch = useDispatch();
-  const {userData, token} = useSelector((state: any) => state?.user);
+  const {userData, token, language} = useSelector((state: any) => state?.user);
   const [login, {data, loading}] = useMutation(loginMutation);
 
-  console.log(token , userData , ">>>>>>>>>")
+  const securePass = async () => {
+    setSecure(!secure);
+  };
 
   const handleLogin = async () => {
-    if (phone.length < 10 || !password) {
-      showMessage({
-        type: 'danger',
-        message: phone.length < 10 ? 'Phone Number' : 'Password is requred',
-        description:
-          phone.length < 10
-            ? 'Phone number should be of 10 digits'
-            : 'Password is requred',
-      });
-      return;
-    }
+    // if (phone.length < 10 || !password) {
+    //   showMessage({
+    //     type: 'danger',
+    //     message: phone.length < 10 ? 'Phone Number' : 'Password is requred',
+    //     description:
+    //       phone.length < 10
+    //         ? 'Phone number should be of 10 digits'
+    //         : 'Password is requred',
+    //   });
+    //   return;
+    // }
     try {
-      const res = await login({variables: {phone: parseInt(phone), password}});
-      const {user, error} = res.data?.login;
+      navigation.navigate("BottomTabs")
+      // const res = await login({variables: {phone: parseInt(phone), password}});
+      // const {user, error} = res.data?.login;
 
-      if (user) {
-        console.log(user)
-
-        dispatch(setUser(user))
-        dispatch(setToken(user.access_token))
-        const jsonValue = JSON.stringify(user.access_token);
-        await AsyncStorage.setItem('token', jsonValue);
-        navigation.replace("BottomTabs")
-        showMessage({
-          type : 'success',
-          message :'Login successfull',
-          description: 'Welcome to mazdoor',
-        })
-        return
-      }
-      if (error) {
-        showMessage({
-          type: 'danger',
-          message: 'Invalid Password',
-          description: error.message,
-        });
-        return;
-      }
+      // if (user) {
+      //   dispatch(setUser(user));
+      //   dispatch(setToken(user.access_token));
+      //   const jsonValue = JSON.stringify(user.access_token);
+      //   await AsyncStorage.setItem('token', jsonValue);
+      //   navigation.replace('BottomTabs');
+      //   showMessage({
+      //     type: 'success',
+      //     message: 'Login successfull',
+      //     description: 'Welcome to mazdoor',
+      //   });
+      //   return;
+      // }
+      // if (error) {
+      //   showMessage({
+      //     type: 'danger',
+      //     message: 'Invalid Password',
+      //     description: error.message,
+      //   });
+      //   return;
+      // }
       // if(data?.login){
       //   await AsyncStorage.setItem('token', data?.login?.acess_token);
       //   dispatch(setToken(data?.login?.acess_token));
       // }
     } catch (error: any) {
-      console.log(error, 'Inside error handling');
-      console.log(error);
+      // console.log(error, 'Inside error handling');
+      // console.log(error);
     }
   };
 
   return (
-    <View className="flex-1 justify-center  px-8">
-      <View>
+    <View className="flex-1 justify-center bg-white  px-8 border-2">
+      {/* <View>
         <Text className="text-4xl font-semibold leading-relaxed text-[#312651]">
-          Welcome
+          {language ? `आपका पुनः` :`Welcome`}
         </Text>
         <Text className="text-4xl font-semibold leading-relaxed text-[#FF7754]">
-          back !
+          {language ? `स्वागत है`:`back !`}
         </Text>
-      </View>
-      <View className="py-3">
+      </View> */}
+      <Text className="font-[Poppins-Medium]  text-4xl  text-gray-900 leading-relaxed ">
+        {language ? `अपने अकाउंट में लॉग इन करें` : `Login to your account`}
+      </Text>
+
+      {/* <View className="py-3">
         <Text className=" text-sm leading-5">
-          Connect with skilled workers easily. Find the right talent through our
-          user-friendly login for labor seekers
+          {language
+            ? 'दक्ष कामगारों से आसानी से जुड़ें और हमारे यूजर-फ्रेंडली लॉगिन के माध्यम से उन्हें खोजें।'
+            : `Connect with skilled workers easily. Find the right talent through our
+          user-friendly login for labor seekers`}
         </Text>
-      </View>
-      <View className="w-full gap-y-4">
+      </View> */}
+      <View className="w-full gap-y-4 ">
         <InputText
-          label="Phone"
+          label={language ? 'फ़ोन' : 'Email'}
           value={phone}
           setData={setPhone}
-          icon={icons.phone}
+          icon={icons.email}
+          keyboard={true}
         />
         <InputText
-          label="Password"
+          label={language ? 'पासवर्ड' : 'Password'}
           value={password}
           setData={setPassword}
           icon={icons.password}
           keyboard={true}
+          secure={true}
+          right={secure ? icons.show : icons.hide}
+          securePass={securePass}
+          pass={!secure}
         />
 
-        <View className=" flex-row justify-between">
-          <Text></Text>
-          <Text className="text-blue-900">Forget password</Text>
-        </View>
-
-        <TouchableOpacity
+        {/* <TouchableOpacity
           className="bg-[#312651] w-full py-3 rounded-xl"
           onPress={handleLogin}>
           <Text className="text-white text-center text-lg font-medium">
-            Login
+            {language ? `लॉग इन करें` : `Login`}
+          </Text>
+</TouchableOpacity> */}
+        <Button
+          onPressFunction={handleLogin}
+          text={language ? `लॉग इन करें` : `Login`}
+        />
+
+        <TouchableOpacity
+          onPress={() => navigation.navigate('ForgetPassword')}
+          className=" justify-center items-center py-4">
+          <Text className="text-[#822BFF] font-[Poppins-Medium]  tracking-wider">
+            {language ? `पासवर्ड भूल गए` : `Forget the password ?`}
           </Text>
         </TouchableOpacity>
+
         <View className="flex-row gap-x-2 justify-center items-center">
-          <View className="border-t border-[#C1C0C8] flex-1" />
-          <Text>Or</Text>
-          <View className="border-t border-[#C1C0C8] flex-1" />
+          <View className="border-t-2 border-gray-200 flex-1" />
+          <Text className="text-gray-500 font-[Poppins-Medium]  tracking-wide text-sm">
+            {language ? `या जारी रखें` : `Or continue with`}
+          </Text>
+          <View className="border-t-2 border-gray-200  flex-1" />
         </View>
-        <View className=" w-full py-3 rounded-lg border-2 border-[#312651] ">
-          {/* <TouchableOpacity className="text-[#83829A] text-center text-lg font-medium justify-center items-center flex-row gap-2">
+        {/* <View className=" w-full py-3 rounded-lg border-2 border-[#312651] "> */}
+        {/* <TouchableOpacity className="text-[#83829A] text-center text-lg font-medium justify-center items-center flex-row gap-2">
             <Image  source={images.Google} className='w-8 h-8'/>
             <Text className="text-[#83829A] text-center text-lg font-medium ">
               Continue with google
             </Text>
+            
+      
+keytool -exportcert -alias androiddebugkey -keystore "C:\Users\numan\.android\debug.keystore" | openssl sha1 -binary | openssl base64
+      
+
           </TouchableOpacity> */}
-          <TouchableOpacity
+        {/* <TouchableOpacity
             className="text-center text-lg font-medium justify-center items-center flex-row gap-2"
             onPress={() => navigation.navigate('RegisterPhone')}>
-            {/* <Image  source={images.Google} className='w-8 h-8'/> */}
             <Text className="text-[#312651] text-center text-lg font-medium ">
-              Sign Up
+              {language ? `साइन अप करें` :`Sign Up`}
             </Text>
-          </TouchableOpacity>
-        </View>
+          </TouchableOpacity> */}
+        {/* </View> */}
+
+        <SocialAuth />
+      </View>
+      <View className="  mt-8">
+        <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+          <Text className="text-center text-gray-500 font-[Poppins-Medium]">
+            {language ? `कोई खाता नहीं है?` : `Don't have an account ?`}{' '}
+            <Text className=" text-[#822BFF] tracking-wider font-[Poppins-Medium]">
+              {language ? `साइन अप करें` : `Sign up`}
+            </Text>
+          </Text>
+        </TouchableOpacity>
       </View>
       {loading && <ActivityIndicatorComponent />}
     </View>

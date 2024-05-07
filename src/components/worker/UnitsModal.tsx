@@ -2,31 +2,34 @@ import {StyleSheet, Modal, View, ActivityIndicator, TouchableOpacity, FlatList} 
 import React, {useState} from 'react';
 import { memo } from 'react';
 import { Text } from 'react-native-paper';
+import { useSelector } from 'react-redux';
 
 const ServiceModal = ({ data , setSericeModal  , setServcie} : {data : string[] , setSericeModal : any , setServcie : any }) => {
   const [modalVal, setModalVal] = useState(true);
-  const [services , setServices] = useState<string[]>([
-    "Electrician",
-    "Plumber",
-    "Carpenter",
-    "Handyman",
-    "Painter",
-    "HVAC Technician",
-    "Landscaper/Gardener",
-    "Cleaning Service",
-    "Roofing Specialist",
-    "Flooring Specialist",
-    "Locksmith",
-    "Pest Control",
-    "Appliance Repair Technician",
-    "Interior Designer",
-    "Moving and Packing Service",
-    "Home Security Specialist",
-    "Renovation Contractor",
-    "Masonry/Bricklayer",
-    "Window and Door Installation/Repair",
-    "Pool Maintenance/Repair"
-  ])
+  const { language} = useSelector((state: any) => state?.user);
+  const unitsOfWork = [
+    { english: "Hour", hindi: "घंटा" },
+    { english: "Day", hindi: "दिन" },
+    { english: "Week", hindi: "सप्ताह" },
+    { english: "Piece", hindi: "टुकड़ा" },
+    { english: "Meter", hindi: "मीटर" },
+    { english: "Cubic Meter", hindi: "क्यूबिक मीटर" },
+    { english: "Ton", hindi: "टन" },
+    { english: "Gallon", hindi: "गैलन" },
+    { english: "Square Meter", hindi: "वर्ग मीटर" },
+    { english: "Linear Meter", hindi: "लीनियर मीटर" },
+    { english: "Kilogram", hindi: "किलोग्राम" },
+    { english: "Square Foot", hindi: "वर्ग फ़ीट" },
+    { english: "Cubic Foot", hindi: "क्यूबिक फ़ीट" },
+    { english: "Liter", hindi: "लीटर" },
+    { english: "Piece Rate", hindi: "टुकड़े की दर" },
+    { english: "Man-Day", hindi: "आदमी-दिन" },
+    { english: "Tonne", hindi: "टन" },
+    { english: "Foot", hindi: "फुट" },
+    { english: "Yard", hindi: "गज" },
+    // Add more units as needed...
+];
+
   return (
     <Modal
       transparent={true}
@@ -39,12 +42,12 @@ const ServiceModal = ({ data , setSericeModal  , setServcie} : {data : string[] 
       <View style={styles.modalBackground} className="flex-1 flex-col justify-end">
         <View className="bg-white w-full rounded-lg h-2/3  mt-10 px-4 ">
          <FlatList
-          data={services}
+          data={unitsOfWork}
           keyExtractor={(itme , index) =>index.toString()} 
           renderItem={({item})=> (  <TouchableOpacity onPress={()=>{
-            setServcie(item)
+            setServcie(item.english)
             setSericeModal(false)}} className='py-3  px-5 border-b border-gray-200'>
-          <Text className='text-lg font-semibold text-[#312651]'>{item}</Text>
+          <Text className='text-lg font-semibold text-[#312651]'>{language ?item.hindi :item.english}</Text>
        </TouchableOpacity>)}
           contentContainerStyle={{paddingBottom: 10}}
         />

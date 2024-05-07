@@ -12,7 +12,7 @@ import {useVerifyOtpMutation} from '../../service/api/userApi';
 import {useSelector} from 'react-redux';
 import ActivityIndicatorComponent from '../../components/common/ActivityIndicatorComponent';
 const Otp = ({navigation}: {navigation: any}) => {
-  const {token} = useSelector((state: any) => state?.user);
+  const {language , token} = useSelector((state: any) => state?.user);
   const [verifyOtp, {data, isSuccess, error, isError, isLoading}] =
     useVerifyOtpMutation();
 
@@ -74,10 +74,10 @@ const Otp = ({navigation}: {navigation: any}) => {
     <View className=" flex-1 items-center px-4 my-5 py-5 bg-gray-100">
       <MaterialIcons size={50} name="security" color={'#312651'} />
       <Text style={styles.title} className="text-[#312651]">
-        Enter OTP
+        {language ? `ओटीपी दर्ज करें`:`Enter OTP`}
       </Text>
       <Text className="text-center my-3">
-        Please Enter the otp we just sent to *788628712 to proced
+        {language ? `कृपया वह ओटीपी दर्ज करें जिसे हमने अभी प्रक्रिया के लिए भेजा है` :`Please Enter the otp we just sent  to proced`}
       </Text>
       <View className="flex-row gap-4">
         <TextInput
@@ -116,7 +116,7 @@ const Otp = ({navigation}: {navigation: any}) => {
       <TouchableOpacity
         onPress={handleVerifyOTP}
         className=" bg-[#312651]  w-3/4 mt-3 rounded-lg items-center py-3">
-        <Text className="text-base font-semibold text-white">Continue</Text>
+        <Text className="text-base font-semibold text-white">{language ? `जारी रखना`:`Continue`}</Text>
       </TouchableOpacity>
 
       {isLoading && <ActivityIndicatorComponent />}
