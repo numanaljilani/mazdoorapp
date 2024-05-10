@@ -30,4 +30,5 @@ export default {
   secure: require('../assets/icons/secure-shield.png'),
   people: require('../assets/icons/people.png'),
   language: require('../assets/icons/language.png'),
+  star: require('../assets/icons/star.png'),
 };

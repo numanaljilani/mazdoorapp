@@ -7,14 +7,14 @@ import {
   Animated,
   Image,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, { useRef, useState } from 'react';
 import images from '../../constants/images';
 
-const Onboarding = ({navigation} : any) => {
-  const {width}: any = useWindowDimensions();
+const Onboarding = ({ navigation }: any) => {
+  const { width }: any = useWindowDimensions();
   const [currentIndex, setCurrentIndex] = useState(0);
   let scrollX = useRef(new Animated.Value(0)).current;
-  const viewConfig = useRef({viewAreaCoveragePercentThreshold: 50}).current;
+  const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
   const slideRef: any = useRef(null);
   const onboardingCard = [
     {
@@ -39,7 +39,7 @@ const Onboarding = ({navigation} : any) => {
 
   const scrollTo = async () => {
     if (currentIndex < onboardingCard.length - 1) {
-      slideRef.current.scrollToIndex({index: currentIndex + 1});
+      slideRef.current.scrollToIndex({ index: currentIndex + 1 });
       setCurrentIndex(currentIndex + 1)
     } else {
       setCurrentIndex(0)
@@ -48,11 +48,11 @@ const Onboarding = ({navigation} : any) => {
     }
   };
 
-  const onBoardingCards = ({item}: any) => {
+  const onBoardingCards = ({ item }: any) => {
     return (
       <View className={`py-4  w-screen items-center justify-center`}>
-        <Image source={images.OnBoardinImage2} className={`w-72 h-72 my-4`} resizeMode='contain'/>
-        <Text  className="font-[Poppins-Regular] mx-3 text-black text-3xl font-semibold  leading-loose tracking-wider text-center">
+        <Image source={images.OnBoardinImage2} className={`w-72 h-72 my-4`} resizeMode='contain' />
+        <Text className="font-[Poppins-Regular] mx-3 text-black text-3xl font-semibold  leading-loose tracking-wider text-center">
           {item.english}
         </Text>
       </View>
@@ -72,8 +72,8 @@ const Onboarding = ({navigation} : any) => {
           viewabilityConfig={viewConfig}
           ref={slideRef}
           onScroll={Animated.event(
-            [{nativeEvent: {contentOffset: {x: scrollX}}}],
-            {useNativeDriver: false},
+            [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+            { useNativeDriver: false },
           )}
         />
       </View>
@@ -94,7 +94,7 @@ const Onboarding = ({navigation} : any) => {
             <Animated.View
               key={i.toString()}
               className={`h-3 w-3 m-2 rounded-full bg-[#822BFF] flex-row w-[${dotWidth}]`}
-              style={{width: dotWidth, opacity}}
+              style={{ width: dotWidth, opacity }}
             />
           );
         })}

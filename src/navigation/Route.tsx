@@ -1,6 +1,6 @@
 import React from 'react';
 import Login from '../screens/auth/Login';
-import {createStackNavigator} from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import Splash from '../screens/splash/Splash';
 import BottomTabs from './BottomTabs';
 import Otp from '../screens/createuser/Otp';
@@ -12,6 +12,7 @@ import UpdateProfile from '../screens/update/UpdateProfile';
 import ForgetPassword from '../screens/ForgetPassword/ForgetPasswordOtp';
 import Onboarding from '../screens/onboarding/Onboarding';
 import SignUp from '../screens/SignUp/SignUp';
+import WorkDetails from '../screens/details/WorkDetails';
 
 const Stack = createStackNavigator();
 
@@ -22,7 +23,8 @@ const Route = () => {
         headerShown: false,
       }}
       initialRouteName="Splash">
-      <Stack.Screen name="Splash" component={Splash} />
+      {/* <Stack.Screen name="Splash" component={Splash} /> */}
+      <Stack.Screen name="WorkDetails" component={WorkDetails} />
       <Stack.Screen name="onboarding" component={Onboarding} />
       <Stack.Screen name="Signup" component={SignUp} />
       <Stack.Screen name="Otp" component={Otp} />
