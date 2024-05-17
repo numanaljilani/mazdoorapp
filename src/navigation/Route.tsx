@@ -12,6 +12,8 @@ import UpdateProfile from '../screens/update/UpdateProfile';
 import ForgetPassword from '../screens/ForgetPassword/ForgetPasswordOtp';
 import Onboarding from '../screens/onboarding/Onboarding';
 import SignUp from '../screens/SignUp/SignUp';
+import HelpCenter from '../screens/ProfielSubScreens/HelpCenter';
+import navigationString from "../constants/navigation"
 
 const Stack = createStackNavigator();
 
@@ -34,6 +36,7 @@ const Route = () => {
       <Stack.Screen name="WorkerProfile" component={WorkerProfile} />
       <Stack.Screen name="UpdateProfile" component={UpdateProfile} />
       <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
+      <Stack.Screen name={navigationString.HELPCENTER} component={HelpCenter} />
     </Stack.Navigator>
   );
 };

@@ -1,4 +1,12 @@
-import {View, Text, Image, StyleSheet, TouchableOpacity, Switch} from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  Switch,
+  Animated 
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import images from '../../constants/images';
 import {useDispatch, useSelector} from 'react-redux';
@@ -23,7 +31,8 @@ import {deletePostMeutation} from '../../graphql/delete';
 import Feather from 'react-native-vector-icons/Feather';
 import ProfileButton from '../../components/profile/ProfileButton';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-
+import Logout from '../../components/profile/Logout';
+import navigationString from "../../constants/navigation"
 const Profile = ({navigation}: any) => {
   const {userData, token, posts, language} = useSelector(
     (state: any) => state?.user,
@@ -32,7 +41,10 @@ const Profile = ({navigation}: any) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>('');
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
+  const [logoutModal, setLogoutModal] = useState<boolean>(false);
   const [imageId, setImageId] = useState<string>('');
+  const animation = new Animated.Value(0);
+
   const [uploadPostApi, {data, isSuccess, isError, error}] =
     useUploadPostMutation();
 
@@ -168,11 +180,38 @@ const Profile = ({navigation}: any) => {
     setLoading(false);
   };
 
+
+  const showModal = () => {
+    setLogoutModal(true);
+    Animated.spring(animation, {
+      toValue: 1,
+      stiffness: 100,
+      damping: 10,
+      mass: 1,
+      useNativeDriver: true, 
+    }).start();
+  };
+
+  const hideModal = () => {
+    Animated.spring(animation, {
+      toValue: 0,
+      stiffness: 100,
+      damping: 10,
+      mass: 1,
+      useNativeDriver: true, 
+    }).start(() => {
+      setLogoutModal(false);
+    });
+  };
+
+  const navigateToHelpCenter = () => navigation.navigate(navigationString.HELPCENTER)
+
+
   return (
     <ScrollView className="bg-white px-4">
-      <View className="py-3 px-4 flex-row justify-between">
-        <View className="flex-row">
-          {/* <Image source={images.Register} className='w-10 h-10'/> */}
+      <View className="py-5 px-4 flex-row justify-between">
+        <View className="flex-row gap-x-3">
+          <Image source={images.logo} className='w-6 h-6'/>
           <Text className="text-2xl font-[Poppins-Medium] text-black">
             Profile
           </Text>
@@ -185,7 +224,7 @@ const Profile = ({navigation}: any) => {
       </View>
       <View className=" px-7">
         <View className="w-36 mt-4 mx-auto h-36  rounded-full overflow-hidden">
-          <Image
+         {userData?.profile ? <Image
             source={
               userData?.profile
                 ? {
@@ -194,7 +233,11 @@ const Profile = ({navigation}: any) => {
                 : icons.avatar
             }
             className="w-full h-full"
-          />
+          /> : <Image
+          source={icons.avatar}
+          className="w-full h-full"
+          tintColor={'#D3D3D3'}
+        />}
         </View>
         <View>
           <Text className="text-black text-center  font-[Poppins-Medium] ">
@@ -222,12 +265,12 @@ const Profile = ({navigation}: any) => {
             </Text>
           </View>
           <Switch
-        trackColor={{ false: "#767577", true: "#81b0ff" }}
-        thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-        ios_backgroundColor="#3e3e3e"
-        onValueChange={toggleSwitch}
-        value={isEnabled}
-      />
+            trackColor={{false: '#767577', true: '#81b0ff'}}
+            thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={toggleSwitch}
+            value={isEnabled}
+          />
         </View>
         <View className=" flex-row gap-x-3 justify-between items-center">
           <View className=" flex-row gap-x-3 items-end py-2">
@@ -237,21 +280,21 @@ const Profile = ({navigation}: any) => {
               tintColor={'#181818'}
             />
             <Text className=" text-black font-[Poppins-Medium] text-base">
-            Dark Mode
+              Dark Mode
             </Text>
           </View>
           <Switch
-        trackColor={{ false: "#767577", true: "#81b0ff" }}
-        thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-        ios_backgroundColor="#3e3e3e"
-        onValueChange={toggleSwitch}
-        value={isEnabled}
-      />
+            trackColor={{false: '#767577', true: '#81b0ff'}}
+            thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={toggleSwitch}
+            value={isEnabled}
+          />
         </View>
         <ProfileButton text={'Privacy'} icon={icons.password} />
-        <ProfileButton text={'Help Center'} icon={icons.notification} />
+        <ProfileButton text={'Help Center'} icon={icons.notification} onPress={navigateToHelpCenter} />
         <ProfileButton text={'Invite Friends'} icon={icons.people} />
-        <View className=" flex-row gap-x-3 justify-between items-center">
+        <TouchableOpacity onPress={showModal} className=" flex-row gap-x-3 justify-between items-center">
           <View className=" flex-row gap-x-3 items-end py-2">
             <Image
               source={icons.logout}
@@ -263,8 +306,12 @@ const Profile = ({navigation}: any) => {
             </Text>
           </View>
           <MaterialIcons name="navigate-next" size={30} color={'#EF4444'} />
-         
-        </View>
+        </TouchableOpacity>
+        <Logout
+          setModal={hideModal}
+          logoutModal={logoutModal}
+          logout={logout}
+        />
       </View>
 
       {/* <View className="justify-center items-center">

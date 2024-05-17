@@ -4,7 +4,8 @@ export default {
   SIGNUPSCREEN : 'Signup',
   LOGINSCREEN : 'Login',
   COMPLETEPROFILESCREEN : 'CompleteProfile',
-  BOTTOMTABSSCREEN : 'BottomTabs'
+  BOTTOMTABSSCREEN : 'BottomTabs',
+  HELPCENTER : 'HelpCenter'
 
 
 };
