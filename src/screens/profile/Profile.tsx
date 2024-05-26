@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Switch,
-  Animated 
+  Animated,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import images from '../../constants/images';
@@ -32,7 +32,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import ProfileButton from '../../components/profile/ProfileButton';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Logout from '../../components/profile/Logout';
-import navigationString from "../../constants/navigation"
+import navigationString from '../../constants/navigation';
 const Profile = ({navigation}: any) => {
   const {userData, token, posts, language} = useSelector(
     (state: any) => state?.user,
@@ -70,7 +70,7 @@ const Profile = ({navigation}: any) => {
 
   const logout = async () => {
     setLoading(true);
-    await AsyncStorage.setItem('token', '');
+    await AsyncStorage.setItem('accessToken', '');
     navigation.navigate('Login');
     setOptionModal(false);
     setLoading(false);
@@ -180,7 +180,6 @@ const Profile = ({navigation}: any) => {
     setLoading(false);
   };
 
-
   const showModal = () => {
     setLogoutModal(true);
     Animated.spring(animation, {
@@ -188,7 +187,7 @@ const Profile = ({navigation}: any) => {
       stiffness: 100,
       damping: 10,
       mass: 1,
-      useNativeDriver: true, 
+      useNativeDriver: true,
     }).start();
   };
 
@@ -198,20 +197,20 @@ const Profile = ({navigation}: any) => {
       stiffness: 100,
       damping: 10,
       mass: 1,
-      useNativeDriver: true, 
+      useNativeDriver: true,
     }).start(() => {
       setLogoutModal(false);
     });
   };
 
-  const navigateToHelpCenter = () => navigation.navigate(navigationString.HELPCENTER)
-
+  const navigateToHelpCenter = () =>
+    navigation.navigate(navigationString.HELPCENTER);
 
   return (
     <ScrollView className="bg-white px-4">
       <View className="py-5 px-4 flex-row justify-between">
         <View className="flex-row gap-x-3">
-          <Image source={images.logo} className='w-6 h-6'/>
+          <Image source={images.logo} className="w-6 h-6" />
           <Text className="text-2xl font-[Poppins-Medium] text-black">
             Profile
           </Text>
@@ -224,27 +223,27 @@ const Profile = ({navigation}: any) => {
       </View>
       <View className=" px-7">
         <View className="w-36 mt-4 mx-auto h-36  rounded-full overflow-hidden">
-         {userData?.profile ? <Image
-            source={
-              userData?.profile
-                ? {
-                    uri: `${env.storage}${userData?.profile}`,
-                  }
-                : icons.avatar
-            }
-            className="w-full h-full"
-          /> : <Image
-          source={icons.avatar}
-          className="w-full h-full"
-          tintColor={'#D3D3D3'}
-        />}
+          {userData?.image ? (
+            <Image
+              source={{
+                uri: `${env.storage}${userData?.image}`,
+              }}
+              className="w-full h-full"
+            />
+          ) : (
+            <Image
+              source={icons.avatar}
+              className="w-full h-full"
+              tintColor={'#D3D3D3'}
+            />
+          )}
         </View>
         <View>
           <Text className="text-black text-center  font-[Poppins-Medium] ">
-            Andrew Ansely
+            {userData?.fullname}
           </Text>
           <Text className="text-black text-center  font-[Poppins-Medium] ">
-            andrewansely@gmail.com
+            {userData?.email}
           </Text>
         </View>
       </View>
@@ -292,9 +291,15 @@ const Profile = ({navigation}: any) => {
           />
         </View>
         <ProfileButton text={'Privacy'} icon={icons.password} />
-        <ProfileButton text={'Help Center'} icon={icons.notification} onPress={navigateToHelpCenter} />
+        <ProfileButton
+          text={'Help Center'}
+          icon={icons.notification}
+          onPress={navigateToHelpCenter}
+        />
         <ProfileButton text={'Invite Friends'} icon={icons.people} />
-        <TouchableOpacity onPress={showModal} className=" flex-row gap-x-3 justify-between items-center">
+        <TouchableOpacity
+          onPress={showModal}
+          className=" flex-row gap-x-3 justify-between items-center">
           <View className=" flex-row gap-x-3 items-end py-2">
             <Image
               source={icons.logout}

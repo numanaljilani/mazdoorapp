@@ -15,6 +15,8 @@ import SignUp from '../screens/SignUp/SignUp';
 import HelpCenter from '../screens/ProfielSubScreens/HelpCenter';
 import navigationString from "../constants/navigation"
 import WorkDetails from '../screens/details/WorkDetails';
+import ContractorListScreen from '../screens/Contractor/ContractorListScreen';
+import BookMarks from '../screens/Bookmarks/BookMarks';
 
 
 const Stack = createStackNavigator();
@@ -26,7 +28,7 @@ const Route = () => {
         headerShown: false,
       }}
       initialRouteName="Splash">
-      {/* <Stack.Screen name="Splash" component={Splash} /> */}
+      <Stack.Screen name="Splash" component={Splash} />
       <Stack.Screen name="WorkDetails" component={WorkDetails} />
       <Stack.Screen name="onboarding" component={Onboarding} />
       <Stack.Screen name="Signup" component={SignUp} />
@@ -40,6 +42,8 @@ const Route = () => {
       <Stack.Screen name="UpdateProfile" component={UpdateProfile} />
       <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
       <Stack.Screen name={navigationString.HELPCENTER} component={HelpCenter} />
+      <Stack.Screen name={navigationString.CONTRACTORLIST} component={ContractorListScreen} />
+      <Stack.Screen name={navigationString.MYBOOKMARKS} component={BookMarks} />
     </Stack.Navigator>
   );
 };

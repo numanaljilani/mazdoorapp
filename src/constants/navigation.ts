@@ -5,7 +5,11 @@ export default {
   LOGINSCREEN : 'Login',
   COMPLETEPROFILESCREEN : 'CompleteProfile',
   BOTTOMTABSSCREEN : 'BottomTabs',
-  HELPCENTER : 'HelpCenter'
+  HELPCENTER : 'HelpCenter',
+  BOTTOMTABS : 'BottomTabs',
+  CONTRACTORLIST : 'ContractorList',
+  MYBOOKMARKS : 'MyBookMarks',
+  LOGIN :'Login'
 
 
 };

@@ -26,6 +26,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import ServicesList from '../../components/Lists/ServicesList';
 import WorkerList from '../../components/Lists/WorkerList';
+import navigationString from '../../constants/navigation'
 
 const Home = ({navigation}: any) => {
   const [topRatedWorker, setTopRatedWorker] = useState([]);
@@ -34,6 +35,7 @@ const Home = ({navigation}: any) => {
   const [service, setService] = useState<string>('Plumber');
 
   const {userData, token, language} = useSelector((state: any) => state?.user);
+  console.log(userData)
 
   const [getTopWorker, {loading, error, data}] =
     useMutation(Get_Top_RatedWorkers);
@@ -144,26 +146,31 @@ const Home = ({navigation}: any) => {
       </View>
     </TouchableOpacity>
   );
-
+console.log(`${env.storage}${userData.image}`)
   return (
     <ScrollView>
       <View className=" bg-white px-4 py-5 min-h-full">
         <View className="flex-row justify-between">
           <View className=" flex-row items-center gap-3">
             <View className="  rounded-full overflow-hidden">
-              <Image
-                source={icons.user}
+             {userData.image ? <Image
+                source={{uri : `${env.storage}${userData.image}`}}
                 className="w-10 h-10 "
-                tintColor={'#D3D3D3'}
-                resizeMode="contain"
-              />
+              
+                resizeMode="cover"
+              /> : <Image
+              source={icons.user}
+              className="w-10 h-10 "
+              tintColor={'#D3D3D3'}
+              resizeMode="contain"
+            />  }
             </View>
             <View className="">
               <Text className="text-black font-[Poppins-Regular]">
                 Good Morining
               </Text>
               <Text className="text-black font-[Poppins-SemiBold] tracking-wider text-base">
-                Andrew Ansely
+                {userData?.fullname}
               </Text>
             </View>
           </View>
@@ -171,7 +178,7 @@ const Home = ({navigation}: any) => {
             <TouchableOpacity className="w-8 h-8">
               <Image source={icons.notification} className="w-full h-full" />
             </TouchableOpacity>
-            <TouchableOpacity className="w-8 h-8">
+            <TouchableOpacity onPress={()=> navigation.navigate(navigationString.MYBOOKMARKS)} className="w-8 h-8">
               <Image source={icons.bookmark} className="w-full h-full" />
             </TouchableOpacity>
           </View>
@@ -346,7 +353,7 @@ const Home = ({navigation}: any) => {
           </View>
         </View>
         <View>
-          <TouchableOpacity className="shadow shadow-black bg-white p-3 rounded-3xl flex-row">
+          <TouchableOpacity onPress={()=>navigation.navigate(navigationString.CONTRACTORLIST)} className="shadow shadow-black bg-white p-3 rounded-3xl flex-row">
             <View className="border w-28 h-28 rounded-3xl"></View>
             <View className=" flex-1 px-3">
               <View className="flex-row justify-between ">

@@ -39,26 +39,26 @@ const Logout = ({
         <View className="border-2 rounded-full  mt-3 w-10 mx-auto border-gray-200 " />
           <View className='pb-7'>
            
-            <Text className="text-xl mt-3 font-[Poppins-Medium] text-center text-red-600">
+            <Text className="text-2xl mt-4 font-[Poppins-SemiBold] text-center text-red-500">
               Logout
             </Text>
-            <View className="border-t border-gray-200  mx-10 mt-3" />
-            <Text className="text-lg  text-black text-center my-6 font-[Poppins-Regular]">
-              Are you sure you want to log out
+            <View className="border-t border-gray-200  mx-10 mt-5" />
+            <Text className="text-lg   text-center my-8 text-gray-500 font-[Poppins-SemiBold]">
+              Are you sure you want to log out?
             </Text>
             <View className="flex-row">
               <TouchableOpacity
-                className="  py-3 bg-[#832bff42] rounded-full mx-2 flex-1"
+                className="   bg-[#832bff42] rounded-full mx-2 flex-1 py-4"
                 onPress={ setModal}>
-                <Text className="text-center text-base text-[#822BFF] font-[Poppins-SemiBold]">
+                <Text className="text-center text-lg text-[#822BFF] font-[Poppins-SemiBold]">
                   {language ? `रद्द करें` : `Cancel`}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                className="flex-1 py-3 bg-[#822BFF] mx-2 rounded-full"
+                className="flex-1 py-4 bg-[#822BFF] mx-2 rounded-full"
                 onPress={logout}>
-                <Text className="px-6 text-base text-center text-white font-[Poppins-SemiBold]">
-                  {language ? 'लॉग आउट' : `Logout`}
+                <Text className="px-6 text-lg text-center text-white font-[Poppins-SemiBold]">
+                  {language ? 'लॉग आउट' : `Yes ,Logout`}
                 </Text>
               </TouchableOpacity>
             </View>
