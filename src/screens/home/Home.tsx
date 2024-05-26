@@ -7,13 +7,8 @@ import {
   ScrollView,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {Avatar} from 'react-native-paper';
 import images from '../../constants/images';
-import {gql, useMutation, useQuery} from '@apollo/client';
-import {
-  Get_Top_RatedWorkers,
-  Get_Worker_By_Service,
-} from '../../graphql/worker';
+import {useMutation, useQuery} from '@apollo/client';
 import {useSelector} from 'react-redux';
 import env from '../../env';
 import {services} from '../../constants/services';
@@ -23,22 +18,27 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import ServicesList from '../../components/Lists/ServicesList';
 import WorkerList from '../../components/Lists/WorkerList';
-import navigationString from '../../constants/navigation'
+import navigationString from '../../constants/navigation';
+import {GET_CONTRACTOR_BY_SERVICE} from '../../graphql/mutation/getContractor';
 
 const Home = ({navigation}: any) => {
-  const [topRatedWorker, setTopRatedWorker] = useState([]);
+  const [contractors, setContractors] = useState([]);
   const [worker, setWorker] = useState([]);
-
-  const [service, setService] = useState<string>('Plumber');
+  const [service, setService] = useState<string>('Electrician');
 
   const {userData, token, language} = useSelector((state: any) => state?.user);
-  console.log(userData)
 
-  const [getTopWorker, {loading, error, data}] =
-    useMutation(Get_Top_RatedWorkers);
+  const headers = {
+    authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
+  };
+  // console.log(userData.accessToken)
+  // console.log(userData)
+
+  const [get_contractor_by_service, {loading, error, data}] = useMutation(
+    GET_CONTRACTOR_BY_SERVICE,
+  );
 
   // const {
   //   loading: loading2,
@@ -49,26 +49,26 @@ const Home = ({navigation}: any) => {
   //   variables: {occupation: service, take: 50, skip: 0},
   // });
 
-  // const getTop = async () => {
-  //   const res = await getTopWorker({variables: {take: 10, skip: 0}});
-  //   // console.log(res.data.topRatedWorkers)
-  //   if (res.data?.topRatedWorkers) {
-  //     setTopRatedWorker(res.data.topRatedWorkers);
-  //   }
-  // };
+  const getContractorsByService = async () => {
+    await get_contractor_by_service({
+      variables: {service, take: 20, skip: 0},
+      context: {headers},
+    });
+  };
 
-  // useEffect(() => {
-  //   // if (loading2) return;
-  //   if (gqlData2) {
-  //     refetch();
-  //     setWorker(gqlData2?.getWorkerByService);
-  //   }
-  // }, [gqlData2]);
+  useEffect(() => {
+    if (loading) return;
+    getContractorsByService();
+  }, [service]);
 
-  // useEffect(() => {
-  //   getTop();
-  // }, []);
+  useEffect(() => {
+    if (loading) return;
+    if (data) {
+      setContractors(data?.getContractor);
+    }
+  }, [data]);
 
+  console.log(contractors, 'contractors');
   const renderItem = ({item}: {item: any}) => (
     <TouchableOpacity
       onPress={() => setService(item.english)}
@@ -146,24 +146,27 @@ const Home = ({navigation}: any) => {
       </View>
     </TouchableOpacity>
   );
-console.log(`${env.storage}${userData.image}`)
+  // console.log(`${env.storage}${userData.image}`)
   return (
     <ScrollView>
-      <View className=" bg-white px-4 py-5 min-h-full">
+      <View className=" bg-white px-4 py-5 min-h-screen">
         <View className="flex-row justify-between">
           <View className=" flex-row items-center gap-3">
             <View className="  rounded-full overflow-hidden">
-             {userData.image ? <Image
-                source={{uri : `${env.storage}${userData.image}`}}
-                className="w-10 h-10 "
-              
-                resizeMode="cover"
-              /> : <Image
-              source={icons.user}
-              className="w-10 h-10 "
-              tintColor={'#D3D3D3'}
-              resizeMode="contain"
-            />  }
+              {userData.image ? (
+                <Image
+                  source={{uri: `${env.storage}${userData.image}`}}
+                  className="w-10 h-10 "
+                  resizeMode="cover"
+                />
+              ) : (
+                <Image
+                  source={icons.user}
+                  className="w-10 h-10 "
+                  tintColor={'#D3D3D3'}
+                  resizeMode="contain"
+                />
+              )}
             </View>
             <View className="">
               <Text className="text-black font-[Poppins-Regular]">
@@ -178,7 +181,9 @@ console.log(`${env.storage}${userData.image}`)
             <TouchableOpacity className="w-8 h-8">
               <Image source={icons.notification} className="w-full h-full" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={()=> navigation.navigate(navigationString.MYBOOKMARKS)} className="w-8 h-8">
+            <TouchableOpacity
+              onPress={() => navigation.navigate(navigationString.MYBOOKMARKS)}
+              className="w-8 h-8">
               <Image source={icons.bookmark} className="w-full h-full" />
             </TouchableOpacity>
           </View>
@@ -222,12 +227,21 @@ console.log(`${env.storage}${userData.image}`)
           <Text className="text-lg text-black font-[Poppins-Medium]">
             Special Offers
           </Text>
-          <View className="rounded-xl overflow-hidden">
-            <Image
+          <View className="rounded-xl p-4 w-full  bg-[#822BFF]/90  shadow-black shadow-lg">
+            <Text className="text-4xl   text-white font-[Poppins-SemiBold]">
+              30%
+            </Text>
+            <Text className="text-lg  text-white font-[Poppins-Medium]">
+              Todays Special!
+            </Text>
+            <Text className="text-sm  text-white font-[Poppins-Medium]">
+              Get discount for every order only valid for today
+            </Text>
+            {/* <Image
               source={images.OnBoardinImage2}
               className="w-full h-40"
               resizeMode="cover"
-            />
+            /> */}
           </View>
         </View>
         <View className="mt-3">
@@ -321,7 +335,7 @@ console.log(`${env.storage}${userData.image}`)
             </View>
 
             <View className="">
-              <TouchableOpacity className="bg-[#822BFF]/10 w-16 h-16 justify-center items-center rounded-full">
+              <TouchableOpacity onPress={()=> navigation.navigate(navigationString.MORESERVICES)} className="bg-[#822BFF]/10 w-16 h-16 justify-center items-center rounded-full">
                 <Feather size={40} color={'#822BFF'} name="more-horizontal" />
               </TouchableOpacity>
               <Text className="text-black font-[Poppins-Medium] text-center text-medium">
@@ -330,7 +344,6 @@ console.log(`${env.storage}${userData.image}`)
             </View>
           </View>
         </View>
-
         <View>
           <Text className="text-lg text-black font-[Poppins-Medium]">
             Most Popular Services
@@ -352,8 +365,19 @@ console.log(`${env.storage}${userData.image}`)
             />
           </View>
         </View>
-        <View>
-          <TouchableOpacity onPress={()=>navigation.navigate(navigationString.CONTRACTORLIST)} className="shadow shadow-black bg-white p-3 rounded-3xl flex-row">
+        <View className=" ">
+          {contractors?.length > 0 ? (
+            contractors.map((item, index) => (
+              <WorkerList key={index} item={item} navigation={navigation}/>
+            ))
+          ) : (
+            <View className="min-h-fit justify-center items-center mt-20">
+              <Text className="text-center text-black my-auto text-lg font-semibold">
+                {language ? `कोई कर्मचारी नहीं मिला` : `No Worker Found`}
+              </Text>
+            </View>
+          )}
+          {/* <TouchableOpacity onPress={()=>navigation.navigate(navigationString.CONTRACTORLIST)} className="shadow shadow-black bg-white p-3 rounded-3xl flex-row">
             <View className="border w-28 h-28 rounded-3xl"></View>
             <View className=" flex-1 px-3">
               <View className="flex-row justify-between ">
@@ -379,12 +403,12 @@ console.log(`${env.storage}${userData.image}`)
                 </View>
               </View>
             </View>
-          </TouchableOpacity>
-          <WorkerList/>
+          </TouchableOpacity> */}
+          {/* <WorkerList/> */}
         </View>
 
         <View className="  ">
-          {worker.length > 0 ? (
+          {/* {contractors?.length > 0 ? (
             <FlatList
               data={worker}
               keyExtractor={(item, index) => index.toString()}
@@ -397,7 +421,7 @@ console.log(`${env.storage}${userData.image}`)
                 {language ? `कोई कर्मचारी नहीं मिला` : `No Worker Found`}
               </Text>
             </View>
-          )}
+          )} */}
         </View>
       </View>
     </ScrollView>

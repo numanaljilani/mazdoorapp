@@ -203,18 +203,25 @@ const Profile = ({navigation}: any) => {
     });
   };
 
+  const updateProfile = () =>{
+    navigation.navigate(navigationString.UPDATEPROFILE)
+  }
+
+  const PrivacyPolicy = () =>{
+    navigation.navigate(navigationString.PRIVACY)
+  }
   const navigateToHelpCenter = () =>
     navigation.navigate(navigationString.HELPCENTER);
 
   return (
     <ScrollView className="bg-white px-4">
       <View className="py-5 px-4 flex-row justify-between">
-        <View className="flex-row gap-x-3">
+        <TouchableOpacity className="flex-row gap-x-3" onPress={()=> navigation.navigate(navigationString.UPDATEPROFILE)}>
           <Image source={images.logo} className="w-6 h-6" />
           <Text className="text-2xl font-[Poppins-Medium] text-black">
             Profile
           </Text>
-        </View>
+        </TouchableOpacity>
         <TouchableOpacity
           className=" p-2 border-[#822BFF] rounded-full border "
           onPress={() => setOptionModal(true)}>
@@ -248,7 +255,7 @@ const Profile = ({navigation}: any) => {
         </View>
       </View>
       <View className="border-t mt-3 border-gray-300 ">
-        <ProfileButton text={'Edit Profile'} icon={icons.profile} />
+        <ProfileButton text={'Edit Profile'} icon={icons.profile} onPress={updateProfile}/>
         <ProfileButton text={'Notifications'} icon={icons.notification} />
         <ProfileButton text={'Payments'} icon={icons.wallet} />
         <ProfileButton text={'Security'} icon={icons.secure} />
@@ -290,7 +297,7 @@ const Profile = ({navigation}: any) => {
             value={isEnabled}
           />
         </View>
-        <ProfileButton text={'Privacy'} icon={icons.password} />
+        <ProfileButton text={'Privacy'} icon={icons.password} onPress={PrivacyPolicy}/>
         <ProfileButton
           text={'Help Center'}
           icon={icons.notification}

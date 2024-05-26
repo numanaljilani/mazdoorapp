@@ -2,21 +2,27 @@ import { View, Text, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
 import icons from '../../constants/icons'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import env from '../../env';
 
-const WorkerList = () => {
+const WorkerList = ({item , navigation , screen } : any) => {
   return (
-    <TouchableOpacity className="shadow shadow-black bg-white p-3 mt-3 rounded-3xl flex-row">
-    <View className="border w-28 h-28 rounded-3xl"></View>
+    <TouchableOpacity className="shadow  shadow-black bg-white p-3 mt-3 rounded-3xl flex-row" onPress={()=> navigation.navigate()}>
+    <View className={`border w-28 h-28 ${!item?.image && 'p-3'} rounded-3xl overflow-hidden`}>
+    { item?.image ? <Image source={{uri :`${env.storage}${item?.image}` }} className="h-full w-full" /> : <Image source={icons.user} className="h-full w-full"  tintColor={"#dbd7d2"}/>}
+    </View>
     <View className=" flex-1 px-3">
-      <View className="flex-row justify-between ">
+      <TouchableOpacity className="flex-row justify-between" onPress={()=> console.log("Presssed")}>
         <Text className="text-gray-600 font-semibold text-base">
-          Miran Ahmed
+          {item?.fullname}
         </Text>
-        <Image source={icons.bookmark} className="w-7 h-7" />
-      </View>
+      
+        <Image source={icons.bookmark} className="w-7 h-7" tintColor={'#822BFF'} />
+   
+
+      </TouchableOpacity>
       <View>
-        <Text className='text-black font-semibold text-lg'>House Cleaning</Text>
-        <Text className='text-[#822BFF] font-bold text-xl'>600 /-</Text>
+        <Text className='text-black font-semibold text-lg'>{item?.service}</Text>
+        <Text className='text-[#822BFF] font-bold text-xl'>{item?.price} /-</Text>
         <View className='flex-row gap-3'>
           <View className='flex-row gap-x-1'>
           <FontAwesome5                   

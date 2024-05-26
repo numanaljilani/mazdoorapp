@@ -13,7 +13,7 @@ const BookMarks = ({navigation} : any) => {
         <TouchableOpacity onPress={()=> navigation.goBack()}>
           <Image source={icons.back} className="w-7 h-7" />
         </TouchableOpacity>
-        <Text className="text-black text-xl font-[Poppins-SemiBold] text-medium">
+        <Text className="text-black text-xl font-[Poppins-Medium] text-medium">
           My Bookmarks
         </Text>
         </View>

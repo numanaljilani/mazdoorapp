@@ -23,8 +23,6 @@ const BottomTabs = () => {
       tabBarLabel : () => null,     
     })
     }
-    
-   
     >
       <Tab.Screen
         options={{

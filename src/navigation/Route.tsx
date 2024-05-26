@@ -8,7 +8,7 @@ import RegisterPhoneNumberScreen from '../screens/createuser/RegisterPhoneNumber
 import CompleteProfileScreen from '../screens/createuser/CompleteProfileScreen';
 import Worker from '../screens/BecomeWorkerScreen/Worker';
 import WorkerProfile from '../screens/workerProfile/WorkerProfile';
-import UpdateProfile from '../screens/update/UpdateProfile';
+// import UpdateProfile from '../screens/update/UpdateProfile';
 import ForgetPassword from '../screens/ForgetPassword/ForgetPasswordOtp';
 import Onboarding from '../screens/onboarding/Onboarding';
 import SignUp from '../screens/SignUp/SignUp';
@@ -17,6 +17,9 @@ import navigationString from "../constants/navigation"
 import WorkDetails from '../screens/details/WorkDetails';
 import ContractorListScreen from '../screens/Contractor/ContractorListScreen';
 import BookMarks from '../screens/Bookmarks/BookMarks';
+import MoreSerices from '../screens/MoreService/MoreSerices';
+import UpdateProfile from '../screens/UpdateProfile/UpdateProfile';
+import Privacy from '../screens/PrivacyPolicy/Privacy';
 
 
 const Stack = createStackNavigator();
@@ -39,11 +42,14 @@ const Route = () => {
       <Stack.Screen name="BottomTabs" component={BottomTabs} />
       <Stack.Screen name="CreateWorkerProfile" component={Worker} />
       <Stack.Screen name="WorkerProfile" component={WorkerProfile} />
-      <Stack.Screen name="UpdateProfile" component={UpdateProfile} />
+      {/* <Stack.Screen name="UpdateProfile" component={UpdateProfile} /> */}
       <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
       <Stack.Screen name={navigationString.HELPCENTER} component={HelpCenter} />
       <Stack.Screen name={navigationString.CONTRACTORLIST} component={ContractorListScreen} />
       <Stack.Screen name={navigationString.MYBOOKMARKS} component={BookMarks} />
+      <Stack.Screen name={navigationString.MORESERVICES} component={MoreSerices} />
+      <Stack.Screen name={navigationString.UPDATEPROFILE} component={UpdateProfile} />
+      <Stack.Screen name={navigationString.PRIVACY} component={Privacy} />
     </Stack.Navigator>
   );
 };
