@@ -7,13 +7,17 @@ import {
   ScrollView,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
+import { Avatar } from 'react-native-paper';
 import images from '../../constants/images';
 import {useMutation, useQuery} from '@apollo/client';
 import {useSelector} from 'react-redux';
+
+
+
 import env from '../../env';
-import {services} from '../../constants/services';
+import { services } from '../../constants/services';
 import icons from '../../constants/icons';
-import {Icon, TextInput} from 'react-native-paper';
+import { Icon, TextInput } from 'react-native-paper';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -39,6 +43,8 @@ const Home = ({navigation}: any) => {
   const [get_contractor_by_service, {loading, error, data}] = useMutation(
     GET_CONTRACTOR_BY_SERVICE,
   );
+  // const [getTopWorker, { loading, error, data }] =
+  //   useMutation(Get_Top_RatedWorkers);
 
   // const {
   //   loading: loading2,
@@ -48,6 +54,27 @@ const Home = ({navigation}: any) => {
   // } = useQuery(Get_Worker_By_Service, {
   //   variables: {occupation: service, take: 50, skip: 0},
   // });
+
+  // const getTop = async () => {
+  //   const res = await getTopWorker({variables: {take: 10, skip: 0}});
+  //   // console.log(res.data.topRatedWorkers)
+  //   if (res.data?.topRatedWorkers) {
+  //     setTopRatedWorker(res.data.topRatedWorkers);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   // if (loading2) return;
+  //   if (gqlData2) {
+  //     refetch();
+  //     setWorker(gqlData2?.getWorkerByService);
+  //   }
+  // }, [gqlData2]);
+
+  // useEffect(() => {
+  //   getTop();
+  // }, []);
+
 
   const getContractorsByService = async () => {
     await get_contractor_by_service({
@@ -68,33 +95,30 @@ const Home = ({navigation}: any) => {
     }
   }, [data]);
 
-  console.log(contractors, 'contractors');
   const renderItem = ({item}: {item: any}) => (
     <TouchableOpacity
       onPress={() => setService(item.english)}
-      className={`rounded-full py-2 px-4 mx-1  my-3 bg-${
-        item.english === service ? '[#312651]' : 'white'
-      } shadow shadow-[#312651]`}>
+      className={`rounded-full py-2 px-4 mx-1  my-3 bg-${item.english === service ? '[#312651]' : 'white'
+        } shadow shadow-[#312651]`}>
       <Text
-        className={`text-base font-semibold text-gray-100 text-${
-          item.english === service ? 'white' : '[#312651]'
-        }`}>
+        className={`text-base font-semibold text-gray-100 text-${item.english === service ? 'white' : '[#312651]'
+          }`}>
         {language ? item.hindi : item.english}
       </Text>
     </TouchableOpacity>
   );
 
-  const renderList = ({item}: {item: any}) => {
+  const renderList = ({ item }: { item: any }) => {
     if (userData._id === item._id) return <></>;
     return (
       <TouchableOpacity
-        onPress={() => navigation.navigate('WorkerProfile', {id: item._id})}
+        onPress={() => navigation.navigate('WorkerProfile', { id: item._id })}
         className="mb-2 bg-gray-100   px-4 rounded-2xl flex-row  py-2 mt-1">
         <View className="w-16 h-16 rounded-full  overflow-hidden">
           <Image
             source={
               item.profile
-                ? {uri: `${env.storage}${item.profile}`}
+                ? { uri: `${env.storage}${item.profile}` }
                 : images.Male
             }
             className="w-full h-full"
@@ -111,9 +135,9 @@ const Home = ({navigation}: any) => {
     );
   };
 
-  const renderAdds = ({item}: any) => (
+  const renderAdds = ({ item }: any) => (
     <TouchableOpacity
-      onPress={() => navigation.navigate('WorkerProfile', {id: item._id})}
+      onPress={() => navigation.navigate('WorkerProfile', { id: item._id })}
       className="my-3 mx-2 w-44  py-2 bg-white px-4  rounded-2xl justify-between"
       style={{
         shadowColor: '#000',
@@ -128,7 +152,7 @@ const Home = ({navigation}: any) => {
       <View className="w-16 h-16 rounded-full  overflow-hidden shadow-2xl drop-shadow-2xl shadow-black">
         <Image
           source={
-            item.profile ? {uri: `${env.storage}${item.profile}`} : images.Male
+            item.profile ? { uri: `${env.storage}${item.profile}` } : images.Male
           }
           className="w-full h-full"
           resizeMode="contain"
@@ -194,7 +218,7 @@ const Home = ({navigation}: any) => {
             placeholder="Search"
             placeholderTextColor={'#D3D3D3'}
             mode="outlined"
-            theme={{roundness: 10}}
+            theme={{ roundness: 10 }}
             autoCapitalize="none"
             activeOutlineColor="#822BFF"
             outlineColor="transparent"
@@ -352,7 +376,7 @@ const Home = ({navigation}: any) => {
             <FlatList
               data={services}
               keyExtractor={(item, index) => index.toString()}
-              renderItem={({item}: any) => (
+              renderItem={({ item }: any) => (
                 <ServicesList
                   item={item}
                   service={service}
@@ -377,55 +401,11 @@ const Home = ({navigation}: any) => {
               </Text>
             </View>
           )}
-          {/* <TouchableOpacity onPress={()=>navigation.navigate(navigationString.CONTRACTORLIST)} className="shadow shadow-black bg-white p-3 rounded-3xl flex-row">
-            <View className="border w-28 h-28 rounded-3xl"></View>
-            <View className=" flex-1 px-3">
-              <View className="flex-row justify-between ">
-                <Text className="text-gray-600 font-semibold text-base">
-                  Miran Ahmed
-                </Text>
-                <Image source={icons.bookmark} className="w-7 h-7" />
-              </View>
-              <View>
-                <Text className='text-black font-semibold text-lg'>House Cleaning</Text>
-                <Text className='text-[#822BFF] font-bold text-xl'>600 /-</Text>
-                <View className='flex-row gap-3'>
-                  <View className='flex-row gap-x-1'>
-                  <FontAwesome5                   
-                  size={17}
-                  color={'#FFB100'}
-                  name="star-half-alt"/>
-                  <Text className='text-gray-500  font-semibold text-sm'>4.8</Text>
-                  </View>
-
-                  <View className='border-l'/>
-                  <Text className='text-gray-500 font-semibold text-sm'>2000 + Reviews</Text>
-                </View>
-              </View>
-            </View>
-          </TouchableOpacity> */}
-          {/* <WorkerList/> */}
-        </View>
-
-        <View className="  ">
-          {/* {contractors?.length > 0 ? (
-            <FlatList
-              data={worker}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={renderList}
-              contentContainerStyle={{paddingBottom: 900}}
-            />
-          ) : (
-            <View className="min-h-fit justify-center items-center mt-20">
-              <Text className="text-center my-auto text-lg font-semibold">
-                {language ? `कोई कर्मचारी नहीं मिला` : `No Worker Found`}
-              </Text>
-            </View>
-          )} */}
         </View>
       </View>
     </ScrollView>
   );
-};
+}
+
 
 export default Home;

@@ -7,4 +7,6 @@ export default {
   OnBoardinImage2: require('../assets/images/onboarding2.png'),
   Facebook: require('../assets/images/facebook.png'),
   logo: require('../assets/images/Mazdur-logo.png'),
+  notfound: require('../assets/images/notfound.png'),
+  message: require('../assets/images/message.png'),
 };

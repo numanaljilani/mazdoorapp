@@ -8,14 +8,14 @@ import 'react-native-gesture-handler';
 import React from 'react';
 // import type {PropsWithChildren} from 'react';
 import // ActivityIndicator,
-// SafeAreaView,
-// ScrollView,
-// StatusBar,
-// StyleSheet,
-// useColorScheme,
+  // SafeAreaView,
+  // ScrollView,
+  // StatusBar,
+  // StyleSheet,
+  // useColorScheme,
 
-'react-native';
-import {PaperProvider} from 'react-native-paper';
+  'react-native';
+import { PaperProvider } from 'react-native-paper';
 
 // import {
 //   Colors,
@@ -25,12 +25,12 @@ import {PaperProvider} from 'react-native-paper';
 //   ReloadInstructions,
 // } from 'react-native/Libraries/NewAppScreen';
 import Route from './src/navigation/Route';
-import {NavigationContainer} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import {
   ApolloProvider,
 } from '@apollo/client';
-import {Provider} from 'react-redux';
-import {store} from './src/service/store';
+import { Provider } from 'react-redux';
+import { store } from './src/service/store';
 import FlashMessage from 'react-native-flash-message';
 import { client } from './src/utils/apolloclient';
 

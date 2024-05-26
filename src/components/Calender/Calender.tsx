@@ -1,15 +1,15 @@
-import {View, Text, StyleSheet, Modal} from 'react-native';
-import React, {useState} from 'react';
+import { View, Text, StyleSheet, Modal } from 'react-native';
+import React, { useState } from 'react';
 import DateTimePicker from 'react-native-ui-datepicker';
 
-const Calender = ({date, setDate, setCalenderModal, calenderModal}: any) => {
+const Calender = ({ date, setDate, setCalenderModal, calenderModal }: any) => {
   return (
     <Modal
       transparent={true}
       animationType={'none'}
       visible={calenderModal}
-      style={{zIndex: 1100}}
-      onRequestClose={() => {}}>
+      style={{ zIndex: 1100 }}
+      onRequestClose={() => { }}>
       <View style={styles.modalBackground}>
         <View
           style={styles.activityIndicatorWrapper}
@@ -23,8 +23,8 @@ const Calender = ({date, setDate, setCalenderModal, calenderModal}: any) => {
                 setDate(params.date);
               }}
               selectedItemColor="#822BFF"
-              todayTextStyle={{color: 'black'}}
-              calendarTextStyle={{color: 'black'}}
+              todayTextStyle={{ color: 'black' }}
+              calendarTextStyle={{ color: 'black' }}
               headerTextStyle={{
                 color: 'black',
                 fontFamily: 'Poppins-Medium',
