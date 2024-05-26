@@ -22,13 +22,14 @@ import {showMessage} from 'react-native-flash-message';
 import Button from '../../components/common/Button';
 import images from '../../constants/images';
 import SocialAuth from '../../components/SocialAuth/SocialAuth';
+import navigationsString from '../../constants/navigation';
 
 const Login = ({navigation}: {navigation: any}) => {
   const colorScheme = useColorScheme();
-  console.log(colorScheme);
-  const [phone, setPhone] = useState<string>('');
+
+  const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [error, setError] = useState<any>();
+  // const [error, setError] = useState<any>();
   const [secure, setSecure] = useState<boolean>(false);
   const dispatch = useDispatch();
   const {userData, token, language} = useSelector((state: any) => state?.user);
@@ -39,21 +40,31 @@ const Login = ({navigation}: {navigation: any}) => {
   };
 
   const handleLogin = async () => {
-    // if (phone.length < 10 || !password) {
-    //   showMessage({
-    //     type: 'danger',
-    //     message: phone.length < 10 ? 'Phone Number' : 'Password is requred',
-    //     description:
-    //       phone.length < 10
-    //         ? 'Phone number should be of 10 digits'
-    //         : 'Password is requred',
-    //   });
-    //   return;
-    // }
+    if (!email || !password) {
+      showMessage({
+        type: 'danger',
+        message: 'email and Password is requred',
+        description: 'email and  Password must be provieded .',
+      });
+      return;
+    }
     try {
-      navigation.navigate("BottomTabs")
-      // const res = await login({variables: {phone: parseInt(phone), password}});
-      // const {user, error} = res.data?.login;
+      // navigation.navigate("BottomTabs")
+      const res = await login({variables: {email, password}});
+      const {user, error} = res.data?.login;
+      console.log(user, error, '?>>>>>>');
+      if (user) {
+        dispatch(setUser(user));
+        dispatch(setToken(user.access_token));
+        const jsonValue = JSON.stringify(user.accessToken);
+        await AsyncStorage.setItem('accessToken', jsonValue);
+        navigation.replace(navigationsString.BOTTOMTABS);
+      } else {
+        showMessage({
+          type: 'danger',
+          message: 'Something went wrong',
+        });
+      }
 
       // if (user) {
       //   dispatch(setUser(user));
@@ -81,8 +92,8 @@ const Login = ({navigation}: {navigation: any}) => {
       //   dispatch(setToken(data?.login?.acess_token));
       // }
     } catch (error: any) {
-      // console.log(error, 'Inside error handling');
-      // console.log(error);
+      console.log(error, 'Inside error handling');
+      console.log(error);
     }
   };
 
@@ -111,8 +122,8 @@ const Login = ({navigation}: {navigation: any}) => {
       <View className="w-full gap-y-4 ">
         <InputText
           label={language ? 'फ़ोन' : 'Email'}
-          value={phone}
-          setData={setPhone}
+          value={email}
+          setData={setEmail}
           icon={icons.email}
           keyboard={true}
         />
@@ -169,7 +180,7 @@ keytool -exportcert -alias androiddebugkey -keystore "C:\Users\numan\.android\de
           </TouchableOpacity> */}
         {/* <TouchableOpacity
             className="text-center text-lg font-medium justify-center items-center flex-row gap-2"
-            onPress={() => navigation.navigate('RegisterPhone')}>
+            onPress={() => navigation.navigate('Registeremail')}>
             <Text className="text-[#312651] text-center text-lg font-medium ">
               {language ? `साइन अप करें` :`Sign Up`}
             </Text>

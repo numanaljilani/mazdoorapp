@@ -22,7 +22,7 @@ const Splash = ({navigation}: {navigation: any}) => {
     JSON.parse(language!) ? dispatch(setLanguage(true)) : dispatch(setLanguage(false))
     
 
-    if (token) {
+    if (!token) {
       navigation.navigate('Login');
       return;
     }

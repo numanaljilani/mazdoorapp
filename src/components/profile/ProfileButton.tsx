@@ -6,12 +6,14 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 const ProfileButton = ({
   text,
   icon,
+  onPress
 }: {
   text: string;
   icon: ImageSourcePropType;
+  onPress ?: () => void
 }) => {
   return (
-    <TouchableOpacity className=" flex-row gap-x-3 justify-between items-center">
+    <TouchableOpacity onPress={onPress} className=" flex-row gap-x-3 justify-between items-center">
       <View className=" flex-row gap-x-3 items-end py-2">
         <Image source={icon} className="w-8 h-8" />
         <Text className="text-black font-[Poppins-Medium] text-base">{text}</Text>

@@ -14,6 +14,7 @@ import icons from '../../constants/icons';
 import {setUser} from '../../service/slice/userSlice';
 import Button from '../../components/common/Button';
 import {useRoute} from '@react-navigation/native';
+import navigationString from '../../constants/navigation';
 
 import dayjs from 'dayjs';
 import Calender from '../../components/Calender/Calender';
@@ -91,13 +92,13 @@ const CompleteProfileScreen = ({navigation}: any) => {
   const completeProfile = async () => {
     try {
       const inputFormData = new FormData();
-    //  profile && inputFormData.append('file', {
-    //     uri: profile.uri,
-    //     name: 'image.png',
-    //     fileName: 'image',
-    //     // type: 'image/png',
-    // type: "application/octet-stream", 
-    //   });
+     profile && inputFormData.append('file', {
+        uri: profile.uri,
+        name: 'image.png',
+        fileName: 'image',
+        // type: 'image/png',
+    type: "application/octet-stream", 
+      });
      name && inputFormData.append('fullname', name);
       inputFormData.append('email', route.params?.data?.email);
       inputFormData.append('password', route.params?.data?.password);
@@ -136,15 +137,17 @@ const CompleteProfileScreen = ({navigation}: any) => {
   // .catch(error => {
   //     console.error('Error:', error);
   // });
+  console.log(inputFormData)
 
      const res = await  completeProfileApi({
         // body: inputFormData,
-        body: {
-          fullname : name , 
-          password : route.params?.data?.password,
-          email : route.params?.data?.email
+        body: 
+          // fullname : name , 
+          // password : route.params?.data?.password,
+          // email : route.params?.data?.email
+          inputFormData
 
-        },
+        ,
       });
       console.log(res , ">>>>>>>>>>")
     } catch (error) {
@@ -157,6 +160,7 @@ const CompleteProfileScreen = ({navigation}: any) => {
   useEffect(() => {
     if (isSuccess) {
       console.log(data);
+      navigation.navigate(navigationString.LOGIN)
     }
   }, [isSuccess]);
   useEffect(() => {

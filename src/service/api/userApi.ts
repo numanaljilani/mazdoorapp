@@ -76,7 +76,7 @@ export const userzApi = createApi({
           method: "POST",
           body: args.body,
           headers: {
-            'Content-type': 'application/json; charset=UTF-8',
+            'Content-type': 'multipart/form-data; charset=UTF-8',
           },
         };
       },
