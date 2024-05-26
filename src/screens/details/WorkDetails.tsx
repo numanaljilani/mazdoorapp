@@ -14,7 +14,7 @@ const WorkDetails = ({ navigation }: any) => {
     const onboardingCard = [
         {
             id: 1,
-            image: images.LoginBg, // Update image sources here
+            image: images.LoginBg,
         },
         {
             id: 2,
@@ -94,7 +94,7 @@ const WorkDetails = ({ navigation }: any) => {
             if (isPressed !== value) {
                 handlePress(value);
             }
-        };
+        }
 
         return (
             <ScrollView

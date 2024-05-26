@@ -6,19 +6,19 @@ import {
   FlatList,
   ScrollView,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {Avatar} from 'react-native-paper';
+import React, { useEffect, useState } from 'react';
+import { Avatar } from 'react-native-paper';
 import images from '../../constants/images';
-import {gql, useMutation, useQuery} from '@apollo/client';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import {
   Get_Top_RatedWorkers,
   Get_Worker_By_Service,
 } from '../../graphql/worker';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import env from '../../env';
-import {services} from '../../constants/services';
+import { services } from '../../constants/services';
 import icons from '../../constants/icons';
-import {Icon, TextInput} from 'react-native-paper';
+import { Icon, TextInput } from 'react-native-paper';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -27,15 +27,15 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import ServicesList from '../../components/Lists/ServicesList';
 import WorkerList from '../../components/Lists/WorkerList';
 
-const Home = ({navigation}: any) => {
+const Home = ({ navigation }: any) => {
   const [topRatedWorker, setTopRatedWorker] = useState([]);
   const [worker, setWorker] = useState([]);
 
   const [service, setService] = useState<string>('Plumber');
 
-  const {userData, token, language} = useSelector((state: any) => state?.user);
+  const { userData, token, language } = useSelector((state: any) => state?.user);
 
-  const [getTopWorker, {loading, error, data}] =
+  const [getTopWorker, { loading, error, data }] =
     useMutation(Get_Top_RatedWorkers);
 
   // const {
@@ -67,32 +67,30 @@ const Home = ({navigation}: any) => {
   //   getTop();
   // }, []);
 
-  const renderItem = ({item}: {item: any}) => (
+  const renderItem = ({ item }: { item: any }) => (
     <TouchableOpacity
       onPress={() => setService(item.english)}
-      className={`rounded-full py-2 px-4 mx-1  my-3 bg-${
-        item.english === service ? '[#312651]' : 'white'
-      } shadow shadow-[#312651]`}>
+      className={`rounded-full py-2 px-4 mx-1  my-3 bg-${item.english === service ? '[#312651]' : 'white'
+        } shadow shadow-[#312651]`}>
       <Text
-        className={`text-base font-semibold text-gray-100 text-${
-          item.english === service ? 'white' : '[#312651]'
-        }`}>
+        className={`text-base font-semibold text-gray-100 text-${item.english === service ? 'white' : '[#312651]'
+          }`}>
         {language ? item.hindi : item.english}
       </Text>
     </TouchableOpacity>
   );
 
-  const renderList = ({item}: {item: any}) => {
+  const renderList = ({ item }: { item: any }) => {
     if (userData._id === item._id) return <></>;
     return (
       <TouchableOpacity
-        onPress={() => navigation.navigate('WorkerProfile', {id: item._id})}
+        onPress={() => navigation.navigate('WorkerProfile', { id: item._id })}
         className="mb-2 bg-gray-100   px-4 rounded-2xl flex-row  py-2 mt-1">
         <View className="w-16 h-16 rounded-full  overflow-hidden">
           <Image
             source={
               item.profile
-                ? {uri: `${env.storage}${item.profile}`}
+                ? { uri: `${env.storage}${item.profile}` }
                 : images.Male
             }
             className="w-full h-full"
@@ -109,9 +107,9 @@ const Home = ({navigation}: any) => {
     );
   };
 
-  const renderAdds = ({item}: any) => (
+  const renderAdds = ({ item }: any) => (
     <TouchableOpacity
-      onPress={() => navigation.navigate('WorkerProfile', {id: item._id})}
+      onPress={() => navigation.navigate('WorkerProfile', { id: item._id })}
       className="my-3 mx-2 w-44  py-2 bg-white px-4  rounded-2xl justify-between"
       style={{
         shadowColor: '#000',
@@ -126,7 +124,7 @@ const Home = ({navigation}: any) => {
       <View className="w-16 h-16 rounded-full  overflow-hidden shadow-2xl drop-shadow-2xl shadow-black">
         <Image
           source={
-            item.profile ? {uri: `${env.storage}${item.profile}`} : images.Male
+            item.profile ? { uri: `${env.storage}${item.profile}` } : images.Male
           }
           className="w-full h-full"
           resizeMode="contain"
@@ -182,7 +180,7 @@ const Home = ({navigation}: any) => {
             placeholder="Search"
             placeholderTextColor={'#D3D3D3'}
             mode="outlined"
-            theme={{roundness: 10}}
+            theme={{ roundness: 10 }}
             autoCapitalize="none"
             activeOutlineColor="#822BFF"
             outlineColor="transparent"
@@ -332,7 +330,7 @@ const Home = ({navigation}: any) => {
             <FlatList
               data={services}
               keyExtractor={(item, index) => index.toString()}
-              renderItem={({item}: any) => (
+              renderItem={({ item }: any) => (
                 <ServicesList
                   item={item}
                   service={service}
@@ -360,20 +358,20 @@ const Home = ({navigation}: any) => {
                 <Text className='text-[#822BFF] font-bold text-xl'>600 /-</Text>
                 <View className='flex-row gap-3'>
                   <View className='flex-row gap-x-1'>
-                  <FontAwesome5                   
-                  size={17}
-                  color={'#FFB100'}
-                  name="star-half-alt"/>
-                  <Text className='text-gray-500  font-semibold text-sm'>4.8</Text>
+                    <FontAwesome5
+                      size={17}
+                      color={'#FFB100'}
+                      name="star-half-alt" />
+                    <Text className='text-gray-500  font-semibold text-sm'>4.8</Text>
                   </View>
 
-                  <View className='border-l'/>
+                  <View className='border-l' />
                   <Text className='text-gray-500 font-semibold text-sm'>2000 + Reviews</Text>
                 </View>
               </View>
             </View>
           </TouchableOpacity>
-          <WorkerList/>
+          <WorkerList />
         </View>
 
         <View className="  ">
@@ -382,7 +380,7 @@ const Home = ({navigation}: any) => {
               data={worker}
               keyExtractor={(item, index) => index.toString()}
               renderItem={renderList}
-              contentContainerStyle={{paddingBottom: 900}}
+              contentContainerStyle={{ paddingBottom: 900 }}
             />
           ) : (
             <View className="min-h-fit justify-center items-center mt-20">

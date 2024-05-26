@@ -1,6 +1,6 @@
-import {View, Text} from 'react-native';
-import React, {useRef, useState} from 'react';
-import {Icon, TextInput} from 'react-native-paper';
+import { View, Text } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Icon, TextInput } from 'react-native-paper';
 import icons from '../../constants/icons';
 
 const MemoizedTextInput = React.memo(TextInput);
@@ -30,16 +30,16 @@ const InputText = ({
   right?: string;
   securePass?: any;
   pass?: boolean;
-  flag?  : boolean
-  multiline? : boolean,
-  onChangeState? : any ,
-  calendar ? : boolean ,
-  setCalenderModal? : any 
+  flag?: boolean
+  multiline?: boolean,
+  onChangeState?: any,
+  calendar?: boolean,
+  setCalenderModal?: any
 }) => {
-  const [focused , setFocued] = useState(false);
+  const [focused, setFocued] = useState(false);
 
 
-  const handleTextInputChange = (inputText : any) => {
+  const handleTextInputChange = (inputText: any) => {
     setData(inputText);
   };
   return (
@@ -48,23 +48,23 @@ const InputText = ({
       label={!focused ? label : ""}
       value={value}
       mode="outlined"
-      theme={{roundness: 10}}
+      theme={{ roundness: 10 }}
       keyboardType={keyboard ? `default` : `number-pad`}
-      onFocus={()=>{
+      onFocus={() => {
 
         setFocued(true)
         calendar && setCalenderModal(true)
       }}
       className={`mt-5 font-[Poppins-Regular]  ${focused ? 'bg-[#832bff0c]' : 'bg-gray-100'}`}
       textAlignVertical="center"
-      onBlur={()=> setFocued(false)}
+      onBlur={() => setFocued(false)}
       secureTextEntry={pass ? true : false}
       autoCapitalize="none"
       activeOutlineColor="#822BFF"
       outlineColor='transparent'
-     multiline={multiline && true}
-      numberOfLines={ multiline ? 3 : 1}
-      
+      multiline={multiline && true}
+      numberOfLines={multiline ? 3 : 1}
+
       onChangeText={handleTextInputChange}
       left={
         !flag ? icon && <TextInput.Icon
@@ -72,24 +72,24 @@ const InputText = ({
             <Icon
               source={icon ? icon : icons.phone}
               size={22}
-              color={ focused ? "#822BFF" : "#D3D3D3"}
+              color={focused ? "#822BFF" : "#D3D3D3"}
             />
           )}
-        /> : 
-        <TextInput.Icon
-          icon={() => (
-            <Icon
-              source={icon}
-              size={24}
+        /> :
+          <TextInput.Icon
+            icon={() => (
+              <Icon
+                source={icon}
+                size={24}
 
-            />
-          )}
-        /> 
+              />
+            )}
+          />
       }
       right={
         secure && (
           <TextInput.Icon
-            icon={() => <Icon source={right} size={22}     color={focused ? "#822BFF" : "#D3D3D3"} />}
+            icon={() => <Icon source={right} size={22} color={focused ? "#822BFF" : "#D3D3D3"} />}
             onPress={securePass}
           />
         )

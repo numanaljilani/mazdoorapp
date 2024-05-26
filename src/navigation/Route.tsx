@@ -13,6 +13,13 @@ import ForgetPassword from '../screens/ForgetPassword/ForgetPasswordOtp';
 import Onboarding from '../screens/onboarding/Onboarding';
 import SignUp from '../screens/SignUp/SignUp';
 import WorkDetails from '../screens/details/WorkDetails';
+import Booking from '../screens/booking/BookingDetails';
+import NotFound from '../components/notFound/NotFound';
+import Search from '../screens/search/Search';
+import Searchh from '../screens/search/Searchh';
+import FilterModal from '../components/filter/FilterModal';
+import MyBooking from '../screens/booking/MyBooking';
+import WorkDetailsInput from '../screens/details/WorkDetailsInput';
 
 const Stack = createStackNavigator();
 
@@ -23,8 +30,16 @@ const Route = () => {
         headerShown: false,
       }}
       initialRouteName="Splash">
-      {/* <Stack.Screen name="Splash" component={Splash} /> */}
-      <Stack.Screen name="WorkDetails" component={WorkDetails} />
+      {/* new */}
+      {/* <Stack.Screen name="WorkDetails" component={WorkDetails} /> */}
+      {/* <Stack.Screen name="MyBooking" component={MyBooking} /> */}
+      {/* <Stack.Screen name="Booking" component={Booking} /> */}
+      {/* <Stack.Screen name="NotFound" component={NotFound} /> */}
+      {/* <Stack.Screen name="Searchh" component={Searchh} /> */}
+      {/* <Stack.Screen name="FilterModal" component={FilterModal} /> */}
+      {/* <Stack.Screen name="WorkDetailsInput" component={WorkDetailsInput} /> */}
+      {/* new */}
+      <Stack.Screen name="Splash" component={Splash} />
       <Stack.Screen name="onboarding" component={Onboarding} />
       <Stack.Screen name="Signup" component={SignUp} />
       <Stack.Screen name="Otp" component={Otp} />
