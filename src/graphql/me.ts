@@ -1,7 +1,7 @@
 import {gql} from '@apollo/client';
 export const meMutation = gql`
   mutation Me($token: String!) {
-    me(me : {token : $token}) {
+    me(me: {token: $token}) {
       user {
         _id
         name
@@ -11,7 +11,7 @@ export const meMutation = gql`
         isWorker
         availablity
         occupation
-email
+        email
         unit
         location
       }

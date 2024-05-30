@@ -38,6 +38,7 @@ const Profile = ({navigation}: any) => {
     (state: any) => state?.user,
   );
   const [optionModal, setOptionModal] = useState<boolean>(false);
+  const [mode, setMode] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>('');
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
@@ -247,10 +248,10 @@ const Profile = ({navigation}: any) => {
         </View>
         <View>
           <Text className="text-black text-center  font-[Poppins-Medium] ">
-            {userData?.fullname}
+            {userData?.fullname ? userData?.fullname : "Miran Ahmed"}
           </Text>
           <Text className="text-black text-center  font-[Poppins-Medium] ">
-            {userData?.email}
+            {userData?.email ? userData?.email : "mazdoor@gmail.com"}
           </Text>
         </View>
       </View>

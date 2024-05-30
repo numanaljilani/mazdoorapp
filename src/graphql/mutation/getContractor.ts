@@ -7,6 +7,7 @@ mutation($service : String! ,$skip :Float ,$take :Float  ){
       image
       service
       price
+      id
       
     }
   }

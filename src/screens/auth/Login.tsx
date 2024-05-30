@@ -39,6 +39,7 @@ const Login = ({navigation}: {navigation: any}) => {
     setSecure(!secure);
   };
 
+
   const handleLogin = async () => {
     if (!email || !password) {
       showMessage({
@@ -55,7 +56,7 @@ const Login = ({navigation}: {navigation: any}) => {
       console.log(user, error, '?>>>>>>');
       if (user) {
         dispatch(setUser(user));
-        dispatch(setToken(user.access_token));
+        dispatch(setToken(user.accessToken));
         const jsonValue = JSON.stringify(user.accessToken);
         await AsyncStorage.setItem('accessToken', jsonValue);
         navigation.replace(navigationsString.BOTTOMTABS);

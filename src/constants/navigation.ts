@@ -17,4 +17,5 @@ export default {
   SECURITY: 'Security',
   PRIVACY: 'Privscy',
   INVITEFREIND: 'InviteFriend',
+  CONTRACTORDETAILS : 'WorkDetails'
 };

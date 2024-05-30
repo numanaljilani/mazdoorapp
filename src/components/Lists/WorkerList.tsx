@@ -3,17 +3,23 @@ import React from 'react'
 import icons from '../../constants/icons'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import env from '../../env';
+import { useNavigation } from '@react-navigation/native';
+import navigationString from '../../constants/navigation'
 
 const WorkerList = ({item , navigation , screen } : any) => {
+  const navigation2 = useNavigation();
+  console.log(item)
   return (
-    <TouchableOpacity className="shadow  shadow-black bg-white p-3 mt-3 rounded-3xl flex-row" onPress={()=> navigation.navigate()}>
+    <TouchableOpacity  className="shadow  shadow-black bg-white p-3 mt-3 rounded-3xl flex-row" onPress={()=> navigation.navigate(navigationString.CONTRACTORDETAILS , {
+      id: item.id,
+    })}>
     <View className={`border w-28 h-28 ${!item?.image && 'p-3'} rounded-3xl overflow-hidden`}>
     { item?.image ? <Image source={{uri :`${env.storage}${item?.image}` }} className="h-full w-full" /> : <Image source={icons.user} className="h-full w-full"  tintColor={"#dbd7d2"}/>}
     </View>
     <View className=" flex-1 px-3">
       <TouchableOpacity className="flex-row justify-between" onPress={()=> console.log("Presssed")}>
         <Text className="text-gray-600 font-semibold text-base">
-          {item?.fullname}
+          {item?.fullname ? item?.fullname : "Miran Ahmed"}
         </Text>
       
         <Image source={icons.bookmark} className="w-7 h-7" tintColor={'#822BFF'} />
@@ -21,8 +27,8 @@ const WorkerList = ({item , navigation , screen } : any) => {
 
       </TouchableOpacity>
       <View>
-        <Text className='text-black font-semibold text-lg'>{item?.service}</Text>
-        <Text className='text-[#822BFF] font-bold text-xl'>{item?.price} /-</Text>
+        <Text className='text-black font-semibold text-lg'>{item?.service ? item?.service : "Electrician"}</Text>
+        <Text className='text-[#822BFF] font-bold text-xl'>{item?.price ? item?.price : 500} /-</Text>
         <View className='flex-row gap-3'>
           <View className='flex-row gap-x-1'>
           <FontAwesome5                   

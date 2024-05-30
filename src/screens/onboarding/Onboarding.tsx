@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import React, { useRef, useState } from 'react';
 import images from '../../constants/images';
+import navigationString from '../../constants/navigation'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Onboarding = ({ navigation }: any) => {
   const { width }: any = useWindowDimensions();
@@ -38,12 +40,18 @@ const Onboarding = ({ navigation }: any) => {
   ];
 
   const scrollTo = async () => {
+    if(currentIndex < 2 )   {    
+      navigation.navigate(navigationString.LOGINSCREEN);
+      const jsonValue = JSON.stringify({ onboarding : true });
+      await AsyncStorage.setItem('onboarding', jsonValue);
+    }
     if (currentIndex < onboardingCard.length - 1) {
       slideRef.current.scrollToIndex({ index: currentIndex + 1 });
       setCurrentIndex(currentIndex + 1)
     } else {
       setCurrentIndex(0)
-      navigation.navigate('Login');
+
+
 
     }
   };

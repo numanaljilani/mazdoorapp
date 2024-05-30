@@ -3,11 +3,11 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 import { IconButton, Searchbar } from 'react-native-paper';
 import images from '../../constants/images';
 
-const NotFound = () => {
+const NotFoundBooking = ({des} : any) => {
     const [searchQuery, setSearchQuery] = useState('');
 
     return (
-        <View style={styles.container}>
+        <View style={styles.container} className='min-h-screen'>
             {/* <Searchbar
                 style={styles.searchBar}
                 placeholder="Search"
@@ -16,12 +16,12 @@ const NotFound = () => {
                 right={() => <IconButton icon="filter-outline" iconColor='rgba(130, 43, 255, 10)' />}
             /> */}
 
-            <View style={styles.resultInfo}>
+            {/* <View style={styles.resultInfo}>
                 <Text style={styles.resultText} className="font-[Poppins-Regular] text-black">
                     Results For "<Text style={styles.highlightedText}>Cleaninn</Text>"
                 </Text>
                 <Text style={styles.resultCount}>0 found</Text>
-            </View>
+            </View> */}
 
             <View style={styles.notFoundContainer}>
                 <View style={styles.imageContainer}>
@@ -29,7 +29,7 @@ const NotFound = () => {
                 </View>
                 <Text style={styles.notFoundTitle}  className="font-[Poppins-SemiBold] text-black">Not Found</Text>
                 <Text style={styles.notFoundMessage}  className="font-[Poppins-Regular] text-black">
-                    Sorry, the keyword you entered cannot be found, please check again or search with another keyword.
+                   {des ? des : "No scheduled orders currently."}
                 </Text>
             </View>
         </View>
@@ -38,7 +38,7 @@ const NotFound = () => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+ 
         backgroundColor: 'white',
         padding: 20,
     },
@@ -93,4 +93,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default NotFound;
+export default NotFoundBooking;

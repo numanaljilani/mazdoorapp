@@ -31,4 +31,6 @@ export default {
   people: require('../assets/icons/people.png'),
   language: require('../assets/icons/language.png'),
   star: require('../assets/icons/star.png'),
+  message: require('../assets/icons/messenger.png'),
+  text: require('../assets/icons/text.png'),
 };

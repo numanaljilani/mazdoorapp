@@ -7,17 +7,14 @@ import {
   ScrollView,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import { Avatar } from 'react-native-paper';
 import images from '../../constants/images';
 import {useMutation, useQuery} from '@apollo/client';
 import {useSelector} from 'react-redux';
 
-
-
 import env from '../../env';
-import { services } from '../../constants/services';
+import {services} from '../../constants/services';
 import icons from '../../constants/icons';
-import { Icon, TextInput } from 'react-native-paper';
+import {Icon, TextInput} from 'react-native-paper';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -75,7 +72,6 @@ const Home = ({navigation}: any) => {
   //   getTop();
   // }, []);
 
-
   const getContractorsByService = async () => {
     await get_contractor_by_service({
       variables: {service, take: 20, skip: 0},
@@ -98,27 +94,29 @@ const Home = ({navigation}: any) => {
   const renderItem = ({item}: {item: any}) => (
     <TouchableOpacity
       onPress={() => setService(item.english)}
-      className={`rounded-full py-2 px-4 mx-1  my-3 bg-${item.english === service ? '[#312651]' : 'white'
-        } shadow shadow-[#312651]`}>
+      className={`rounded-full py-2 px-4 mx-1  my-3 bg-${
+        item.english === service ? '[#312651]' : 'white'
+      } shadow shadow-[#312651]`}>
       <Text
-        className={`text-base font-semibold text-gray-100 text-${item.english === service ? 'white' : '[#312651]'
-          }`}>
+        className={`text-base font-semibold text-gray-100 text-${
+          item.english === service ? 'white' : '[#312651]'
+        }`}>
         {language ? item.hindi : item.english}
       </Text>
     </TouchableOpacity>
   );
 
-  const renderList = ({ item }: { item: any }) => {
+  const renderList = ({item}: {item: any}) => {
     if (userData._id === item._id) return <></>;
     return (
       <TouchableOpacity
-        onPress={() => navigation.navigate('WorkerProfile', { id: item._id })}
+        onPress={() => navigation.navigate('WorkerProfile', {id: item._id})}
         className="mb-2 bg-gray-100   px-4 rounded-2xl flex-row  py-2 mt-1">
         <View className="w-16 h-16 rounded-full  overflow-hidden">
           <Image
             source={
               item.profile
-                ? { uri: `${env.storage}${item.profile}` }
+                ? {uri: `${env.storage}${item.profile}`}
                 : images.Male
             }
             className="w-full h-full"
@@ -135,9 +133,9 @@ const Home = ({navigation}: any) => {
     );
   };
 
-  const renderAdds = ({ item }: any) => (
+  const renderAdds = ({item}: any) => (
     <TouchableOpacity
-      onPress={() => navigation.navigate('WorkerProfile', { id: item._id })}
+      onPress={() => navigation.navigate('WorkerProfile', {id: item._id})}
       className="my-3 mx-2 w-44  py-2 bg-white px-4  rounded-2xl justify-between"
       style={{
         shadowColor: '#000',
@@ -152,7 +150,7 @@ const Home = ({navigation}: any) => {
       <View className="w-16 h-16 rounded-full  overflow-hidden shadow-2xl drop-shadow-2xl shadow-black">
         <Image
           source={
-            item.profile ? { uri: `${env.storage}${item.profile}` } : images.Male
+            item.profile ? {uri: `${env.storage}${item.profile}`} : images.Male
           }
           className="w-full h-full"
           resizeMode="contain"
@@ -197,7 +195,7 @@ const Home = ({navigation}: any) => {
                 Good Morining
               </Text>
               <Text className="text-black font-[Poppins-SemiBold] tracking-wider text-base">
-                {userData?.fullname}
+                {userData?.fullname ? userData?.fullname : 'Miran Ahmed'}
               </Text>
             </View>
           </View>
@@ -218,7 +216,7 @@ const Home = ({navigation}: any) => {
             placeholder="Search"
             placeholderTextColor={'#D3D3D3'}
             mode="outlined"
-            theme={{ roundness: 10 }}
+            theme={{roundness: 10}}
             autoCapitalize="none"
             activeOutlineColor="#822BFF"
             outlineColor="transparent"
@@ -274,7 +272,13 @@ const Home = ({navigation}: any) => {
           </Text>
           <View className="flex-row gap-x-3 gap-y-3 flex-wrap justify-center">
             <View className=" w-1/5 aspect-w-1 aspect-h-1">
-              <TouchableOpacity className="bg-[#822BFF]/10 w-16 h-16 justify-center items-center rounded-full">
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate(navigationString.CONTRACTORLIST, {
+                    service: 'Cleaning',
+                  })
+                }
+                className="bg-[#822BFF]/10 w-16 h-16 justify-center items-center rounded-full">
                 <MaterialIcons
                   size={40}
                   color={'#822BFF'}
@@ -286,7 +290,13 @@ const Home = ({navigation}: any) => {
               </Text>
             </View>
             <View className=" w-1/5 aspect-w-1 aspect-h-1">
-              <TouchableOpacity className="bg-[#FE971E]/10  w-16 h-16 justify-center items-center rounded-full">
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate(navigationString.CONTRACTORLIST, {
+                    service: 'Repairing',
+                  })
+                }
+                className="bg-[#FE971E]/10  w-16 h-16 justify-center items-center rounded-full">
                 <MaterialCommunityIcons
                   size={40}
                   color={'#FE971E'}
@@ -299,7 +309,13 @@ const Home = ({navigation}: any) => {
             </View>
 
             <View className=" w-1/5 aspect-w-1 aspect-h-1">
-              <TouchableOpacity className="bg-[#1A96F0]/10  w-16 h-16 justify-center items-center rounded-full">
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate(navigationString.CONTRACTORLIST, {
+                    service: 'Painting',
+                  })
+                }
+                className="bg-[#1A96F0]/10  w-16 h-16 justify-center items-center rounded-full">
                 <MaterialCommunityIcons
                   size={40}
                   color={'#1A96F0'}
@@ -312,7 +328,13 @@ const Home = ({navigation}: any) => {
             </View>
 
             <View className=" w-1/5 aspect-w-1 aspect-h-1">
-              <TouchableOpacity className="bg-[#FDC02D]/10 aspect-w-1 aspect-h-1  w-16 h-16 justify-center items-center rounded-full">
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate(navigationString.CONTRACTORLIST, {
+                    service: 'Laundery',
+                  })
+                }
+                className="bg-[#FDC02D]/10 aspect-w-1 aspect-h-1  w-16 h-16 justify-center items-center rounded-full">
                 <MaterialCommunityIcons
                   size={40}
                   color={'#FDC02D'}
@@ -324,7 +346,13 @@ const Home = ({navigation}: any) => {
               </Text>
             </View>
             <View className=" w-1/5 aspect-w-1 aspect-h-1">
-              <TouchableOpacity className="bg-[#E94032]/10 aspect-w-1 aspect-h-1  w-16 h-16 justify-center items-center rounded-full">
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate(navigationString.CONTRACTORLIST, {
+                    service: 'Appliances',
+                  })
+                }
+                className="bg-[#E94032]/10 aspect-w-1 aspect-h-1  w-16 h-16 justify-center items-center rounded-full">
                 <MaterialCommunityIcons
                   size={40}
                   color={'#E94032'}
@@ -332,12 +360,18 @@ const Home = ({navigation}: any) => {
                 />
               </TouchableOpacity>
               <Text className="text-black font-[Poppins-Medium] text-center text-medium">
-                Laundery
+                Appliances
               </Text>
             </View>
 
             <View className=" w-1/5 aspect-w-1 aspect-h-1">
-              <TouchableOpacity className="bg-[#00BCD2]/10  w-16 h-16 justify-center items-center rounded-full">
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate(navigationString.CONTRACTORLIST, {
+                    service: 'Shifting',
+                  })
+                }
+                className="bg-[#00BCD2]/10  w-16 h-16 justify-center items-center rounded-full">
                 <MaterialCommunityIcons
                   size={40}
                   color={'#00BCD2'}
@@ -350,7 +384,13 @@ const Home = ({navigation}: any) => {
             </View>
 
             <View className=" w-1/5 aspect-w-1 aspect-h-1">
-              <TouchableOpacity className="bg-[#4CAC58]/10  w-16 h-16 justify-center items-center rounded-full">
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate(navigationString.CONTRACTORLIST, {
+                    service: 'Plumbing',
+                  })
+                }
+                className="bg-[#4CAC58]/10  w-16 h-16 justify-center items-center rounded-full">
                 <MaterialIcons size={40} color={'#4CAC58'} name="plumbing" />
               </TouchableOpacity>
               <Text className="text-black font-[Poppins-Medium] text-center text-medium">
@@ -359,7 +399,11 @@ const Home = ({navigation}: any) => {
             </View>
 
             <View className="">
-              <TouchableOpacity onPress={()=> navigation.navigate(navigationString.MORESERVICES)} className="bg-[#822BFF]/10 w-16 h-16 justify-center items-center rounded-full">
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate(navigationString.MORESERVICES)
+                }
+                className="bg-[#822BFF]/10 w-16 h-16 justify-center items-center rounded-full">
                 <Feather size={40} color={'#822BFF'} name="more-horizontal" />
               </TouchableOpacity>
               <Text className="text-black font-[Poppins-Medium] text-center text-medium">
@@ -376,7 +420,7 @@ const Home = ({navigation}: any) => {
             <FlatList
               data={services}
               keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }: any) => (
+              renderItem={({item}: any) => (
                 <ServicesList
                   item={item}
                   service={service}
@@ -390,9 +434,10 @@ const Home = ({navigation}: any) => {
           </View>
         </View>
         <View className=" ">
+          {/* <WorkerList  navigation={navigation}/> */}
           {contractors?.length > 0 ? (
             contractors.map((item, index) => (
-              <WorkerList key={index} item={item} navigation={navigation}/>
+              <WorkerList key={index} item={item} navigation={navigation} />
             ))
           ) : (
             <View className="min-h-fit justify-center items-center mt-20">
@@ -405,7 +450,6 @@ const Home = ({navigation}: any) => {
       </View>
     </ScrollView>
   );
-}
-
+};
 
 export default Home;

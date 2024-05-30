@@ -3,11 +3,19 @@ import React, { useState } from 'react';
 import { Appbar, Button, IconButton, TextInput } from 'react-native-paper';
 import MyCalender from '../../components/Calender/MyCalender';
 import { ScrollView } from 'react-native';
+import { useSelector } from 'react-redux';
+import CustomButton from '../../components/common/Button'
 
-const BookingDetails = () => {
+const BookingDetails = ({ navigation} : any ) => {
     const [date, setDate] = React.useState(new Date());
     const [workingHours, setWorkinghours] = React.useState(2)
     const [text, setText] = React.useState("");
+
+    const {userData, token, language} = useSelector((state: any) => state?.user);
+
+    const headers = {
+      authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
+    };
 
 
     const decrementWorkingHours = () => {
@@ -73,8 +81,8 @@ const BookingDetails = () => {
         <>
             <ScrollView>
                 <Appbar.Header className='bg-transparent'>
-                    <Appbar.BackAction onPress={() => { }} />
-                    <Appbar.Content title="Details Details" />
+                    <Appbar.BackAction onPress={() => navigation.navigate.goBack()} />
+                    <Appbar.Content title="Details Details" color='black'/>
                     <Appbar.Action icon="dots-horizontal-circle-outline" onPress={() => { }} />
                 </Appbar.Header>
 
@@ -109,9 +117,11 @@ const BookingDetails = () => {
                     <View className='mb-2'>
                         <Text className='text-black font-extrabold text-base'>Choose Start Time</Text>
                         <ButtonGroup
+                        
                             values={['09:00 AM', '10:00 AM', '11:00 AM', '13:00 PM', '14:00 PM', '15:00 PM']}
                             isPressed={isPressed}
                             handlePress={handlePress}
+                            
                         />
                     </View>
 
@@ -138,7 +148,7 @@ const BookingDetails = () => {
                     </View>
                     <View className='mt-4' style={{ borderBottomWidth: 1, borderBottomColor: '#CCCCCC' }}></View>
                     <View className='py-2'>
-                        <Button className='py-2' buttonColor='blue' textColor='white'>Continue-$125</Button>
+                        <CustomButton text={"Continue"}/>
                     </View>
                 </View>
             </ScrollView>

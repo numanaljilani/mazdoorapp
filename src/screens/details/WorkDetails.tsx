@@ -1,20 +1,35 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, ScrollView, useWindowDimensions, Animated, Image } from 'react-native';
 import images from '../../constants/images';
 import icons from '../../constants/icons';
 import { Avatar, Button, Icon, IconButton } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
+import { useMutation } from '@apollo/client';
+import { CONTRACTORDETAILS } from '../../graphql/mutation/contractor';
+import env from '../../env';
 
-const WorkDetails = ({ navigation }: any) => {
+const WorkDetails = ({ navigation , route }: any) => {
     const { width, height }: any = useWindowDimensions();
+    const [contractorDetails, setContractorDetails] = useState<any>()
     let scrollX = useRef(new Animated.Value(0)).current;
     const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
+    const [details , { data , loading , error }] = useMutation(CONTRACTORDETAILS);
     const slideRef: any = useRef(null);
+
+    const {userData, token, language} = useSelector((state: any) => state?.user);
+
+    const headers = {
+      authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
+    };
+    const { id } = route.params;
+
+    console.log(route.params)
 
     const onboardingCard = [
         {
             id: 1,
-            image: images.LoginBg,
+            image:contractorDetails?.image ? {uri :  `${env.storage}${contractorDetails?.image}` } :images.OnBoardinImage2 ,
         },
         {
             id: 2,
@@ -26,6 +41,17 @@ const WorkDetails = ({ navigation }: any) => {
         },
     ];
 
+    const getDetails = async () => {
+        const res = await details({variables : { id } ,       context: {headers},});
+        console.log(res?.data?.contractorDetails.contractor , "response")
+        if(res?.data?.contractorDetails.contractor){
+            setContractorDetails(res?.data?.contractorDetails.contractor)
+        }
+    }
+
+    useEffect(()=>{
+        getDetails();
+    },[])
 
     const aboutImages = [
         {
@@ -54,9 +80,9 @@ const WorkDetails = ({ navigation }: any) => {
         maxChars: number;
     }
 
-    const ReadMoreText: React.FC<ReadMoreTextProps> = ({ children, maxChars }) => {
+    const ReadMoreText: React.FC<ReadMoreTextProps> = ({ children , maxChars }) => {
         const [isExpanded, setIsExpanded] = useState(false);
-        const truncatedText = children.length > maxChars ? children.slice(0, maxChars) + '...' : children;
+        const truncatedText = children && children?.length > maxChars ? children?.slice(0, maxChars) + '...' : children;
 
         return (
             <View>
@@ -177,7 +203,7 @@ const WorkDetails = ({ navigation }: any) => {
         <View style={{ flex: 1, backgroundColor: 'white' }}>
             <View style={{ position: 'absolute', top: 10, left: 10, zIndex: 1 }}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <IconButton icon={icons.back} />
+                    <IconButton icon={icons.back} iconColor='black'/>
                 </TouchableOpacity>
             </View>
             <View className='h-72 '>
@@ -223,32 +249,32 @@ const WorkDetails = ({ navigation }: any) => {
                 })}
             </View>
             <ScrollView className='px-5 py-5'>
-                <View className='flex-row justify-between items-center'>
-                    <Text className='text-black text-3xl font-bold'>House Cleaning</Text>
+                <View className='flex-row justify-between items-center '>
+                    <Text className='text-black text-3xl font-[Poppins-Medium]'>{contractorDetails ? contractorDetails?.service : "-" }</Text>
                     <TouchableOpacity>
                         <IconButton size={30} iconColor='#822BFF' icon={icons.bookmark} />
                     </TouchableOpacity>
                 </View>
                 <View className='flex-row items-center'>
-                    <Text className='text-blue-600 font-extrabold text-base mr-3'>Jenny Wilson</Text>
+                    <Text className='text-[#8d51e1]  text-base mr-3 font-[Poppins-SemiBold]'>{contractorDetails ? contractorDetails?.fullname : "-" }</Text>
                     <View className='flex-row items-center gap-2'>
                         <Image className='h-6 w-6' source={icons.star} />
-                        <Text className='text-[#3b3941]'>
+                        <Text className='text-[#3b3941] font-[Poppins-Regular]'>
                             4.8 (4,479 reviews)
                         </Text>
                     </View>
                 </View>
                 <View className='py-2 flex-row items-center'>
-                    <Text className='text-[#8d51e1] text-center w-16 rounded-lg p-1 text-xs bg-[#dcc5fd]'>Cleaning</Text>
+                    <Text className='text-[#8d51e1] text-center  rounded-lg p-1 text-xs bg-[#dcc5fd] font-[Poppins-Regular]'>{contractorDetails ? contractorDetails?.service : "" }</Text>
                     <View className='flex-row items-center'>
                         <IconButton iconColor='#822BFF' size={20} icon={icons.location} />
-                        <Text className='text-[#3b3941] text-xs'>255 Grand Park Avenue. New York</Text>
+                        <Text className='text-[#3b3941] text-xs font-[Poppins-Regular]'>{contractorDetails ? contractorDetails?.address : "-" }</Text>
                     </View>
                 </View>
 
                 <View className='flex-row items-center gap-2'>
-                    <Text className='text-blue-600 text-4xl font-extrabold'>$20</Text>
-                    <Text className='text-sm text-[#3b3941]'>(Floor price)</Text>
+                    <Text className='text-[#8d51e1] text-4xl font-[Poppins-SemiBold]'>${contractorDetails ? contractorDetails?.price : "" }</Text>
+                    <Text className='text-sm text-[#3b3941] font-[Poppins-Regular]'>({contractorDetails ? contractorDetails?.unit : "" })</Text>
                 </View>
 
                 <View className='py-2' style={{ borderBottomWidth: 1, borderBottomColor: '#CCCCCC' }}></View>
@@ -256,10 +282,10 @@ const WorkDetails = ({ navigation }: any) => {
                 {/* About */}
 
                 <View className='py-2'>
-                    <Text className='text-[#3b3941] font-extrabold text-lg mb-2'>About me</Text>
+                    <Text className='text-[#3b3941] text-lg mb-2 font-[Poppins-SemiBold]'>About me</Text>
                     <View>
-                        <ReadMoreText maxChars={80}>
-                            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nostrum eos laboriosam voluptates ratione est pariatur harum magni quos excepturi deleniti velit fugiat culpa at atque ipsam nemo, corporis aspernatur similique?
+                        <ReadMoreText maxChars={80} >
+                           {contractorDetails ? contractorDetails?.about : "" }
                         </ReadMoreText>
                     </View>
                 </View>
@@ -270,15 +296,15 @@ const WorkDetails = ({ navigation }: any) => {
 
                 <View className='py-2'>
                     <View className=' flex-row justify-between items-center'>
-                        <Text className='text-[#3b3941] font-extrabold text-lg mb-2'>Photos & Videos</Text>
+                        <Text className='text-[#3b3941]  text-lg mb-2 font-[Poppins-SemiBold]'>Photos & Videos</Text>
                         <TouchableOpacity>
-                            <Text className='text-blue-600 font-extrabold'>See all</Text>
+                            <Text className='text-[#8d51e1] font-[Poppins-SemiBold]'>See all</Text>
                         </TouchableOpacity>
                     </View>
 
 
                     {
-                        aboutImages.map(item => <View className='flex-row gap-3 justify-center items-center'>
+                        aboutImages.map((item, index) => <View key={index} className='flex-row gap-3 justify-center items-center'>
                             <View>
                                 {/* Left Image */}
                                 <Image
@@ -312,12 +338,12 @@ const WorkDetails = ({ navigation }: any) => {
                     <View className=' flex-row justify-between items-center'>
                         <View className='flex-row items-center gap-1'>
                             <Image className='h-8 w-8 mb-2' source={icons.star} />
-                            <Text className='text-[#3b3941] font-extrabold text-lg mb-2'>
+                            <Text className='text-[#3b3941] font-[Poppins-SemiBold] text-lg mb-2'>
                                 4.8 (4,479 reviews)
                             </Text>
                         </View>
                         <TouchableOpacity>
-                            <Text className='text-blue-600 font-extrabold'>See all</Text>
+                            <Text className='text-[#8d51e1] font-[Poppins-SemiBold]'>See all</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -334,15 +360,15 @@ const WorkDetails = ({ navigation }: any) => {
                                 <View className='flex-row justify-between '>
                                     <View className='flex-row  items-center gap-3'>
                                         <Image className='h-10 w-10 rounded-full' source={item.imageSource} />
-                                        <Text className='text-black'>{item.name}</Text>
+                                        <Text className='text-black font-[Poppins-Regular]'>{item.name}</Text>
                                     </View>
                                     <View className='flex-row  items-center'>
                                         <Button
                                             icon="star"
                                             mode='outlined'
-                                            textColor='blue'
-                                            className='w-10 h-10  text-xs'
-                                            style={{ borderColor: "blue" }}
+                                            textColor='#8d51e1'
+                                            className='w-10 h-10  text-xs font-[Poppins-Regular]'
+                                            style={{ borderColor: "#8d51e1" }}
                                             onPress={() => console.log("pressed")}
                                         >
                                             {item.star}
@@ -373,12 +399,12 @@ const WorkDetails = ({ navigation }: any) => {
 
                     <View className='py-2' style={{ borderBottomWidth: 1, borderBottomColor: '#CCCCCC' }}></View>
 
-                    <View className='h-32 justify-center '  >
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+                    <View className='py-5 justify-center '  >
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 7 }}>
                             <Button
                                 mode='outlined'
-                                textColor='blue'
-                                style={{ flex: 1, marginRight: 5, borderColor: "blue" }}
+                                textColor='#822BFF'
+                                style={{ flex: 1, marginRight: 5, borderColor: "#822BFF" , paddingVertical : 5 , alignContent :'center' }}
                                 onPress={() => console.log("pressed")}
                             >
                                 Message
@@ -386,8 +412,10 @@ const WorkDetails = ({ navigation }: any) => {
                             <Button
                                 mode='outlined'
                                 textColor='white'
-                                style={{ flex: 1, marginLeft: 5, borderColor: "blue", backgroundColor: "blue" }}
+                                style={{ flex: 1, marginLeft: 5, borderColor: "#822BFF", backgroundColor: "#822BFF" , alignContent :'center' , justifyContent : 'center'}}
+                                className='font-[Poppins-Regular]'
                                 onPress={() => console.log("pressed")}
+                                
                             >
                                 Book Now
                             </Button>
@@ -414,15 +442,15 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         backgroundColor: '#fff',
         marginRight: 10,
-        borderColor: 'blue',
+        borderColor: '#822BFF',
         borderWidth: 2
     },
     buttonText: {
-        color: 'blue',
+        color: '#822BFF',
         fontSize: 16,
     },
     activeButton: {
-        backgroundColor: 'blue',
+        backgroundColor: '#822BFF',
     },
     activeButtonText: {
         color: 'white',
