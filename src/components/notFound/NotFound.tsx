@@ -18,7 +18,7 @@ const NotFound = () => {
 
             <View style={styles.resultInfo}>
                 <Text style={styles.resultText} className="font-[Poppins-Regular] text-black">
-                    Results For "<Text style={styles.highlightedText}>Cleaninn</Text>"
+                    Results For "<Text style={styles.highlightedText}>Cleanig</Text>"
                 </Text>
                 <Text style={styles.resultCount}>0 found</Text>
             </View>

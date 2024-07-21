@@ -1,5 +1,13 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, Text, View, ScrollView, Image} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  RefreshControl,
+} from 'react-native';
 import {
   Appbar,
   Card,
@@ -12,13 +20,13 @@ import {
   Icon,
 } from 'react-native-paper';
 import images from '../../constants/images';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useIsFocused} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {useSelector} from 'react-redux';
 import {MYAPPOINTMENT} from '../../graphql/mutation/appointment';
 import {useMutation} from '@apollo/client';
-import NotFound from '../../components/notFound/NotFound';
 import NotFoundBooking from '../../components/common/NotFoundBookings';
+import env from '../../env';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -65,71 +73,100 @@ const MyBooking = () => {
 export default MyBooking;
 
 const Upcoming = () => {
-  const {userData, token, language} = useSelector((state: any) => state?.user);
-
+  const {userData, token,language} = useSelector((state: any) => state?.user);
+const focused = useIsFocused()
   const headers = {
     authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
   };
   const [my_appointment, {loading, error, data}] = useMutation(MYAPPOINTMENT);
 
   const upcomingAppointments = async () => {
-    console.log('inside upcomingAppointments');
+    console.log('inside upcomingAppointments hello');
     const res = await my_appointment({
-      variables: {take: 20, skip: 0, status: 'upcoming'},
+      variables: {take: 20, skip: 0, status: 'pending'},
       context: {headers},
     });
-    console.log(res, '>>>>>>>>');
+    console.log(res, '>>>>>');
     if (res?.data?.myAppointment) {
-        setBookings(res?.data?.myAppointment)
+      setBookings(res?.data?.myAppointment);
     }
   };
 
   useEffect(() => {
     upcomingAppointments();
+  }, [focused]);
+  const [bookings, setBookings] = useState<any>([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    // Simulate a network request
+    upcomingAppointments();
+    setRefreshing(false);
+
   }, []);
-  const [bookings, setBookings] = useState<any>([  ]);
   return (
-    <ScrollView style={styles.scrollView}>
-      { bookings.length > 0 ? bookings.map((booking: any, index: any) => (
-        <Card className="bg-white" key={index} style={styles.card}>
-          <Card.Content style={styles.cardContent}>
-            <Image source={booking.image} style={styles.cardImage} />
-            <View style={styles.cardDetails}>
-              <View>
-                <Title className="text-black font-extrabold">
-                  {booking?.contractor?.service ? booking?.contractor?.service : "-"}
-                </Title>
-                <Paragraph className="mb-2 text-black">
-                  {booking?.contractor?.fullname ? booking?.contractor?.fullname : "-"}
-                </Paragraph>
-                <Text style={styles.upcomingStatus}>Upcoming</Text>
-              </View>
-              <View style={styles.messageIcon}>
+    <ScrollView
+    refreshControl={
+      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+    }
+    style={styles.scrollView}>
+      {bookings.length > 0 ? (
+        bookings.map((booking: any, index: any) => (
+          <Card className="bg-white" key={index} style={styles.card}>
+            <Card.Content style={styles.cardContent}>
+              <Image
+                source={{uri: `${env.storage}${booking?.contractor?.image}`}}
+                style={styles.cardImage}
+              />
+
+              <View style={styles.cardDetails}>
+                <View>
+                  <Title className="text-black font-extrabold">
+                    {booking?.contractor?.service
+                      ? booking?.contractor?.service
+                      : '-'}
+                  </Title>
+                  <Paragraph className="mb-2 text-black">
+                    {booking?.contractor?.fullname
+                      ? booking?.contractor?.fullname
+                      : '-'}
+                  </Paragraph>
+                  <Text style={styles.upcomingStatus}>Upcoming</Text>
+                </View>
+                {/* <View style={styles.messageIcon}>
                 <View className="bg-purple-300 rounded-full">
                   <IconButton
                     iconColor="#822BFF"
                     size={30}
                     icon="chat-processing"
                   />
+
                 </View>
+              </View> */}
               </View>
+            </Card.Content>
+
+            <View style={styles.separator}></View>
+
+            <View className=" flex-row justify-end px-5">
+              {/* <IconButton size={35} icon="chevron-down" />
+               */}
+              <TouchableOpacity className='px-6 py-3 my-2 rounded-lg bg-red-200'>
+                <Text className='text-xs text-red-600 font-[Poppins-SemiBold]'>Cancel Booking</Text>
+              </TouchableOpacity>
             </View>
-          </Card.Content>
-
-          <View style={styles.separator}></View>
-
-          <View className=" flex-row justify-center">
-            <IconButton size={35} icon="chevron-down" />
-          </View>
-        </Card>
-      )) : <NotFoundBooking desc={"No scheduled orders currently."}/>}
+          </Card>
+        ))
+      ) : (
+        <NotFoundBooking desc={'No scheduled orders currently.'} />
+      )}
     </ScrollView>
   );
 };
 
 const Completed = () => {
-  const [bookings, setBookings] = useState<any>([
-  ]);
+  const [bookings, setBookings] = useState<any>([]);
 
   const {userData, token, language} = useSelector((state: any) => state?.user);
 
@@ -144,52 +181,72 @@ const Completed = () => {
       variables: {take: 20, skip: 0, status: 'completed'},
       context: {headers},
     });
-    console.log(res, '>>>>>>>>');
+    console.log(res?.data?.myAppointment[0].contractor, '>>>>>>>>');
     if (res?.data?.myAppointment) {
-        setBookings(res?.data?.myAppointment)
+      setBookings(res?.data?.myAppointment);
     }
   };
 
   useEffect(() => {
+    // completedAppointments();
+  }, []);
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    // Simulate a network request
     completedAppointments();
+    setRefreshing(false);
+
   }, []);
   return (
-    <ScrollView style={styles.scrollView}>
-      {bookings.length > 0 ?  bookings.map((booking: any, index: any) => (
-        <Card className="bg-white" key={index} style={styles.card}>
-          <Card.Content style={styles.cardContent}>
-            <Image source={booking.image} style={styles.cardImage} />
-            <View style={styles.cardDetails}>
-              <View>
-                <Title className="text-black font-extrabold">
-                  {booking?.contractor?.service ? booking?.contractor?.service : "-"}
-                </Title>
-                <Paragraph className="mb-2 text-black">
-                  {booking?.contractor?.fullname ? booking?.contractor?.fullname : "-"}
-                </Paragraph>
-                <Text style={styles.completedStatus} className="bg-green-500">
-                  Completed
-                </Text>
-              </View>
-              <View style={styles.messageIcon}>
-                <View className="bg-purple-300 rounded-full">
-                  <IconButton
-                    iconColor="#822BFF"
-                    size={30}
-                    icon="chat-processing"
-                  />
+    <ScrollView      refreshControl={
+      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+    } style={styles.scrollView}>
+      {bookings.length > 0 ? (
+        bookings.map((booking: any, index: any) => (
+          <Card className="bg-white" key={index} style={styles.card}>
+            <Card.Content style={styles.cardContent}>
+              <Image source={booking.image} style={styles.cardImage} />
+              <View style={styles.cardDetails}>
+                <View>
+                  <Title className="text-black font-extrabold">
+                    {booking?.contractor?.service
+                      ? booking?.contractor?.service
+                      : '-'}
+                  </Title>
+                  <Paragraph className="mb-2 text-black">
+                    {booking?.contractor?.fullname
+                      ? booking?.contractor?.fullname
+                      : '-'}
+                  </Paragraph>
+                  <Text style={styles.completedStatus} className="bg-green-500">
+                    Completed
+                  </Text>
+                </View>
+                <View style={styles.messageIcon}>
+                  <View className="bg-purple-300 rounded-full">
+                    <IconButton
+                      iconColor="#822BFF"
+                      size={30}
+                      icon="chat-processing"
+                    />
+                  </View>
                 </View>
               </View>
+            </Card.Content>
+
+            <View style={styles.separator}></View>
+
+            <View className=" flex-row justify-center">
+              <IconButton size={35} icon="chevron-down" />
             </View>
-          </Card.Content>
-
-          <View style={styles.separator}></View>
-
-          <View className=" flex-row justify-center">
-            <IconButton size={35} icon="chevron-down" />
-          </View>
-        </Card>
-      )) : <NotFoundBooking des={"No upcompleted orders found."}/>}
+          </Card>
+        ))
+      ) : (
+        <NotFoundBooking des={'No upcompleted orders found.'} />
+      )}
     </ScrollView>
   );
 };
@@ -201,70 +258,91 @@ const Cancelled = () => {
     authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
   };
   const [my_appointment, {loading, error, data}] = useMutation(MYAPPOINTMENT);
-  const [bookings, setBookings] = useState<any>([
-
-  ]);
+  const [bookings, setBookings] = useState<any>([]);
 
   const cancelAppointments = async () => {
-    console.log('inside upcomingAppointments');
+    console.log('inside upcomingAppointment');
     const res = await my_appointment({
       variables: {take: 20, skip: 0, status: 'completed'},
       context: {headers},
     });
-    console.log(res, '>>>>>>>>');
+    // console.log(res?.data?.myAppointment, '>>>>>>>>');
     if (res?.data?.myAppointment) {
-        setBookings(res?.data?.myAppointment)
+      setBookings(res?.data?.myAppointment);
     }
   };
 
   useEffect(() => {
     cancelAppointments();
   }, []);
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    // Simulate a network request
+    cancelAppointments();
+    setRefreshing(false);
+
+  }, []);
+
   return (
-    <ScrollView style={styles.scrollView}>
-      {bookings.length > 0 ? bookings.map((booking: any, index: any) => (
-        <Card className="bg-white" key={index} style={styles.card}>
-          <Card.Content style={styles.cardContent}>
-            <Image source={booking.image} style={styles.cardImage} />
-            <View style={styles.cardDetails}>
-              <View>
-                <Title className="text-black font-extrabold">
-                  {booking?.contractor?.service ? booking?.contractor?.service : "-"}
-                </Title>
-                <Paragraph className="mb-2 text-black">
-                  {booking?.contractor?.fullname ? booking?.contractor?.fullname : "-"}
-                </Paragraph>
-                <Text style={styles.cancelledStatus} className="bg-red-500">
-                  Cancelled
-                </Text>
-              </View>
-              <View style={styles.messageIcon}>
-                <View className="bg-purple-300 rounded-full">
-                  <IconButton
-                    iconColor="#822BFF"
-                    size={30}
-                    icon="chat-processing"
-                  />
+    <ScrollView     refreshControl={
+      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+    } style={styles.scrollView}>
+      {bookings.length > 0 ? (
+        bookings.map((booking: any, index: any) => (
+          <Card className="bg-white" key={index} style={styles.card}>
+            <Card.Content style={styles.cardContent}>
+              <Image
+                source={{uri: `${env.storage}${booking?.contractor?.image}`}}
+                style={styles.cardImage}
+              />
+              <View style={styles.cardDetails}>
+                <View>
+                  <Title className="text-black font-extrabold">
+                    {booking?.contractor?.service
+                      ? booking?.contractor?.service
+                      : '-'}
+                  </Title>
+                  <Paragraph className="mb-2 text-black">
+                    {booking?.contractor?.fullname
+                      ? booking?.contractor?.fullname
+                      : '-'}
+                  </Paragraph>
+                  <Text style={styles.cancelledStatus} className="bg-red-500">
+                    Cancelled
+                  </Text>
+                </View>
+                <View style={styles.messageIcon}>
+                  <View className="bg-purple-300 rounded-full">
+                    <IconButton
+                      iconColor="#822BFF"
+                      size={30}
+                      icon="chat-processing"
+                    />
+                  </View>
                 </View>
               </View>
+            </Card.Content>
+
+            <View style={styles.separator}></View>
+
+            <View className=" flex-row justify-center">
+              <IconButton size={35} icon="chevron-down" />
             </View>
-          </Card.Content>
-
-          <View style={styles.separator}></View>
-
-          <View className=" flex-row justify-center">
-            <IconButton size={35} icon="chevron-down" />
-          </View>
-        </Card>
-      ) ) : <NotFoundBooking des={"No canceled orders at the moment."}/>}
+          </Card>
+        ))
+      ) : (
+        <NotFoundBooking des={'No canceled orders at the moment.'} />
+      )}
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: 'white',
+    flex: 1,    backgroundColor: 'white',
   },
   appbarHeader: {
     backgroundColor: 'transparent',
@@ -279,7 +357,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   scrollView: {
-    // padding: 20,
+    padding: 10,
   },
   card: {
     marginBottom: 20,

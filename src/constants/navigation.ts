@@ -17,5 +17,9 @@ export default {
   SECURITY: 'Security',
   PRIVACY: 'Privscy',
   INVITEFREIND: 'InviteFriend',
-  CONTRACTORDETAILS : 'WorkDetails'
+  CONTRACTORDETAILS : 'WorkDetails',
+  BOOK :'Book',
+  CREATECONTRACTOR : 'WorkDetailsInput',
+  NOTIFICATION : 'Notifications',
+  CHANGEPASSWORD : 'ChangePassword'
 };

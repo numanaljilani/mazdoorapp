@@ -23,7 +23,7 @@ const Splash = ({navigation}: {navigation: any}) => {
   const dispatch = useDispatch();
 
   const navigateToAutorizedScreen = async () => {
-    navigation.navigate(navigationString.ONBOARDINGSCREEN);
+    // navigation.navigate(navigationString.ONBOARDINGSCREEN);
     const token: string | null = await AsyncStorage.getItem('accessToken');
 
     const language = await AsyncStorage.getItem('language');
@@ -61,8 +61,9 @@ const Splash = ({navigation}: {navigation: any}) => {
         navigation.replace(navigationString.BOTTOMTABS);
         showMessage({
           type: 'success',
-          message: 'Welom back',
-          description: 'Welcome to mazdoor',
+          message: 'Welcom back',
+          // description: 'Welcome to mazdoor',
+          icon:"success"
         });
         return;
       } else {
@@ -73,6 +74,8 @@ const Splash = ({navigation}: {navigation: any}) => {
       navigation.navigate(navigationString.LOGINSCREEN);
     }
   };
+
+  useEffect(()=>{},[])
   useEffect(() => {
     navigateToAutorizedScreen();
   }, []);

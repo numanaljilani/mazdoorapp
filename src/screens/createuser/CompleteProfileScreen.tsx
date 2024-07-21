@@ -21,6 +21,7 @@ import Calender from '../../components/Calender/Calender';
 import {useMutation} from '@apollo/client';
 import {REGISTER_USER} from '../../graphql/mutation/registerMeutation';
 import env from '../../env';
+import ActivityIndicatorComponent from '../../components/common/ActivityIndicatorComponent';
 const CompleteProfileScreen = ({navigation}: any) => {
   const route: any = useRoute();
   const [name, setName] = useState<string>('');
@@ -48,8 +49,6 @@ const CompleteProfileScreen = ({navigation}: any) => {
   // });
 
   const {language, token} = useSelector((state: any) => state?.user);
-  // const [uploadProfile, {data, isError, isSuccess, error : any, isLoading}] =
-  //   useUploadProfileMutation();
   const [completeProfileApi, {data, isError, isSuccess, error, isLoading}] =
     useCompleteProfileMutation();
 
@@ -90,77 +89,42 @@ const CompleteProfileScreen = ({navigation}: any) => {
   };
 
   const completeProfile = async () => {
+    setLoading(true);
     try {
       const inputFormData = new FormData();
-     profile && inputFormData.append('file', {
-        uri: profile.uri,
-        name: 'image.png',
-        fileName: 'image',
-        // type: 'image/png',
-    type: "application/octet-stream", 
-      });
-     name && inputFormData.append('fullname', name);
+      profile &&
+        inputFormData.append('file', {
+          uri: profile.uri,
+          name: 'image.png',
+          fileName: 'image',
+          // type: 'image/png',
+          type: 'application/octet-stream',
+        });
+      name && inputFormData.append('fullname', name);
       inputFormData.append('email', route.params?.data?.email);
       inputFormData.append('password', route.params?.data?.password);
       nikname && inputFormData.append('nikname', nikname);
       phone && inputFormData.append('phone', phone);
       address && inputFormData.append('address', address);
       date && inputFormData.append('dob', date);
-  //     fetch('http://192.168.251.213:3000/')
-  // .then(response => {
-  //   if (!response.ok) {
-  //     throw new Error('Network response was not ok');
-  //   }
-  //   return response.json();
-  // })
-  // .then(data => {
-  //   console.log(data);
-  // })
-  // .catch(error => {
-  //   console.error('Error fetching data:', error);
-  // });
-  //     fetch(`http://192.168.251.213:3000/user`, {
-  //       method: 'POST',
-  //       body: inputFormData,
-  //       headers: {
-  //           'Content-Type': 'multipart/form-data',
-  //       },
-  //   }).then(response => {
-  //     if (!response.ok) {
-  //         throw new Error('Network response was not ok');
-  //     }
-  //     return response.json();
-  // })
-  // .then(data => {
-  //     console.log('Success:', data);
-  // })
-  // .catch(error => {
-  //     console.error('Error:', error);
-  // });
-  console.log(inputFormData)
 
-     const res = await  completeProfileApi({
-        // body: inputFormData,
-        body: 
-          // fullname : name , 
-          // password : route.params?.data?.password,
-          // email : route.params?.data?.email
-          inputFormData
+      const res : any = await completeProfileApi({body: inputFormData});
 
-        ,
-      });
-      console.log(res , ">>>>>>>>>>")
+    
+        navigation.navigate(navigationString.LOGIN);
+      
+      console.log(res, '>>>>>>>>>>');
+      setLoading(false);
     } catch (error) {
       console.log(error, 'catch');
+      setLoading(false);
     }
-
-    setLoading(true);
   };
 
   useEffect(() => {
     if (isSuccess) {
       console.log(data);
-      navigation.navigate(navigationString.LOGIN)
+      navigation.navigate(navigationString.LOGIN);
     }
   }, [isSuccess]);
   useEffect(() => {
@@ -169,29 +133,9 @@ const CompleteProfileScreen = ({navigation}: any) => {
     }
   }, [isError]);
 
-  // useEffect(() => {
-  //   if (isSuccess) {
-  //   }
-  //   if (userIsSuccess) {
-  //     dispatch(setUser(userData));
-  //     navigation.navigate('BottomTabs');
-  //   }
-  //   setLoading(false);
-  // }, [isSuccess, userIsSuccess]);
-
-  // useEffect(() => {
-  //   if (isError) {
-  //     console.log(error, 'eroor');
-  //   }
-  //   if (userIsError) {
-  //     console.log(userError, 'userEroror');
-  //   }
-  //   setLoading(false);
-  // }, [isError, userIsError]);
-
   return (
     <ScrollView contentContainerStyle={{}}>
-      <View className="py-3 bg-white">
+      <View className="py-3 min-h-screen bg-white">
         <View className="px-5 flex-row gap-5 my-3">
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image
@@ -200,7 +144,7 @@ const CompleteProfileScreen = ({navigation}: any) => {
               resizeMode="contain"
             />
           </TouchableOpacity>
-          <Text className="text-2xl font-semibold text-center  text-black">
+          <Text className="text-2xl font-semibold text-center font-[Poppins-SemiBold]  text-black">
             {language ? `प्रोफ़ाइल पूर्ण क्र` : `Fill Your Profile`}
           </Text>
           <View />
@@ -210,12 +154,20 @@ const CompleteProfileScreen = ({navigation}: any) => {
           <TouchableOpacity
             className="w-36 h-36 relative overflow-hidden  rounded-full  bg-gray-50 my-3  justify-center items-center"
             onPress={handleImage}>
-            <Image
-              source={profile ? {uri: `${profile.uri}`} : icons.avatar}
-              className="w-full h-full"
-              resizeMode="cover"
-              // tintColor={!profile && '#D3D3D3'}
-            />
+            {profile ? (
+              <Image
+                source={{uri: `${profile.uri}`}}
+                className="w-full h-full"
+                resizeMode="cover"
+              />
+            ) : (
+              <Image
+                source={icons.avatar}
+                className="w-full h-full"
+                resizeMode="cover"
+                tintColor={'#D3D3D3'}
+              />
+            )}
 
             {/* */}
           </TouchableOpacity>
@@ -252,16 +204,23 @@ const CompleteProfileScreen = ({navigation}: any) => {
             setData={onChangeText}
             icon={icons.email}
           />
-          <InputText
-            label={language ? `पासवर्ड` : 'Date of Birth'}
-            value={date.format('DD/MM/YYYY')}
-            keyboard={true}
-            secure={true}
-            icon={icons.calendar}
-            calendar={true}
-            setCalenderModal={setCalenderModal}
-          />
 
+          <TouchableOpacity
+            onPress={() => setCalenderModal(true)}
+            className="flex-row items-center bg-gray-100 mt-5 rounded-xl py-3 px-5 relative">
+            <Text className="text-gray-300 absolute -top-2 left-4 text-xs ">
+              {language ? `जन्म की तारीख`:`Date of Birth`}
+            </Text>
+            <Image
+              source={icons.calendar}
+              className="w-6 h-6"
+              resizeMode="cover"
+              tintColor={'#D3D3D3'}
+            />
+            <Text className="text-black ml-4 font-[Poppins-SemiBold]">
+              {date.format('DD/MM/YYYY')}
+            </Text>
+          </TouchableOpacity>
           <InputText
             label={language ? 'फ़ोन' : 'Phone'}
             value={phone}
@@ -270,7 +229,6 @@ const CompleteProfileScreen = ({navigation}: any) => {
             keyboard={true}
             flag={true}
           />
-
           <InputText
             label={language ? `पता` : 'Address'}
             value={address}
@@ -279,41 +237,11 @@ const CompleteProfileScreen = ({navigation}: any) => {
             keyboard={true}
             multiline={true}
           />
-
-          {/* <TextInput
-            label={language ? `पता` : 'Address'}
-            
-            numberOfLines={3}
-            className="mt-5 bg-gray-100 "
-            mode="outlined"
-            value={address}
-            theme={{roundness: 10}}
-            onChangeText={(text: string) => setAddress(text)}
-            autoCapitalize="none"
-            activeOutlineColor="#822BFF"
-            outlineColor="transparent"
-            left={
-              <TextInput.Icon
-                icon={() => (
-                  <Icon source={icons.location} size={22} color="#312651" />
-                )}
-              />
-            }
-          /> */}
-
           <Button
             onPressFunction={completeProfile}
             text={language ? `जरी राखे` : `Continue`}
           />
-          {/* <TouchableOpacity className="bg-white border-[#312651] border-2 w-full py-3 rounded-lg mt-5">
-            <Text className="text-[#312651] text-center text-lg font-medium">
-              {language ? `लॉगिन पर वापस जाएं`:`Back To Login`}
-            </Text>
-          </TouchableOpacity> */}
         </View>
-        {/* {userIsLoading ||
-          isLoading ||
-          (loading && <ActivityIndicatorComponent />)} */}
       </View>
       <Calender
         date={date}
@@ -321,6 +249,7 @@ const CompleteProfileScreen = ({navigation}: any) => {
         setCalenderModal={setCalenderModal}
         calenderModal={calenderModal}
       />
+      {loading && <ActivityIndicatorComponent />}
     </ScrollView>
   );
 };

@@ -1,5 +1,5 @@
-import {View, Text, Image} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import {View, Text, Image, RefreshControl} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {TouchableOpacity} from 'react-native';
 import icons from '../../constants/icons';
@@ -10,13 +10,12 @@ import {MYBOOKMARK} from '../../graphql/mutation/bookmark';
 import {useMutation} from '@apollo/client';
 import {services} from '../../constants/services';
 import ServicesList from '../../components/Lists/ServicesList';
-import NotFound from '../../components/notFound/NotFound';
+import NotFoundBooking from '../../components/common/NotFoundBookings';
 
 const BookMarks = ({navigation}: any) => {
   const {userData, token, language} = useSelector((state: any) => state?.user);
   const [service, setService] = useState<any>('Electrician');
   const [myBookmarkList, setMyBookmarList] = useState<any>([]);
-  console.log(service, '>>>>>>');
 
   const headers = {
     authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
@@ -29,7 +28,7 @@ const BookMarks = ({navigation}: any) => {
       variables: {service, take: 20, skip: 0},
       context: {headers},
     });
-    console.log(res);
+    console.log(res.data)
     if (res?.data?.myBookmark) {
       setMyBookmarList(res?.data?.myBookmark);
     }
@@ -38,6 +37,18 @@ const BookMarks = ({navigation}: any) => {
   useEffect(() => {
     getBookmarks();
   }, [service]);
+
+
+  const [refreshing, setRefreshing] = useState(false);
+
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    // Simulate a network request
+    getBookmarks()
+    setRefreshing(false);
+  }, []);
+
   return (
     <View className="bg-white min-h-screen">
       <View className="flex-row justify-between px-6 py-5">
@@ -54,7 +65,7 @@ const BookMarks = ({navigation}: any) => {
           <AntDesign size={30} color={'#312651'} name="search1" />
         </TouchableOpacity>
       </View>
-      <View className=" px-3">
+      <View className=" px-3 my-2 pb-10">
         <View>
           <View>
             <FlatList
@@ -74,12 +85,15 @@ const BookMarks = ({navigation}: any) => {
           </View>
         </View>
         {/* <WorkerList /> */}
-       {myBookmarkList.length > 0 ?  <FlatList
+       { myBookmarkList.length > 0 ?  <FlatList
         data={myBookmarkList}
         keyExtractor={(item , index) => index.toString()}
-        renderItem={WorkerList}
+        renderItem={(item)=><WorkerList item={item.item} navigation={navigation} contractors ={myBookmarkList} setContractors={setMyBookmarList} fromBookmark ={true} funct={getBookmarks}/>}
         contentContainerStyle={{paddingBottom: 80}}
-      /> :<NotFound/> }
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      /> : <NotFoundBooking des ={"You don't have bookmarks. "}/> }
       </View>
     </View>
   );

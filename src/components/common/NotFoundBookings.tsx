@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
-import { IconButton, Searchbar } from 'react-native-paper';
 import images from '../../constants/images';
 
 const NotFoundBooking = ({des} : any) => {
     const [searchQuery, setSearchQuery] = useState('');
 
     return (
-        <View style={styles.container} className='min-h-screen'>
+        <View style={styles.container} className='min-h-screen -m-4 -z-20'>
             {/* <Searchbar
                 style={styles.searchBar}
                 placeholder="Search"

@@ -1,57 +1,45 @@
 import {View, Text, TouchableOpacity, ScrollView, Image} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import InputText from '../../components/Input/InputText';
-import {Icon, TextInput} from 'react-native-paper';
 import {
   launchImageLibrary,
   ImageLibraryOptions,
 } from 'react-native-image-picker';
-import images from '../../constants/images';
-import {useCompleteProfileMutation} from '../../service/api/userApi';
+import {
+  useCompleteProfileMutation,
+  useUpdateProfileMutation,
+} from '../../service/api/userApi';
 import {useDispatch, useSelector} from 'react-redux';
-import {showMessage} from 'react-native-flash-message';
 import icons from '../../constants/icons';
-import {setUser} from '../../service/slice/userSlice';
-import Button from '../../components/common/Button';
 import {useRoute} from '@react-navigation/native';
 import navigationString from '../../constants/navigation';
 
 import dayjs from 'dayjs';
 import Calender from '../../components/Calender/Calender';
-import {useMutation} from '@apollo/client';
-import {REGISTER_USER} from '../../graphql/mutation/registerMeutation';
-import env from '../../env';
+import CreateContractorModal from '../../components/contractor/ContractorModal';
+import ActivityIndicatorComponent from '../../components/common/ActivityIndicatorComponent';
 const UpdateProfile = ({navigation}: any) => {
+  const {language, token, userData} = useSelector((state: any) => state?.user);
+  console.log(userData)
   const route: any = useRoute();
-  const [name, setName] = useState<string>('');
-  const [nikname, setNikname] = useState<string>('');
-  const [email, setEmail] = useState<string>(
-    route.params ? route.params.data.email : '',
-  );
-  const [address, setAddress] = useState<string>('');
-  const [rnFile, setRnFile] = useState();
+  const [name, setName] = useState<string>(userData.fullname);
+  const [nikname, setNikname] = useState<string>(userData.nikname);
+  const [email, setEmail] = useState<string>(userData.email);
+  const [address, setAddress] = useState<string>(userData.address);
   const [date, setDate] = useState(dayjs());
   const [phone, setPhone] = useState<string>('');
   const [profile, setProfile] = useState<any>();
   const [loading, setLoading] = useState<boolean>(false);
   const [calenderModal, setCalenderModal] = useState<boolean>(false);
+  const [contractorModal, setCreateContractorMoadal] = useState<boolean>(false);
 
   const dispatch = useDispatch();
 
   const dataFromScreenA = route.params?.data;
   // console.log(dataFromScreenA);
 
-  // const [register, {data, error}] = useMutation(REGISTER_USER, {
-  //   onError: err => {
-  //     console.log(err);
-  //   },
-  // });
-
-  const {language, token} = useSelector((state: any) => state?.user);
-  // const [uploadProfile, {data, isError, isSuccess, error : any, isLoading}] =
-  //   useUploadProfileMutation();
-  const [completeProfileApi, {data, isError, isSuccess, error, isLoading}] =
-    useCompleteProfileMutation();
+  const [updateProfile, {data, isError, isSuccess, error, isLoading}] =
+    useUpdateProfileMutation();
 
   const handleImage = async () => {
     const options: ImageLibraryOptions = {
@@ -90,77 +78,44 @@ const UpdateProfile = ({navigation}: any) => {
   };
 
   const completeProfile = async () => {
+    setLoading(true)
     try {
       const inputFormData = new FormData();
-     profile && inputFormData.append('file', {
-        uri: profile.uri,
-        name: 'image.png',
-        fileName: 'image',
-        // type: 'image/png',
-    type: "application/octet-stream", 
-      });
-     name && inputFormData.append('fullname', name);
-      inputFormData.append('email', route.params?.data?.email);
-      inputFormData.append('password', route.params?.data?.password);
+      profile &&
+        inputFormData.append('file', {
+          uri: profile.uri,
+          name: 'image.png',
+          fileName: 'image',
+          // type: 'image/png',
+          type: 'application/octet-stream',
+        });
+      name && inputFormData.append('fullname', name);
+      userData?.id && inputFormData.append('userId',userData.id)
+      // inputFormData.append('email', route.params?.data?.email);
+      // inputFormData.append('password', route.params?.data?.password);
       nikname && inputFormData.append('nikname', nikname);
       phone && inputFormData.append('phone', phone);
       address && inputFormData.append('address', address);
       date && inputFormData.append('dob', date);
-  //     fetch('http://192.168.251.213:3000/')
-  // .then(response => {
-  //   if (!response.ok) {
-  //     throw new Error('Network response was not ok');
-  //   }
-  //   return response.json();
-  // })
-  // .then(data => {
-  //   console.log(data);
-  // })
-  // .catch(error => {
-  //   console.error('Error fetching data:', error);
-  // });
-  //     fetch(`http://192.168.251.213:3000/user`, {
-  //       method: 'POST',
-  //       body: inputFormData,
-  //       headers: {
-  //           'Content-Type': 'multipart/form-data',
-  //       },
-  //   }).then(response => {
-  //     if (!response.ok) {
-  //         throw new Error('Network response was not ok');
-  //     }
-  //     return response.json();
-  // })
-  // .then(data => {
-  //     console.log('Success:', data);
-  // })
-  // .catch(error => {
-  //     console.error('Error:', error);
-  // });
-  console.log(inputFormData)
+      console.log(inputFormData);
 
-     const res = await  completeProfileApi({
-        // body: inputFormData,
-        body: 
-          // fullname : name , 
-          // password : route.params?.data?.password,
-          // email : route.params?.data?.email
-          inputFormData
-
-        ,
+      const res = await updateProfile({
+        body: inputFormData,
+       token : userData.accessToken,
       });
-      console.log(res , ">>>>>>>>>>")
+      console.log(res, '>>>>>>>>>>');
+      navigation.goBack()
     } catch (error) {
       console.log(error, 'catch');
     }
 
-    setLoading(true);
+    setLoading(false);
   };
 
   useEffect(() => {
     if (isSuccess) {
       console.log(data);
-      navigation.navigate(navigationString.LOGIN)
+      navigation.navigate(navigationString.LOGIN);
     }
   }, [isSuccess]);
   useEffect(() => {
@@ -169,25 +124,7 @@ const UpdateProfile = ({navigation}: any) => {
     }
   }, [isError]);
 
-  // useEffect(() => {
-  //   if (isSuccess) {
-  //   }
-  //   if (userIsSuccess) {
-  //     dispatch(setUser(userData));
-  //     navigation.navigate('BottomTabs');
-  //   }
-  //   setLoading(false);
-  // }, [isSuccess, userIsSuccess]);
-
-  // useEffect(() => {
-  //   if (isError) {
-  //     console.log(error, 'eroor');
-  //   }
-  //   if (userIsError) {
-  //     console.log(userError, 'userEroror');
-  //   }
-  //   setLoading(false);
-  // }, [isError, userIsError]);
+  async function create() {}
 
   return (
     <ScrollView contentContainerStyle={{}}>
@@ -198,7 +135,6 @@ const UpdateProfile = ({navigation}: any) => {
               source={icons.back}
               className="w-8 h-8"
               resizeMode="contain"
-        
             />
           </TouchableOpacity>
           <Text className="text-2xl font-semibold text-center  text-black">
@@ -211,17 +147,21 @@ const UpdateProfile = ({navigation}: any) => {
           <TouchableOpacity
             className="w-36 h-36 relative overflow-hidden  rounded-full  bg-gray-50 my-3  justify-center items-center"
             onPress={handleImage}>
-            {profile?.uri ? <Image
-              source={profile ? {uri: `${profile.uri}`} : icons.avatar}
-              className="w-full h-full"
-              resizeMode="cover"
-              tintColor={"#dbd7d2"}
-            /> : <Image
-              source={icons.avatar}
-              className="w-full h-full"
-              resizeMode="cover"
-              tintColor={"#dbd7d2"}
-            />}
+            {profile?.uri ? (
+              <Image
+                source={profile ? {uri: `${profile.uri}`} : icons.avatar}
+                className="w-full h-full"
+                resizeMode="cover"
+                tintColor={'#dbd7d2'}
+              />
+            ) : (
+              <Image
+                source={icons.avatar}
+                className="w-full h-full"
+                resizeMode="cover"
+                tintColor={'#dbd7d2'}
+              />
+            )}
 
             {/* */}
           </TouchableOpacity>
@@ -286,40 +226,26 @@ const UpdateProfile = ({navigation}: any) => {
             multiline={true}
           />
 
-          {/* <TextInput
-            label={language ? `पता` : 'Address'}
-            
-            numberOfLines={3}
-            className="mt-5 bg-gray-100 "
-            mode="outlined"
-            value={address}
-            theme={{roundness: 10}}
-            onChangeText={(text: string) => setAddress(text)}
-            autoCapitalize="none"
-            activeOutlineColor="#822BFF"
-            outlineColor="transparent"
-            left={
-              <TextInput.Icon
-                icon={() => (
-                  <Icon source={icons.location} size={22} color="#312651" />
-                )}
-              />
-            }
-          /> */}
+          <View className='flex-row gap-x-2 py-3 justify-between items-center'>
+          <TouchableOpacity
+              className="bg-[#822BFF]  py-3 rounded-full  flex-1"
+              onPress={() => setCreateContractorMoadal(true)}>
+              <Text className="text-white font-[Poppins-Regular] tracking-widest text-center text-lg ">
+                {language ? `जरी राखे` : ` contractor`}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="bg-[#822BFF]  py-3 rounded-full  flex-1 gap-x-2"
+              onPress={completeProfile}>
+              <Text className="text-white font-[Poppins-Regular] tracking-widest text-center text-lg ">
+                {language ? `जरी राखे` : `Update`}
+              </Text>
+            </TouchableOpacity>
 
-          <Button
-            onPressFunction={completeProfile}
-            text={language ? `जरी राखे` : `Update`}
-          />
-          {/* <TouchableOpacity className="bg-white border-[#312651] border-2 w-full py-3 rounded-lg mt-5">
-            <Text className="text-[#312651] text-center text-lg font-medium">
-              {language ? `लॉगिन पर वापस जाएं`:`Back To Login`}
-            </Text>
-          </TouchableOpacity> */}
+          </View>
         </View>
-        {/* {userIsLoading ||
-          isLoading ||
-          (loading && <ActivityIndicatorComponent />)} */}
+        {
+          (loading && <ActivityIndicatorComponent />)}
       </View>
       <Calender
         date={date}
@@ -327,6 +253,12 @@ const UpdateProfile = ({navigation}: any) => {
         setCalenderModal={setCalenderModal}
         calenderModal={calenderModal}
       />
+      {/* <CreateContractorModal
+        navigation={navigation}
+        create={create}
+        setModal={setCreateContractorMoadal}
+        contractorModal={contractorModal}
+      /> */}
     </ScrollView>
   );
 };

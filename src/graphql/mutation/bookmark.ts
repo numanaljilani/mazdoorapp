@@ -1,9 +1,9 @@
 import { gql } from '@apollo/client';
 
 export const ADDTOBOOKMARK = gql`
-mutation addToBookmark($contractorId :String!){
+mutation addToBookmark($contractorId :String! , $isBookmark : Boolean!){
     addToBookmark(bookmarkInput:{
-  contractorId :$contractorId}){
+  contractorId :$contractorId ,isBookmark : $isBookmark }){
     bookmark{
       message
     }
@@ -20,6 +20,8 @@ mutation myBookmark($service : String! ,$skip :Float ,$take :Float  ){
     contractorId
         contractor{
           fullname
+          image
+          
         }
       }
     }

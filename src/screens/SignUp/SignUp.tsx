@@ -32,8 +32,8 @@ const SignUp = ({navigation}: {navigation: any}) => {
       });
       return;
     }
-    console.log(email?.endsWith('@gmail.com'));
-    if (!email?.endsWith('@gmail.com')) {
+    console.log(email?.trim()?.endsWith('@gmail.com'));
+    if (!email?.trim().endsWith('@gmail.com')) {
       showMessage({
         type: 'danger',
         message: 'Invalid Email',
@@ -51,7 +51,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
     }
     try {
       navigation.navigate(navigationStrings.COMPLETEPROFILESCREEN, {
-        data: {email, password},
+        data: {email : email?.trim(), password},
       });
     } catch (error: any) {
       console.log(error, 'Inside error handling');
@@ -60,7 +60,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
   };
 
   return (
-    <View className="flex-1 justify-center bg-white  px-8 border-2">
+    <View className="flex-1 justify-center bg-white  px-8 ">
       <Text className="text-4xl font-semibold text-gray-900 leading-relaxed font-[Poppins-Medium]">
         {language ? `अपने अकाउंट में लॉग इन करें` : `Create your Account`}
       </Text>
@@ -96,7 +96,7 @@ const SignUp = ({navigation}: {navigation: any}) => {
           <View className="border-t-2 border-gray-200  flex-1" />
         </View>
 
-        <SocialAuth />
+        <SocialAuth navigation={navigation}/>
       </View>
       <View className="  mt-8">
         <TouchableOpacity onPress={() => navigation.navigate('Login')}>

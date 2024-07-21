@@ -43,7 +43,7 @@ export const userzApi = createApi({
         console.log(args.body , ">>>>>>>")
         console.log(args.token , ">>>>>>> token")
         return {
-          url: "user/profile",
+          url: "user/update",
           method: "POST",
           body: args.body,
           headers: {
@@ -81,6 +81,20 @@ export const userzApi = createApi({
         };
       },
     }),
+    completeContractorRegistration : builder.mutation({
+      query: (args) => {
+        console.log(args.body , ">>>>>>>")
+        return {
+          url: "user/register-contractor",
+          method: "POST",
+          body: args.body,
+          headers: {
+            'Content-type': 'multipart/form-data; charset=UTF-8',
+            "Authorization": `Bearer ${args.token}`,
+          },
+        };
+      },
+    }),
     updateProfile : builder.mutation({
       query: (args) => {
         console.log(args.body , ">>>>>>>")
@@ -90,7 +104,7 @@ export const userzApi = createApi({
           method: "POST",
           body: args.body,
           headers: {
-            "Content-type": "application/json; charset=UTF-8",
+            'Content-type': 'multipart/form-data; charset=UTF-8',
             "Authorization": `Bearer ${args.token}`,
           },
         };
@@ -101,7 +115,7 @@ export const userzApi = createApi({
         console.log(args.body , ">>>>>>>")
         console.log(args.token , ">>>>>>> token")
         return {
-          url: "worker/post",
+          url: "user/postimage",
           method: "POST",
           body: args.body,
           headers: {
@@ -116,4 +130,4 @@ export const userzApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const {useRegisterPhoneNumberMutation , useVerifyOtpMutation, useUpdateProfileMutation , useUploadProfileMutation , useCompleteProfileMutation , useBecomeWorkerMutation , useUploadPostMutation} = userzApi
+export const {useRegisterPhoneNumberMutation , useVerifyOtpMutation, useUpdateProfileMutation , useUploadProfileMutation , useCompleteProfileMutation , useBecomeWorkerMutation , useUploadPostMutation , useCompleteContractorRegistrationMutation} = userzApi

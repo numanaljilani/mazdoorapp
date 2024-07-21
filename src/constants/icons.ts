@@ -22,6 +22,7 @@ export default {
   suitcase: require('../assets/icons/suitcase.png'),
   delete: require('../assets/icons/bin.png'),
   bookmark: require('../assets/icons/bookmark.png'),
+  bookmark1: require('../assets/icons/bookmark1.png'),
   notification: require('../assets/icons/notifications.png'),
   manue: require('../assets/icons/menu.png'),
   home: require('../assets/icons/home.png'),

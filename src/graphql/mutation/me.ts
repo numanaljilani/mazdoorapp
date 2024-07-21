@@ -20,6 +20,7 @@ mutation {
         id 
         image
         nikname
+        isContractor
       }
     }
   }

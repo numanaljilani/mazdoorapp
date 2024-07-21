@@ -20,6 +20,7 @@ const WorkerProfile = ({navigation, route}: any) => {
   const [profile, setProfile] = useState<any>({});
   const [available, setAvailable] = useState<boolean>(false);
 
+  console.log(userData,route.params.id , "....")
   
   const headers = {
     authorization: token ? `Bearer ${token}` : '',

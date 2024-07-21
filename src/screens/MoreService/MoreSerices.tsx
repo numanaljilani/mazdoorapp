@@ -124,11 +124,6 @@ const MoreSerices = ({ navigation } : any) => {
             </View>
 
 
-
-
-
-           
-
             
           </View>
         </View>

@@ -11,10 +11,15 @@ import MyBooking from '../screens/booking/MyBooking';
 import { IconButton } from 'react-native-paper';
 import Calender from '../components/Calender/Calender';
 import Booking from '../screens/booking/BookingDetails';
+import ContractorOrders from '../screens/contractorOrders/ContractorOrders';
+import BookinTabs from './BookinTabs';
+import { useSelector } from 'react-redux';
+import MyCalenderBookings from '../screens/CalenderBookings/MyCalenderBookings';
 
 const Tab = createBottomTabNavigator();
 
-const BottomTabs = () => {
+const BottomTabs = ({navigation}: any) => {
+  const {userData} = useSelector((state: any) => state?.user);
   return (
     <Tab.Navigator
  
@@ -57,7 +62,7 @@ const BottomTabs = () => {
         }}
         initialParams={{ tabIndex: 1 }}
         name="Booking"
-        component={MyBooking}
+        component={BookinTabs}
       />
 
 
@@ -74,22 +79,22 @@ const BottomTabs = () => {
         }}
         initialParams={{ tabIndex: 1 }}
         name="Calender"
-        component={Booking}
+        component={MyCalenderBookings}
       />
 
-      {/* <Tab.Screen
+      {userData?.isContractor && <Tab.Screen
         options={{
           tabBarIcon: ({ focused }) => {
             return (    <View className={`  h-full w-full items-center justify-center`}>
-            <Image source={icons.home} className={`w-8 h-8`} tintColor={focused ? '#822BFF' : '#848482'} />
+            <Image source={icons.suitcase} className={`w-7 h-7`} tintColor={focused ? '#822BFF' : '#848482'} />
           </View>)
           },
           // tabBarLabel: 'Liked',
         }}
         initialParams={{ tabIndex: 2 }}
         name="All"
-        component={Liked}
-      /> */}
+        component={ContractorOrders}
+      />}
 
       <Tab.Screen
         options={{

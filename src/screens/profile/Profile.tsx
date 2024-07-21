@@ -17,7 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ActivityIndicatorComponent from '../../components/common/ActivityIndicatorComponent';
 import {useMutation} from '@apollo/client';
 import {availablityStatus} from '../../graphql/workerProfile';
-import {setPosts, setUser} from '../../service/slice/userSlice';
+import {setLanguage, setPosts, setUser} from '../../service/slice/userSlice';
 import {showMessage} from 'react-native-flash-message';
 import {
   ImageLibraryOptions,
@@ -63,10 +63,15 @@ const Profile = ({navigation}: any) => {
     setOptionModal(false);
   };
 
-  const [isEnabled, setIsEnabled] = useState(false);
+  const [isEnabled, setIsEnabled] = useState<boolean>(language);
+  const [isEnabledDark, setIsEnabledDark] = useState(false);
 
   const toggleSwitch = () => {
-    setIsEnabled(previousState => !previousState);
+    // setIsEnabled(previousState => !previousState);
+    dispatch(setLanguage(!language))
+  };
+  const toggleDark = () => {
+    setIsEnabledDark(previousState => !previousState);
   };
 
   const logout = async () => {
@@ -74,6 +79,7 @@ const Profile = ({navigation}: any) => {
     await AsyncStorage.setItem('accessToken', '');
     navigation.navigate('Login');
     setOptionModal(false);
+    setLogoutModal(false)
     setLoading(false);
   };
 
@@ -204,6 +210,9 @@ const Profile = ({navigation}: any) => {
     });
   };
 
+  const changePassword = () =>{
+    navigation.navigate(navigationString.CHANGEPASSWORD)
+  }
   const updateProfile = () =>{
     navigation.navigate(navigationString.UPDATEPROFILE)
   }
@@ -214,19 +223,21 @@ const Profile = ({navigation}: any) => {
   const navigateToHelpCenter = () =>
     navigation.navigate(navigationString.HELPCENTER);
 
+  const becomeContractor = () =>     navigation.navigate(navigationString.CREATECONTRACTOR);
+
   return (
     <ScrollView className="bg-white px-4">
       <View className="py-5 px-4 flex-row justify-between">
         <TouchableOpacity className="flex-row gap-x-3" onPress={()=> navigation.navigate(navigationString.UPDATEPROFILE)}>
           <Image source={images.logo} className="w-6 h-6" />
           <Text className="text-2xl font-[Poppins-Medium] text-black">
-            Profile
+            {!language ? `Profile` : `प्रोफ़ाइल`}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           className=" p-2 border-[#822BFF] rounded-full border "
           onPress={() => setOptionModal(true)}>
-          <Feather size={30} color={'#822BFF'} name="more-horizontal" />
+          <Feather size={20} color={'#822BFF'} name="more-horizontal" />
         </TouchableOpacity>
       </View>
       <View className=" px-7">
@@ -256,10 +267,11 @@ const Profile = ({navigation}: any) => {
         </View>
       </View>
       <View className="border-t mt-3 border-gray-300 ">
-        <ProfileButton text={'Edit Profile'} icon={icons.profile} onPress={updateProfile}/>
-        <ProfileButton text={'Notifications'} icon={icons.notification} />
-        <ProfileButton text={'Payments'} icon={icons.wallet} />
-        <ProfileButton text={'Security'} icon={icons.secure} />
+        <ProfileButton text={!language ? 'Edit Profile' :'प्रोफ़ाइल संपादित करें'} icon={icons.profile} onPress={updateProfile}/>
+        <ProfileButton text={!language ? 'Contractor' : "ठेकेदार"} icon={icons.suitcase} onPress={becomeContractor}/>
+        <ProfileButton text={!language ?'Notifications': 'सूचनाएं'} icon={icons.notification} />
+        {/* <ProfileButton text={!language ?'Payments' :'भुगतान'} icon={icons.wallet} /> */}
+        <ProfileButton text={!language ?'Security' :'सुरक्षा'} icon={icons.secure} onPress={changePassword} />
         <View className=" flex-row gap-x-3 justify-between items-center">
           <View className=" flex-row gap-x-3 items-end py-2">
             <Image
@@ -268,18 +280,18 @@ const Profile = ({navigation}: any) => {
               tintColor={'#181818'}
             />
             <Text className=" text-black font-[Poppins-Medium] text-base">
-              Language
+              {!language ? `Language` : `भाषा`}
             </Text>
           </View>
           <Switch
-            trackColor={{false: '#767577', true: '#81b0ff'}}
-            thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
+            trackColor={{false: '#767577', true: '#e6d4ff'}}
+            thumbColor={language ? '#822BFF' : '#f4f3f4'}
             ios_backgroundColor="#3e3e3e"
             onValueChange={toggleSwitch}
-            value={isEnabled}
+            value={language}
           />
         </View>
-        <View className=" flex-row gap-x-3 justify-between items-center">
+        {/* <View className=" flex-row gap-x-3 justify-between items-center">
           <View className=" flex-row gap-x-3 items-end py-2">
             <Image
               source={icons.show}
@@ -287,24 +299,24 @@ const Profile = ({navigation}: any) => {
               tintColor={'#181818'}
             />
             <Text className=" text-black font-[Poppins-Medium] text-base">
-              Dark Mode
+             {!language ?` Dark Mode` : `डार्क मोड`}
             </Text>
           </View>
           <Switch
-            trackColor={{false: '#767577', true: '#81b0ff'}}
-            thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
+            trackColor={{false: '#767577', true: '#e6d4ff'}}
+            thumbColor={isEnabledDark ? '#822BFF' : '#f4f3f4'}
             ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleSwitch}
-            value={isEnabled}
+            onValueChange={toggleDark}
+            value={isEnabledDark}
           />
-        </View>
-        <ProfileButton text={'Privacy'} icon={icons.password} onPress={PrivacyPolicy}/>
+        </View> */}
+        <ProfileButton text={!language ?'Privacy':'गोपनीयता'} icon={icons.password} onPress={PrivacyPolicy}/>
         <ProfileButton
-          text={'Help Center'}
+          text={!language ? 'Help Center':`सहायता केंद्र`}
           icon={icons.notification}
           onPress={navigateToHelpCenter}
         />
-        <ProfileButton text={'Invite Friends'} icon={icons.people} />
+        <ProfileButton text={!language ?'Invite Friends':'मित्रों को आमंत्रित करें'} icon={icons.people} />
         <TouchableOpacity
           onPress={showModal}
           className=" flex-row gap-x-3 justify-between items-center">
@@ -315,7 +327,7 @@ const Profile = ({navigation}: any) => {
               tintColor={'#EF4444'}
             />
             <Text className=" text-red-500 font-[Poppins-Medium] text-base">
-              Logout
+              {!language ?`Logout` : `लॉग आउट`}
             </Text>
           </View>
           <MaterialIcons name="navigate-next" size={30} color={'#EF4444'} />

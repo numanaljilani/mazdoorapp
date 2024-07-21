@@ -27,6 +27,8 @@ import BookMarks from '../screens/Bookmarks/BookMarks';
 import MoreSerices from '../screens/MoreService/MoreSerices';
 import UpdateProfile from '../screens/UpdateProfile/UpdateProfile';
 import Privacy from '../screens/PrivacyPolicy/Privacy';
+import Notification from '../screens/Notification/Notification';
+import Security from '../screens/security/Security';
 
 
 const Stack = createStackNavigator();
@@ -39,13 +41,13 @@ const Route = () => {
       }}
       initialRouteName="Splash">
       {/* new */}
-      <Stack.Screen name="WorkDetails" component={WorkDetails} />
+      <Stack.Screen name={navigationString.CONTRACTORDETAILS} component={WorkDetails} />
       <Stack.Screen name="MyBooking" component={MyBooking} />
       <Stack.Screen name="Booking" component={Booking} />
       <Stack.Screen name="NotFound" component={NotFound} />
       <Stack.Screen name="Searchh" component={Searchh} />
       {/* <Stack.Screen name="FilterModal" component={FilterModal} /> */}
-      <Stack.Screen name="WorkDetailsInput" component={WorkDetailsInput} />
+      <Stack.Screen  name={navigationString.CREATECONTRACTOR}  component={WorkDetailsInput} />
       {/* new */}
       <Stack.Screen name="Splash" component={Splash} />
       <Stack.Screen name="onboarding" component={Onboarding} />
@@ -65,6 +67,9 @@ const Route = () => {
       <Stack.Screen name={navigationString.MORESERVICES} component={MoreSerices} />
       <Stack.Screen name={navigationString.UPDATEPROFILE} component={UpdateProfile} />
       <Stack.Screen name={navigationString.PRIVACY} component={Privacy} />
+      <Stack.Screen name={navigationString.BOOK} component={Booking} />
+      <Stack.Screen name={navigationString.NOTIFICATION} component={Notification} />
+      <Stack.Screen name={navigationString.CHANGEPASSWORD} component={Security} />
     </Stack.Navigator>
   );
 };

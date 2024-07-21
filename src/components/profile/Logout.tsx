@@ -40,11 +40,11 @@ const Logout = ({
           <View className='pb-7'>
            
             <Text className="text-2xl mt-4 font-[Poppins-SemiBold] text-center text-red-500">
-              Logout
+              {!language ?  `Logout` : `लॉग आउट`}
             </Text>
             <View className="border-t border-gray-200  mx-10 mt-5" />
             <Text className="text-lg   text-center my-8 text-gray-500 font-[Poppins-SemiBold]">
-              Are you sure you want to log out?
+              {!language ?`Are you sure you want to log out?` : `क्या आप लॉग आउट करना चाहते हैं?`}
             </Text>
             <View className="flex-row">
               <TouchableOpacity

@@ -9,7 +9,6 @@ import image, {
 } from 'react-native-image-picker';
 import images from '../../constants/images';
 import {
-  useCompleteProfileMutation,
   useUpdateProfileMutation,
   useUploadProfileMutation,
 } from '../../service/api/userApi';
@@ -17,7 +16,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {showMessage} from 'react-native-flash-message';
 import icons from '../../constants/icons';
 import ActivityIndicatorComponent from '../../components/common/ActivityIndicatorComponent';
-import {setLanguage, setUser} from '../../service/slice/userSlice';
+import { setUser} from '../../service/slice/userSlice';
 import env from '../../env';
 import {meMutation} from '../../graphql/me';
 import {useMutation} from '@apollo/client';

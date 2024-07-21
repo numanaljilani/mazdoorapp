@@ -8,7 +8,19 @@ mutation($service : String! ,$skip :Float ,$take :Float  ){
       service
       price
       id
+      isBookmark
       
     }
   }
+`;
+export const SEARCHCONTRACTOR = gql`
+mutation searchContractor($search : String! , $skip : Float! , $take : Float!){
+  searchContractor(searchContractorInput:{search : $search , skip : $skip , take : $take}){
+    fullname
+    id
+    image
+    service
+    subService
+  }
+}
 `;

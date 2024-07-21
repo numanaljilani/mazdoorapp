@@ -1,7 +1,7 @@
 import {View, Text, TouchableOpacity, ScrollView, Image} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Icon, TextInput} from 'react-native-paper';
-import image, {
+import {
   launchImageLibrary,
   ImageLibraryOptions,
 } from 'react-native-image-picker';
@@ -14,8 +14,6 @@ import ActivityIndicatorComponent from '../../components/common/ActivityIndicato
 import {setUser} from '../../service/slice/userSlice';
 import ServiceModal from '../../components/worker/ServiceModal';
 import {services} from '../../constants/services';
-import {configureStore} from '@reduxjs/toolkit';
-services;
 
 const Worker = ({navigation}: any) => {
   const [service, setServcie] = useState<{

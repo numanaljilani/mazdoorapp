@@ -16,7 +16,7 @@ const ActivityIndicatorComponent = () => {
           <ActivityIndicator
             animating={modalVal}
             size="large"
-            color="#312651"
+            color="#822BFF"
           />
 
           {/* If you want to image set source here */}
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     height: 100,
     width: 100,
-    borderRadius: 10,
+    borderRadius: 20,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-around',

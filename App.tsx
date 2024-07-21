@@ -5,7 +5,7 @@
  * @format
  */
 import 'react-native-gesture-handler';
-import React from 'react';
+import React, { useEffect } from 'react';
 // import type {PropsWithChildren} from 'react';
 import // ActivityIndicator,
   // SafeAreaView,
@@ -33,6 +33,8 @@ import { Provider } from 'react-redux';
 import { store } from './src/service/store';
 import FlashMessage from 'react-native-flash-message';
 import { client } from './src/utils/apolloclient';
+import { PermissionsAndroid, Platform } from 'react-native';
+import { notificationListeners, requestUserPermission } from './src/utils/notificationservice';
 
 // import {PaperProvider} from 'react-native-paper';
 
@@ -81,6 +83,25 @@ function App(): React.JSX.Element {
   // const backgroundStyle = {
   //   backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   // };
+
+  useEffect(()=>{
+
+    if(Platform.OS == 'android'){
+      PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS).then((res)=>{
+          console.log("res+++++",res)
+          requestUserPermission()
+          notificationListeners()
+          if(!!res && res == 'granted'){
+
+          }
+      }).catch(error=>{
+        console.log('something wrong')
+      })
+    }else{
+  
+    }
+  
+  },[])
   return (
     <Provider store={store}>
       <ApolloProvider client={client}>

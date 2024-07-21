@@ -5,8 +5,9 @@ import {
   TouchableOpacity,
   FlatList,
   ScrollView,
+  RefreshControl,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import images from '../../constants/images';
 import {useMutation, useQuery} from '@apollo/client';
 import {useSelector} from 'react-redux';
@@ -23,54 +24,26 @@ import ServicesList from '../../components/Lists/ServicesList';
 import WorkerList from '../../components/Lists/WorkerList';
 import navigationString from '../../constants/navigation';
 import {GET_CONTRACTOR_BY_SERVICE} from '../../graphql/mutation/getContractor';
+import SearchModal from '../../components/search/SearchModal';
+import {useIsFocused} from '@react-navigation/native';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
 const Home = ({navigation}: any) => {
   const [contractors, setContractors] = useState([]);
-  const [worker, setWorker] = useState([]);
   const [service, setService] = useState<string>('Electrician');
+  const [searchModal, setSearchModal] = useState<boolean>(false);
+
+  const isFocused = useIsFocused();
 
   const {userData, token, language} = useSelector((state: any) => state?.user);
 
   const headers = {
     authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
   };
-  // console.log(userData.accessToken)
-  // console.log(userData)
 
   const [get_contractor_by_service, {loading, error, data}] = useMutation(
     GET_CONTRACTOR_BY_SERVICE,
   );
-  // const [getTopWorker, { loading, error, data }] =
-  //   useMutation(Get_Top_RatedWorkers);
-
-  // const {
-  //   loading: loading2,
-  //   error: error2,
-  //   data: gqlData2,
-  //   refetch,
-  // } = useQuery(Get_Worker_By_Service, {
-  //   variables: {occupation: service, take: 50, skip: 0},
-  // });
-
-  // const getTop = async () => {
-  //   const res = await getTopWorker({variables: {take: 10, skip: 0}});
-  //   // console.log(res.data.topRatedWorkers)
-  //   if (res.data?.topRatedWorkers) {
-  //     setTopRatedWorker(res.data.topRatedWorkers);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   // if (loading2) return;
-  //   if (gqlData2) {
-  //     refetch();
-  //     setWorker(gqlData2?.getWorkerByService);
-  //   }
-  // }, [gqlData2]);
-
-  // useEffect(() => {
-  //   getTop();
-  // }, []);
 
   const getContractorsByService = async () => {
     await get_contractor_by_service({
@@ -80,9 +53,10 @@ const Home = ({navigation}: any) => {
   };
 
   useEffect(() => {
+    if (!isFocused) return;
     if (loading) return;
     getContractorsByService();
-  }, [service]);
+  }, [service, isFocused]);
 
   useEffect(() => {
     if (loading) return;
@@ -91,86 +65,25 @@ const Home = ({navigation}: any) => {
     }
   }, [data]);
 
-  const renderItem = ({item}: {item: any}) => (
-    <TouchableOpacity
-      onPress={() => setService(item.english)}
-      className={`rounded-full py-2 px-4 mx-1  my-3 bg-${
-        item.english === service ? '[#312651]' : 'white'
-      } shadow shadow-[#312651]`}>
-      <Text
-        className={`text-base font-semibold text-gray-100 text-${
-          item.english === service ? 'white' : '[#312651]'
-        }`}>
-        {language ? item.hindi : item.english}
-      </Text>
-    </TouchableOpacity>
-  );
+  const search = async () => {};
+  const [refreshing, setRefreshing] = useState(false);
 
-  const renderList = ({item}: {item: any}) => {
-    if (userData._id === item._id) return <></>;
-    return (
-      <TouchableOpacity
-        onPress={() => navigation.navigate('WorkerProfile', {id: item._id})}
-        className="mb-2 bg-gray-100   px-4 rounded-2xl flex-row  py-2 mt-1">
-        <View className="w-16 h-16 rounded-full  overflow-hidden">
-          <Image
-            source={
-              item.profile
-                ? {uri: `${env.storage}${item.profile}`}
-                : images.Male
-            }
-            className="w-full h-full"
-            resizeMode="contain"
-          />
-        </View>
-        <View className="ml-4">
-          <Text className="text-base font-bold text-[#312651]">
-            {item?.name}
-          </Text>
-          <Text className="text-xs text-[#312651]">{item?.occupation}</Text>
-        </View>
-      </TouchableOpacity>
-    );
-  };
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    // Simulate a network request
 
-  const renderAdds = ({item}: any) => (
-    <TouchableOpacity
-      onPress={() => navigation.navigate('WorkerProfile', {id: item._id})}
-      className="my-3 mx-2 w-44  py-2 bg-white px-4  rounded-2xl justify-between"
-      style={{
-        shadowColor: '#000',
-        shadowOffset: {
-          width: 0,
-          height: 4,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 3,
-      }}>
-      <View className="w-16 h-16 rounded-full  overflow-hidden shadow-2xl drop-shadow-2xl shadow-black">
-        <Image
-          source={
-            item.profile ? {uri: `${env.storage}${item.profile}`} : images.Male
-          }
-          className="w-full h-full"
-          resizeMode="contain"
-        />
-      </View>
-      <View>
-        <Text className="text-lg font-semibold">{item?.name}</Text>
-        <Text className="text-sm font-normal">{item?.occupation}</Text>
-      </View>
-      <View>
-        <Text className="text-lg font-medium">
-          ₹ {item?.cost ? item?.cost : '_ '}/{item?.unit ? item?.unit : '_ '}
-        </Text>
-        <Text className="text-sm">{item?.address}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+    getContractorsByService();
+    setTimeout(() => {
+      setRefreshing(false);
+      // You can also refresh your data here
+    }, 2000);
+  }, []);
   // console.log(`${env.storage}${userData.image}`)
   return (
-    <ScrollView>
+    <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
       <View className=" bg-white px-4 py-5 min-h-screen">
         <View className="flex-row justify-between">
           <View className=" flex-row items-center gap-3">
@@ -192,7 +105,7 @@ const Home = ({navigation}: any) => {
             </View>
             <View className="">
               <Text className="text-black font-[Poppins-Regular]">
-                Good Morining
+                {!language ? `Hello` : `नमस्ते`}
               </Text>
               <Text className="text-black font-[Poppins-SemiBold] tracking-wider text-base">
                 {userData?.fullname ? userData?.fullname : 'Miran Ahmed'}
@@ -200,54 +113,36 @@ const Home = ({navigation}: any) => {
             </View>
           </View>
           <View className="flex-row gap-3">
-            <TouchableOpacity className="w-8 h-8">
+            <TouchableOpacity
+              className="w-8 h-8"
+              onPress={() =>
+                navigation.navigate(navigationString.NOTIFICATION)
+              }>
               <Image source={icons.notification} className="w-full h-full" />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => navigation.navigate(navigationString.MYBOOKMARKS)}
               className="w-8 h-8">
-              <Image source={icons.bookmark} className="w-full h-full" />
+              <Image source={icons.bookmark1} className="w-full h-full" />
             </TouchableOpacity>
           </View>
         </View>
         <View className="py-2">
-          <TextInput
-            className=" bg-gray-100 text-black rounded-lg"
-            placeholder="Search"
-            placeholderTextColor={'#D3D3D3'}
-            mode="outlined"
-            theme={{roundness: 10}}
-            autoCapitalize="none"
-            activeOutlineColor="#822BFF"
-            outlineColor="transparent"
-            left={
-              <TextInput.Icon
-                icon={focused => (
-                  <AntDesign
-                    size={25}
-                    color={focused ? '#312651' : '#555555'}
-                    name="search1"
-                  />
-                )}
-              />
-            }
-            right={
-              <TextInput.Icon
-                icon={focused => (
-                  <Icon
-                    source={icons.manue}
-                    size={26}
-                    color={focused ? '#822BFF' : '#D3D3D3'}
-                  />
-                )}
-              />
-            }
-          />
+          <TouchableOpacity
+            onPress={() => {
+              setSearchModal(true);
+            }}
+            className="bg-gray-100 flex-row  px-5 py-2 rounded-lg">
+            <AntDesign size={25} color={'#312651'} name="search1" />
+            <Text className="text-lg font-[Poppins-Regular] text-gray-600 ml-4">
+              Search
+            </Text>
+          </TouchableOpacity>
         </View>
 
-        <View className="">
+        {/* <View className="">
           <Text className="text-lg text-black font-[Poppins-Medium]">
-            Special Offers
+            {!language ? `Special Offers` : `खास पेशकश`}
           </Text>
           <View className="rounded-xl p-4 w-full  bg-[#822BFF]/90  shadow-black shadow-lg">
             <Text className="text-4xl   text-white font-[Poppins-SemiBold]">
@@ -259,18 +154,47 @@ const Home = ({navigation}: any) => {
             <Text className="text-sm  text-white font-[Poppins-Medium]">
               Get discount for every order only valid for today
             </Text>
-            {/* <Image
-              source={images.OnBoardinImage2}
-              className="w-full h-40"
-              resizeMode="cover"
-            /> */}
           </View>
-        </View>
+        </View> */}
         <View className="mt-3">
           <Text className="text-lg text-black font-[Poppins-Medium]">
-            Services
+            {!language ? `Services` : `सेवाएं`}
           </Text>
           <View className="flex-row gap-x-3 gap-y-3 flex-wrap justify-center">
+            <View className=" w-1/5 aspect-w-1 aspect-h-1">
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate(navigationString.CONTRACTORLIST, {
+                    service: 'Helper',
+                  })
+                }
+                className="bg-[#00BCD2]/10  w-16 h-16 justify-center items-center rounded-full">
+                <FontAwesome5Icon
+                  size={40}
+                  color={'#00BCD2'}
+                  name="boxes"
+                />
+              </TouchableOpacity>
+              <Text className="text-black font-[Poppins-Medium] text-center text-medium">
+                {!language ?  "Helper" : "सहायक"}
+              </Text>
+            </View>
+
+            <View className=" w-1/5 aspect-w-1 aspect-h-1">
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate(navigationString.CONTRACTORLIST, {
+                    service: 'Plumbing',
+                  })
+                }
+                className="bg-[#4CAC58]/10  w-16 h-16 justify-center items-center rounded-full">
+                <MaterialCommunityIcons size={40} color={'#4CAC58'} name="face-woman-shimmer-outline" />
+              </TouchableOpacity>
+              <Text className="text-black font-[Poppins-Medium] text-center text-medium">
+                {!language ? "Maid" : "नौकरानी"}
+              </Text>
+            </View>
+
             <View className=" w-1/5 aspect-w-1 aspect-h-1">
               <TouchableOpacity
                 onPress={() =>
@@ -286,7 +210,7 @@ const Home = ({navigation}: any) => {
                 />
               </TouchableOpacity>
               <Text className="text-black font-[Poppins-Medium] text-center text-medium">
-                Cleaning
+                {!language ? "Cleaning" : "सफाई"}
               </Text>
             </View>
             <View className=" w-1/5 aspect-w-1 aspect-h-1">
@@ -304,7 +228,7 @@ const Home = ({navigation}: any) => {
                 />
               </TouchableOpacity>
               <Text className="text-black font-[Poppins-Medium] text-center text-medium">
-                Repairing
+                {!language ?"Repairing" : "मरम्मत"}
               </Text>
             </View>
 
@@ -323,7 +247,7 @@ const Home = ({navigation}: any) => {
                 />
               </TouchableOpacity>
               <Text className="text-black font-[Poppins-Medium] text-center text-medium">
-                Painting
+                {!language ?"Painting" :"चित्रकारी"}
               </Text>
             </View>
 
@@ -342,7 +266,7 @@ const Home = ({navigation}: any) => {
                 />
               </TouchableOpacity>
               <Text className="text-black font-[Poppins-Medium] text-center text-medium">
-                Laundery
+                {!language ?"Laundery" : " कपड़े धोन"}
               </Text>
             </View>
             <View className=" w-1/5 aspect-w-1 aspect-h-1">
@@ -360,7 +284,7 @@ const Home = ({navigation}: any) => {
                 />
               </TouchableOpacity>
               <Text className="text-black font-[Poppins-Medium] text-center text-medium">
-                Appliances
+                {!language ? "Appliances" : "उपकरण"}
               </Text>
             </View>
 
@@ -379,7 +303,7 @@ const Home = ({navigation}: any) => {
                 />
               </TouchableOpacity>
               <Text className="text-black font-[Poppins-Medium] text-center text-medium">
-                Shifting
+                {!language ? "Shifting" : "स्थानांतरण"}
               </Text>
             </View>
 
@@ -394,7 +318,7 @@ const Home = ({navigation}: any) => {
                 <MaterialIcons size={40} color={'#4CAC58'} name="plumbing" />
               </TouchableOpacity>
               <Text className="text-black font-[Poppins-Medium] text-center text-medium">
-                Plumbing
+                {!language ? "Plumbing" : "नलकारी"}
               </Text>
             </View>
 
@@ -407,14 +331,14 @@ const Home = ({navigation}: any) => {
                 <Feather size={40} color={'#822BFF'} name="more-horizontal" />
               </TouchableOpacity>
               <Text className="text-black font-[Poppins-Medium] text-center text-medium">
-                More
+                {!language ? "More" : "अधिक"}
               </Text>
             </View>
           </View>
         </View>
         <View>
           <Text className="text-lg text-black font-[Poppins-Medium]">
-            Most Popular Services
+            {!language ? `Most Popular Services` : `सर्वाधिक लोकप्रिय सेवाएँ`}
           </Text>
           <View>
             <FlatList
@@ -437,17 +361,30 @@ const Home = ({navigation}: any) => {
           {/* <WorkerList  navigation={navigation}/> */}
           {contractors?.length > 0 ? (
             contractors.map((item, index) => (
-              <WorkerList key={index} item={item} navigation={navigation} />
+              <WorkerList
+                key={index}
+                item={item}
+                setContractors={setContractors}
+                navigation={navigation}
+                contractors={contractors}
+                fromBookmark={false}
+              />
             ))
           ) : (
             <View className="min-h-fit justify-center items-center mt-20">
-              <Text className="text-center text-black my-auto text-lg font-semibold">
+              <Text className="text-center text-black font-[Poppins-SemiBold] my-auto text-lg font-semibold">
                 {language ? `कोई कर्मचारी नहीं मिला` : `No Worker Found`}
               </Text>
             </View>
           )}
         </View>
       </View>
+      <SearchModal
+        navigation={navigation}
+        modal={searchModal}
+        setModal={setSearchModal}
+        search={search}
+      />
     </ScrollView>
   );
 };
