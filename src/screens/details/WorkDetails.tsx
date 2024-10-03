@@ -30,22 +30,25 @@ import {
 } from 'react-native-image-picker';
 import {useUploadPostMutation} from '../../service/api/userApi';
 import SeeMore from '../../components/seemore/SeeMore';
-import { ADDTOBOOKMARK } from '../../graphql/mutation/bookmark';
-import { showMessage } from 'react-native-flash-message';
+import {ADDTOBOOKMARK} from '../../graphql/mutation/bookmark';
+import {showMessage} from 'react-native-flash-message';
+import {Linking} from 'react-native';
+import ProfileDetailsLoading from '../../components/loading/ProfileDetailsLoading';
 
 const WorkDetails = ({navigation, route}: any) => {
-  const {id , bookmarked} = route?.params;
-  console.log(bookmarked)
+  const {id, bookmarked, canPost} = route?.params;
+  console.log(bookmarked, canPost);
   const {width, height}: any = useWindowDimensions();
   const [contractorDetails, setContractorDetails] = useState<any>();
   let scrollX = useRef(new Animated.Value(0)).current;
   const viewConfig = useRef({viewAreaCoveragePercentThreshold: 50}).current;
   const [loading, setLoading] = useState<boolean>(false);
   const [bookmark1, setBookmark1] = useState<boolean>(bookmarked);
-  const [skip , setSkip]  = useState(0)
+  const [skip, setSkip] = useState(0);
   const [rating, setRating] = useState<number>(1);
   const [text, setText] = useState<string>('');
   const [seeMore, setSeeMore] = useState<boolean>(false);
+  const [skLoading, setSkLoading] = useState<boolean>(false);
   const [reviewsData, setReviewsData] = useState<[]>([]);
   const [posts, setPosts] = useState<any>([]);
   const slideRef: any = useRef(null);
@@ -62,24 +65,24 @@ const WorkDetails = ({navigation, route}: any) => {
   };
 
   console.log(route.params?.canPost);
-  console.log(contractorDetails)
+  console.log(contractorDetails);
   const [bookmark] = useMutation(ADDTOBOOKMARK);
-  
+
   const addToBookmarks = async () => {
     console.log('inside addToBookmarks');
     const res = await bookmark({
-      variables: {contractorId: id , isBookmark : bookmark1  },
+      variables: {contractorId: id, isBookmark: bookmark1},
       context: {headers},
     });
 
     if (res?.data) {
       showMessage({
-        description:"Successfully bookmarks",
+        description: 'Successfully bookmarks',
         message: res?.data?.addToBookmark?.bookmark?.message,
-        type : "success",
-        icon:"success"
+        type: 'success',
+        icon: 'success',
       });
-      setBookmark1(!bookmark1)
+      setBookmark1(!bookmark1);
     }
   };
 
@@ -102,12 +105,14 @@ const WorkDetails = ({navigation, route}: any) => {
 
   // console.log(userData.id === id )
   const getDetails = async () => {
+    setSkLoading(true)
     const res = await details({variables: {id}, context: {headers}});
     console.log(res?.data?.contractorDetails.contractor, 'response');
     if (res?.data?.contractorDetails.contractor) {
       setContractorDetails(res?.data?.contractorDetails.contractor);
       getThisReviews();
     }
+    setSkLoading(false)
   };
 
   const onBoardingCards = ({item}: any) => {
@@ -259,13 +264,13 @@ const WorkDetails = ({navigation, route}: any) => {
       },
       context: {headers},
     });
-    console.log(res?.data , "Post review");
-    if(res?.data){
-      getThisReviews()
+    console.log(res?.data, 'Post review');
+    if (res?.data) {
+      getThisReviews();
     }
   };
 
-  console.log(contractorDetails?.id ,"Contractor Id")
+  console.log(contractorDetails?.id, 'Contractor Id');
   const getThisReviews = async () => {
     const response = await getAllReviewApi({
       variables: {
@@ -348,9 +353,13 @@ const WorkDetails = ({navigation, route}: any) => {
     getPosts();
   }, []);
 
+  const handleCall = () => {
+    Linking.openURL(`tel:${contractorDetails?.phone}`);
+  };
+
   return (
-    <ScrollView>
-      <View style={{flex: 1, marginTop: -1, backgroundColor: 'white'}}>
+   <ScrollView>
+      {skLoading ? <ProfileDetailsLoading/> :<View style={{flex: 1, marginTop: -1, backgroundColor: 'white'}}>
         <View style={{position: 'absolute', top: 10, left: 10, zIndex: 1}}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <IconButton icon={icons.back} iconColor="black" />
@@ -374,7 +383,7 @@ const WorkDetails = ({navigation, route}: any) => {
           />
         </View>
 
-        <ScrollView className="px-5 py-5">
+        <ScrollView className="px-5">
           <View className="flex-row justify-between items-center ">
             <Text className="text-black text-3xl font-[Poppins-Medium]">
               {contractorDetails ? contractorDetails?.service : '-'}
@@ -394,7 +403,7 @@ const WorkDetails = ({navigation, route}: any) => {
             <View className="flex-row items-center gap-2">
               <Image className="h-6 w-6" source={icons.star} />
               <Text className="text-[#3b3941] font-[Poppins-Regular]">
-                5 (0 reviews)
+                {contractorDetails?.rating ? contractorDetails?.rating : 5} ({contractorDetails?.rewies ? contractorDetails?.rewies : 0 } reviews)
               </Text>
             </View>
           </View>
@@ -454,7 +463,7 @@ const WorkDetails = ({navigation, route}: any) => {
             <View className="flex-row flex-wrap justify-center gap-2">
               {posts?.map((item: any, index: number) => {
                 return index > 4 ? (
-                  <></>
+                  <View key={index}></View>
                 ) : (
                   <View
                     key={index}
@@ -503,7 +512,7 @@ const WorkDetails = ({navigation, route}: any) => {
               <View className="flex-row items-center gap-1">
                 <Image className="h-8 w-8 mb-2" source={icons.star} />
                 <Text className="text-[#3b3941] font-[Poppins-SemiBold] text-lg mb-2">
-                  0 (0 reviews)
+                {contractorDetails?.rating ? contractorDetails?.rating : 5} ({contractorDetails?.rewies ? contractorDetails?.rewies : 0} reviews)
                 </Text>
               </View>
               <TouchableOpacity>
@@ -518,63 +527,64 @@ const WorkDetails = ({navigation, route}: any) => {
             isPressed={isPressed}
             handlePress={handlePress}
           /> */}
-
-            <View className="border border-gray-400 p-3 rounded-3xl">
-              <View className="flex-row">
-                <TouchableOpacity onPress={() => setRating(1)}>
-                  <AntDesign
-                    size={25}
-                    color={'#822BFF'}
-                    name={rating >= 1 ? 'star' : 'staro'}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setRating(2)}>
-                  <AntDesign
-                    size={25}
-                    color={'#822BFF'}
-                    name={rating >= 2 ? 'star' : 'staro'}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setRating(3)}>
-                  <AntDesign
-                    size={25}
-                    color={'#822BFF'}
-                    name={rating >= 3 ? 'star' : 'staro'}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setRating(4)}>
-                  <AntDesign
-                    size={25}
-                    color={'#822BFF'}
-                    name={rating >= 4 ? 'star' : 'staro'}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setRating(5)}>
-                  <AntDesign
-                    size={25}
-                    color={'#822BFF'}
-                    name={rating >= 5 ? 'star' : 'staro'}
-                  />
+            {canPost && (
+              <View className="border border-gray-400 p-3 rounded-3xl">
+                <View className="flex-row">
+                  <TouchableOpacity onPress={() => setRating(1)}>
+                    <AntDesign
+                      size={25}
+                      color={'#822BFF'}
+                      name={rating >= 1 ? 'star' : 'staro'}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setRating(2)}>
+                    <AntDesign
+                      size={25}
+                      color={'#822BFF'}
+                      name={rating >= 2 ? 'star' : 'staro'}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setRating(3)}>
+                    <AntDesign
+                      size={25}
+                      color={'#822BFF'}
+                      name={rating >= 3 ? 'star' : 'staro'}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setRating(4)}>
+                    <AntDesign
+                      size={25}
+                      color={'#822BFF'}
+                      name={rating >= 4 ? 'star' : 'staro'}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setRating(5)}>
+                    <AntDesign
+                      size={25}
+                      color={'#822BFF'}
+                      name={rating >= 5 ? 'star' : 'staro'}
+                    />
+                  </TouchableOpacity>
+                </View>
+                <TextInput
+                  mode="outlined"
+                  textColor="#28282B"
+                  className={`mt-5 font-[Poppins-Regular]  ${'bg-gray-100'}`}
+                  placeholder="Post your comment"
+                  onChangeText={text => setText(text)}
+                  value={text}
+                />
+                <TouchableOpacity
+                  onPress={postReviw}
+                  className="bg-[#8d51e1] py-3 w-1/3 self-end mx-3 mt-3 rounded-xl">
+                  <Text className="text-center font-[Poppins-SemiBold] text-base tracking-wider text-white">
+                    Post
+                  </Text>
                 </TouchableOpacity>
               </View>
-              <TextInput
-                mode="outlined"
-                textColor="#28282B"
-                className={`mt-5 font-[Poppins-Regular]  ${'bg-gray-100'}`}
-                placeholder="Post your comment"
-                onChangeText={text => setText(text)}
-                value={text}
-              />
-              <TouchableOpacity
-                onPress={postReviw}
-                className="bg-[#8d51e1] py-3 w-1/3 self-end mx-3 mt-3 rounded-xl">
-                <Text className="text-center font-[Poppins-SemiBold] text-base tracking-wider text-white">
-                  Post
-                </Text>
-              </TouchableOpacity>
-            </View>
+            )}
 
-            <View className="px-3 mt-5">
+            <View className="px-3 mt-5 pb-6">
               {reviewsData.map((item: any, index) => (
                 <View key={index}>
                   <View className="flex-row justify-between " key={index}>
@@ -631,37 +641,45 @@ const WorkDetails = ({navigation, route}: any) => {
                 borderBottomWidth: 1,
                 borderBottomColor: '#CCCCCC',
               }}></View>
-
-            <View className="py-5 justify-center ">
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginBottom: 7,
-                }}
-                className='gap-x-3'
-                >
-
-                  <TouchableOpacity onPress={() => console.log('pressed')} className='border flex-row  py-3 border-[#822BFF] rounded-full flex-1 justify-center items-center'>
-                    <Image source={icons.phone} className='w-5 h-5 mr-2' tintColor={"#822BFF"}/>
-                    <Text className=' text-[#822BFF] text-base tracking-wider'>Call</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() =>
-                    navigation.navigate(navigationString.BOOK, {
-                      contractor: contractorDetails.id,
-                      price: contractorDetails.price,
-                    })
-                  } className=' bg-[#822BFF] rounded-full flex-1 justify-center items-center'>
-                    <Text className=' text-white text-base tracking-wider'>Book Now</Text>
-                  </TouchableOpacity>
-              
-              </View>
-            </View>
           </View>
         </ScrollView>
+        <View className="py-5 justify-center absolute w-full bottom-0 px-4 bg-white mt-2">
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginBottom: 7,
+            }}
+            className="gap-x-3">
+            <TouchableOpacity
+              onPress={handleCall}
+              className="border flex-row  py-3  border-[#822BFF] rounded-full flex-1 justify-center items-center">
+              <Image
+                source={icons.phone}
+                className="w-5 h-5 mr-2"
+                tintColor={'#822BFF'}
+              />
+              <Text className=" text-[#822BFF] text-base tracking-wider">
+                Call
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate(navigationString.BOOK, {
+                  contractor: contractorDetails.id,
+                  price: contractorDetails.price,
+                })
+              }
+              className=" bg-[#822BFF] rounded-full flex-1 justify-center items-center">
+              <Text className=" text-white text-base tracking-wider">
+                Book Now
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
         {loading && <ActivityIndicatorComponent />}
         <SeeMore setModal={setSeeMore} modal={seeMore} posts={posts} />
-      </View>
+      </View>}
     </ScrollView>
   );
 };

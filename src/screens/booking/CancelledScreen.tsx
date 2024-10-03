@@ -11,9 +11,11 @@ import NotFoundBooking from '../../components/common/NotFoundBookings';
 import navigationString from '../../constants/navigation';
 import { useNavigation } from '@react-navigation/core';
 import { formatedDateFunction } from '../../utils/dateFinction';
+import ListLoading from '../../components/loading/ListLoading';
 
 const CancelledScreen = ({ navigation } : { navigation : any}) => {
     const {userData, token, language} = useSelector((state: any) => state?.user);
+    const [skLoading, setSkLoading] = useState<boolean>(false);
   
     const headers = {
       authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
@@ -23,6 +25,7 @@ const CancelledScreen = ({ navigation } : { navigation : any}) => {
   
     const cancelAppointments = async () => {
       console.log('inside upcomingAppointment');
+      setSkLoading(true)
       const res = await my_appointment({
         variables: {take: 20, skip: 0, status: 'cancel'},
         context: {headers},
@@ -31,6 +34,7 @@ const CancelledScreen = ({ navigation } : { navigation : any}) => {
       if (res?.data?.myAppointment) {
         setBookings(res?.data?.myAppointment);
       }
+      setSkLoading(false)
     };
   
     useEffect(() => {
@@ -52,63 +56,68 @@ const CancelledScreen = ({ navigation } : { navigation : any}) => {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       } style={styles.scrollView}>
         {bookings.length > 0 ? (
-          bookings.map((booking: any, index: any) => (
-            <TouchableOpacity  className='' key={index} >
-            <Card className="bg-white" style={styles.card}>
-              <Card.Content style={styles.cardContent}>
-                <Image
-                  source={{uri: `${env.storage}${booking?.contractor?.image}`}}
-                  style={styles.cardImage}
-                />
-                <View style={styles.cardDetails}>
-                  <View>
-                    <Title className="text-black font-[Poppins-SemiBold]">
-                      {booking?.contractor?.service
-                        ? booking?.contractor?.service
-                        : '-'}
-                    </Title>
-                    <Paragraph className="mb-2 text-black font-[Poppins-Regular]">
-                      {booking?.contractor?.fullname
-                        ? booking?.contractor?.fullname
-                        : '-'}
-                    </Paragraph>
-                    <Text style={styles.cancelledStatus} className="bg-red-500">
-                      Cancelled
-                    </Text>
-                  </View>
-                  {/* <View style={styles.messageIcon}>
-                    <View className="bg-purple-300 rounded-full">
-                      <IconButton
-                        iconColor="#822BFF"
-                        size={30}
-                        icon="chat-processing"
-                      />
-                    </View>
-                  </View> */}
-                  <View style={styles.messageIcon}>
+         <ScrollView>
+          {skLoading ? <ListLoading/>:
+
+             bookings.map((booking: any, index: any) => (
+              <TouchableOpacity  className='' key={index} >
+              <TouchableOpacity className="bg-white py-4 rounded-lg" style={styles.card}>
+                <Card.Content style={styles.cardContent}>
+                  <Image
+                    source={{uri: `${env.storage}${booking?.contractor?.image}`}}
+                    style={styles.cardImage}
+                  />
+                  <View style={styles.cardDetails}>
                     <View>
-                      <View className="bg-orange-200 px-2 py-1 rounded-lg">
-                        <Text className="text-orange-600 text-xs font-[Poppins-Medium] tracking-wide">
-                          {formatedDateFunction(booking?.date)}
-                        </Text>
+                      <Title className="text-black font-[Poppins-SemiBold]">
+                        {booking?.contractor?.service
+                          ? booking?.contractor?.service
+                          : '-'}
+                      </Title>
+                      <Paragraph className="mb-2 text-black font-[Poppins-Regular]">
+                        {booking?.contractor?.fullname
+                          ? booking?.contractor?.fullname
+                          : '-'}
+                      </Paragraph>
+                      <Text style={styles.cancelledStatus} className="bg-red-500">
+                        Cancelled
+                      </Text>
+                    </View>
+                    {/* <View style={styles.messageIcon}>
+                      <View className="bg-purple-300 rounded-full">
+                        <IconButton
+                          iconColor="#822BFF"
+                          size={30}
+                          icon="chat-processing"
+                        />
                       </View>
-                      <View className="bg-purple-200 px-2 py-1 rounded-lg mt-1">
-                        <Text className="text-purple-600 text-xs font-[Poppins-Medium] tracking-wide ">
-                          {booking?.time}
-                        </Text>
+                    </View> */}
+                    <View style={styles.messageIcon}>
+                      <View>
+                        <View className="bg-orange-200 px-2 py-1 rounded-lg">
+                          <Text className="text-orange-600 text-xs font-[Poppins-Medium] tracking-wide">
+                            {formatedDateFunction(booking?.date)}
+                          </Text>
+                        </View>
+                        <View className="bg-purple-200 px-2 py-1 rounded-lg mt-1">
+                          <Text className="text-purple-600 text-xs font-[Poppins-Medium] tracking-wide ">
+                            {booking?.time}
+                          </Text>
+                        </View>
                       </View>
                     </View>
                   </View>
-                </View>
-              </Card.Content>
-  
-              {/* <View style={styles.separator}></View>
-              <View className=" flex-row justify-center">
-                <IconButton size={35} icon="chevron-down" />
-              </View> */}
-            </Card>
-            </TouchableOpacity>
-          ))
+                </Card.Content>
+    
+                {/* <View style={styles.separator}></View>
+                <View className=" flex-row justify-center">
+                  <IconButton size={35} icon="chevron-down" />
+                </View> */}
+              </TouchableOpacity>
+              </TouchableOpacity>
+            ))
+          }
+         </ScrollView>
         ) : (
           <NotFoundBooking des={'No canceled orders at the moment.'} />
         )}

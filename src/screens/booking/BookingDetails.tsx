@@ -5,21 +5,18 @@ import MyCalender from '../../components/Calender/MyCalender';
 import {ScrollView} from 'react-native';
 import {useSelector} from 'react-redux';
 import CustomButton from '../../components/common/Button';
-import RazorpayCheckout from 'react-native-razorpay';
 import {BOOKANAPPOINTMENT} from '../../graphql/mutation/appointment';
 import {useMutation} from '@apollo/client';
-import navigationString from '../../constants/navigation'
+import navigationString from '../../constants/navigation';
 import ActivityIndicatorComponent from '../../components/common/ActivityIndicatorComponent';
-
-
+import PhoneWarning from '../../components/updateModal/PhoneWarning';
 
 const BookingDetails = ({navigation, route}: any) => {
-
-  
   const [date, setDate] = React.useState(new Date());
   const [workingHours, setWorkinghours] = React.useState(2);
   const [time, setTime] = React.useState<string>('09:00 AM');
-  const [loading , setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false);
+  const [phoneModal, setPhoneModal] = useState<boolean>(false);
   const [text, setText] = React.useState('');
   console.log(route.params, 'Navigation Data');
   const {userData, token, language} = useSelector((state: any) => state?.user);
@@ -28,8 +25,7 @@ const BookingDetails = ({navigation, route}: any) => {
     authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
   };
 
-  const [bookAppointment, { error, data}] =
-    useMutation(BOOKANAPPOINTMENT);
+  const [bookAppointment, {error, data}] = useMutation(BOOKANAPPOINTMENT);
 
   const decrementWorkingHours = () => {
     if (workingHours > 2) {
@@ -55,7 +51,7 @@ const BookingDetails = ({navigation, route}: any) => {
     //       workingHours,
     //       promoCode : text,
     //     };
-    setLoading(true)
+    setLoading(true);
     bookAnAppointment(data);
 
     console.log(data);
@@ -92,19 +88,26 @@ const BookingDetails = ({navigation, route}: any) => {
   };
 
   const bookAnAppointment = async (data: any) => {
-    setLoading(true)
-    const res = await bookAppointment({
-      variables: {
-        contractorId: route.params.contractor,
-        date: date,
-        time: time,
-      },
-      context: {headers},
-    });
+    if (userData.phone) {
+      setLoading(true);
+      const res = await bookAppointment({
+        variables: {
+          contractorId: route.params.contractor,
+          date: date,
+          time: time,
+        },
+        context: {headers},
+      });
 
-    console.log(res, 'appointment booked');
-    setLoading(false)
-    navigation.navigate(navigationString.BOTTOMTABSSCREEN , { screen : 'Booking'})
+      console.log(res, 'appointment booked');
+      setLoading(false);
+      navigation.navigate(navigationString.BOTTOMTABSSCREEN, {
+        screen: 'Booking',
+      });
+    } else {
+      setPhoneModal(true);
+      return;
+    }
   };
   const ButtonGroup: React.FC<ButtonGroupProps> = ({
     values,
@@ -146,20 +149,16 @@ const BookingDetails = ({navigation, route}: any) => {
 
   return (
     <>
-      <ScrollView>
+      <View className=" h-full">
         <Appbar.Header className="bg-transparent">
-          <Appbar.BackAction onPress={() => navigation.navigate.goBack()} />
-          <Appbar.Content title="Details" color="black" />
-          <Appbar.Action
-            icon="dots-horizontal-circle-outline"
-            onPress={() => {}}
-          />
+          <Appbar.BackAction onPress={() => navigation.goBack()} />
+          <Appbar.Content title="Booking" color="black" />
         </Appbar.Header>
 
-        <View className="px-5">
+        <View className="  h-full  relative">
           {/* Calender */}
 
-          <View className="pb-2 ">
+          <View className="pb-2 px-4 ">
             <Text className="text-black font-extrabold mb-5 text-base">
               Select Date
             </Text>
@@ -168,7 +167,7 @@ const BookingDetails = ({navigation, route}: any) => {
 
           {/* Working Hours */}
 
-          <View className="mb-3 rounded-2xl px-4 py-1 bg-white flex-row items-center justify-between">
+          {/* <View className="mb-3 rounded-2xl px-4 py-1 bg-white flex-row items-center justify-between">
             <View className="flex flex-col">
               <Text className="text-xl mb-1 text-black font-extrabold">
                 Working Hours
@@ -194,12 +193,12 @@ const BookingDetails = ({navigation, route}: any) => {
                 icon="minus-circle"
               />
             </View>
-          </View>
+          </View> */}
 
           {/* Start Time */}
 
           <View className="mb-2">
-            <Text className="text-black font-extrabold text-base">
+            <Text className="text-black mx-4 font-extrabold text-base">
               Choose Start Time
             </Text>
             <ButtonGroup
@@ -218,7 +217,7 @@ const BookingDetails = ({navigation, route}: any) => {
 
           {/* Promo Code */}
 
-          <View>
+          {/* <View>
             <Text className="text-black font-extrabold text-base mb-2">
               Promo Code
             </Text>
@@ -237,19 +236,19 @@ const BookingDetails = ({navigation, route}: any) => {
                 icon="plus-circle"
               />
             </View>
-          </View>
-          <View
-            className="mt-4"
-            style={{borderBottomWidth: 1, borderBottomColor: '#CCCCCC'}}></View>
-          <View className="py-2">
-            <CustomButton
-              text={`You have to pay ₹ ${route?.params?.price}`}
-              onPressFunction={completeThePayment}
-            />
-          </View>
+          </View> */}
         </View>
-      </ScrollView>
-      {loading && <ActivityIndicatorComponent/>}
+        <View className="py-2  w-full absolute bottom-14 px-4 justify-between ">
+          <CustomButton
+            text={`You have to pay ₹${route?.params?.price}`}
+            onPressFunction={completeThePayment}
+          />
+        </View>
+      </View>
+      {phoneModal && (
+        <PhoneWarning setModal={setPhoneModal} navigation={navigation} />
+      )}
+      {loading && <ActivityIndicatorComponent />}
     </>
   );
 };

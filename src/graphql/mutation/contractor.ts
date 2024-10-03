@@ -13,6 +13,8 @@ export const CONTRACTORDETAILS = gql`
         unit
         about
         service
+        rewies
+        rating
       }
     }
   }

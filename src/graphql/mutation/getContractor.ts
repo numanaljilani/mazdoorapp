@@ -9,6 +9,8 @@ mutation($service : String! ,$skip :Float ,$take :Float  ){
       price
       id
       isBookmark
+      rewies
+      rating
       
     }
   }
@@ -21,6 +23,8 @@ mutation searchContractor($search : String! , $skip : Float! , $take : Float!){
     image
     service
     subService
+    rewies
+    rating
   }
 }
 `;

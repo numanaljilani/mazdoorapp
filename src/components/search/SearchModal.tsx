@@ -39,6 +39,7 @@ const SearchModal = ({
     setRecentItems(items => [...items, searchQuery]);
     const jsonValue = await JSON.stringify(recentItems);
     await AsyncStorage.setItem('searchHistory', jsonValue);
+    setModal(false)
     navigation.navigate(navigationString.CONTRACTORLIST, {
       search: searchQuery,
       searchScreen: true,
@@ -55,7 +56,7 @@ const SearchModal = ({
         setRecentItems(JSON.parse(searchHistory));
       }
     })();
-  }, [searchQuery]);
+  }, []);
   return (
     <Modal
       transparent={true}

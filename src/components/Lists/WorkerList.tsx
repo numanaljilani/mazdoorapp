@@ -12,7 +12,7 @@ import {showMessage} from 'react-native-flash-message';
 
 const WorkerList = ({item, navigation, contractors , setContractors , fromBookmark , funct}: any) => {
   const {userData, token, language} = useSelector((state: any) => state?.user);
-
+console.log(userData , ">>>")
   const headers = {
     authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
   };
@@ -48,7 +48,7 @@ const WorkerList = ({item, navigation, contractors , setContractors , fromBookma
       });
     }
   };
-console.log(item.id,"id")
+console.log(item,"id")
   return (
     <TouchableOpacity
       className="shadow  shadow-black bg-white p-3 mt-3 rounded-3xl flex-row mb-1"
@@ -64,7 +64,7 @@ console.log(item.id,"id")
         } rounded-3xl overflow-hidden`}>
         {item?.image || item?.contractor ? (
           <Image
-            source={{uri: `${env.storage}${item?.image ? item?.image : item?.contractor?.image}`}}
+            source={{uri:item?.image && item?.image?.includes('googleusercontent') ? item?.image : item?.contractor?.image && item?.contractor?.image.includes('googleusercontent') ? item?.contractor?.image : `${env.storage}${item?.image ? item?.image : item?.contractor?.image}`}}
             className="h-full w-full"
             resizeMode='cover'
           />
@@ -101,12 +101,12 @@ console.log(item.id,"id")
           <View className="flex-row gap-3">
             <View className="flex-row gap-x-1">
               <FontAwesome5 size={17} color={'#FFB100'} name="star-half-alt" />
-              <Text className="text-gray-500  font-semibold text-sm">5</Text>
+              <Text className="text-gray-500  font-semibold text-sm">{item?.rating ? item?.rating : item?.contractor?.rating ? item?.contractor?.rating : 5}</Text>
             </View>
 
             <View className="border-l" />
             <Text className="text-gray-500 font-semibold text-sm">
-              0 + Reviews
+            {item?.rewies ? item?.rewies : item?.contractor?.rewies ? item?.contractor?.rewies : 0} + Reviews
             </Text>
           </View>
         </View>

@@ -31,7 +31,7 @@ const SocialAuth = ({ navigation , login ,setLoading } : any) => {
       await GoogleSignin.signOut();
       await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
       const userInfo = await GoogleSignin.signIn();
-      console.log(userInfo.user)
+      console.log(userInfo)
       if(userInfo?.user){
         const res = await socialSignup({variables : { email : userInfo.user.email,fullname : userInfo.user.familyName , socialAuthname : "gmail" , image : userInfo.user.photo}});
         console.log(res?.data)
@@ -71,7 +71,7 @@ const SocialAuth = ({ navigation , login ,setLoading } : any) => {
       await GoogleSignin.signOut();
       await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
       const userInfo = await GoogleSignin.signIn();
-      // console.log(userInfo.user)
+      console.log(userInfo.user)
       if(userInfo?.user){
         setLoading(true)
         const res = await socialLogin({variables : { email : userInfo.user.email , socialAuthName : "gmail" , fcmtoken : await messenging().getToken() }});

@@ -18,16 +18,20 @@ import dayjs from 'dayjs';
 import Calender from '../../components/Calender/Calender';
 import CreateContractorModal from '../../components/contractor/ContractorModal';
 import ActivityIndicatorComponent from '../../components/common/ActivityIndicatorComponent';
+import { ME } from '../../graphql/mutation/me';
+import { useMutation } from '@apollo/client';
+import { setUser } from '../../service/slice/userSlice';
 const UpdateProfile = ({navigation}: any) => {
   const {language, token, userData} = useSelector((state: any) => state?.user);
   console.log(userData)
+  const [me] = useMutation(ME);
   const route: any = useRoute();
   const [name, setName] = useState<string>(userData.fullname);
   const [nikname, setNikname] = useState<string>(userData.nikname);
   const [email, setEmail] = useState<string>(userData.email);
   const [address, setAddress] = useState<string>(userData.address);
   const [date, setDate] = useState(dayjs());
-  const [phone, setPhone] = useState<string>('');
+  const [phone, setPhone] = useState<string>(userData.phone);
   const [profile, setProfile] = useState<any>();
   const [loading, setLoading] = useState<boolean>(false);
   const [calenderModal, setCalenderModal] = useState<boolean>(false);
@@ -36,6 +40,8 @@ const UpdateProfile = ({navigation}: any) => {
   const dispatch = useDispatch();
 
   const dataFromScreenA = route.params?.data;
+
+
   // console.log(dataFromScreenA);
 
   const [updateProfile, {data, isError, isSuccess, error, isLoading}] =
@@ -103,14 +109,35 @@ const UpdateProfile = ({navigation}: any) => {
         body: inputFormData,
        token : userData.accessToken,
       });
-      console.log(res, '>>>>>>>>>>');
+      getUpdatedData()
+
       navigation.goBack()
     } catch (error) {
       console.log(error, 'catch');
     }
-
+    // getUpdatedData()
     setLoading(false);
   };
+
+
+  const getUpdatedData = async () =>{
+    console.log("Inside get updated data")
+    const headers = {
+      authorization: `Bearer ${userData.accessToken}`,
+    };
+    try {
+      const res = await me({ context: {headers},});
+      console.log(res.data , ">>>>>>>>>>>>>>>>>")
+  
+      if (res.data?.me.user) {
+        dispatch(setUser(res.data.me.user));
+      }
+    } catch (error) {
+      console.log(error)
+    }
+
+
+  }
 
   useEffect(() => {
     if (isSuccess) {
@@ -124,7 +151,6 @@ const UpdateProfile = ({navigation}: any) => {
     }
   }, [isError]);
 
-  async function create() {}
 
   return (
     <ScrollView contentContainerStyle={{}}>
@@ -231,14 +257,14 @@ const UpdateProfile = ({navigation}: any) => {
               className="bg-[#822BFF]  py-3 rounded-full  flex-1"
               onPress={() => setCreateContractorMoadal(true)}>
               <Text className="text-white font-[Poppins-Regular] tracking-widest text-center text-lg ">
-                {language ? `जरी राखे` : ` contractor`}
+                {language ? `ठेकेदार` : ` contractor`}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               className="bg-[#822BFF]  py-3 rounded-full  flex-1 gap-x-2"
               onPress={completeProfile}>
               <Text className="text-white font-[Poppins-Regular] tracking-widest text-center text-lg ">
-                {language ? `जरी राखे` : `Update`}
+                {language ? `अद्यतन` : `Update`}
               </Text>
             </TouchableOpacity>
 

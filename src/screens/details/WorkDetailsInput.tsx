@@ -23,12 +23,13 @@ import {useSelector} from 'react-redux';
 import ButtonGroup from '../../components/common/ButtonGroup';
 import icons from '../../constants/icons';
 import {units} from '../../constants/unit';
-import {BECOMEACONTRACTOR} from '../../graphql/mutation/contractor';
+import {BECOMEACONTRACTOR, CONTRACTORDETAILS} from '../../graphql/mutation/contractor';
 import {useMutation} from '@apollo/client';
 import {showMessage} from 'react-native-flash-message';
 import {useCompleteContractorRegistrationMutation} from '../../service/api/userApi';
 import navigationString from '../../constants/navigation';
 import ActivityIndicatorComponent from '../../components/common/ActivityIndicatorComponent';
+import PhoneWarning from '../../components/updateModal/PhoneWarning';
 
 type SubService = {
   id: string;
@@ -41,11 +42,13 @@ const WorkDetailsInput = ({navigation}: any) => {
   );
   const [service, setService] = useState('');
   const [unit, setUnit] = useState('');
-  const [price, setPrice] = useState<string>('');
+  const [contractorDetails, setContractorDetails] = useState<any>();
+  const [price, setPrice] = useState<string>(contractorDetails?.price ||'');
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [about, setAbout] = useState('');
   const [selectedSubServices, setSelectedSubServices] = useState<string[]>([]);
+  const [phoneModal, setPhoneModal] = useState<boolean>(false);
   const [imageUri, setImageUri] = useState<string | null>(null);
   // const [becomeContractor, {data, loading}] = useMutation(BECOMEACONTRACTOR);
   const [becomeContractor, {data, isSuccess, isError, error}] =
@@ -57,6 +60,7 @@ const WorkDetailsInput = ({navigation}: any) => {
   const headers = {
     authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
   };
+  const [details] = useMutation(CONTRACTORDETAILS);
 
   const pickImage = () => {
     const options: ImageLibraryOptions = {
@@ -73,6 +77,7 @@ const WorkDetailsInput = ({navigation}: any) => {
     });
   };
 
+  console.log(userData , "user data")
   const removeImage = () => {
     setImageUri(null);
   };
@@ -82,6 +87,10 @@ const WorkDetailsInput = ({navigation}: any) => {
   };
 
   const registerContractor = async () => {
+    if(!userData.phone){
+      setPhoneModal(true)
+      return
+    }
     if (!service || !price || !unit || !subServices) {
       showMessage({
         message: 'All fields are required',
@@ -92,7 +101,7 @@ const WorkDetailsInput = ({navigation}: any) => {
     service && inputFormData.append('service', service);
     subServices &&
       inputFormData.append('subServices', [
-        subServices.map(sub => sub.english),
+        subServices.length > 0 ? subServices?.map(sub => sub.english) : service,
       ]);
     price && inputFormData.append('price', price);
     unit && inputFormData.append('unit', unit);
@@ -100,36 +109,60 @@ const WorkDetailsInput = ({navigation}: any) => {
     inputFormData.append('token', userData.accessToken);
 
     setIsLoading(true);
-    const res = await becomeContractor({
+    const res :any = await becomeContractor({
       body: inputFormData,
       token: userData.accessToken,
     });
     setIsLoading(false);
-
-    console.log(res, 'response');
+    if(res.data){
+      navigation.navigate(navigationString.CONTRACTORDETAILS, {
+        id: res?.data?.user.id,
+      });
+    }else{
+      navigation.goBack();
+    }
   };
 
-  useEffect(() => {
-    if (isSuccess) {
-      navigation.navigate(navigationString.CONTRACTORDETAILS, {
-        id: data.user.id,
-      });
+  const getDetails = async () => {
+    if(userData.isContractor){
+      const res = await details({variables: {id : userData.id}, context: {headers}});
+      
+      if (res?.data?.contractorDetails.contractor) {
+        setContractorDetails(res?.data?.contractorDetails.contractor);
+      
+      }
     }
-  }, [isSuccess]);
+       
+  };
+
+  useEffect(()=>{
+    getDetails()
+  },[])
+  useEffect(()=>{
+    if(contractorDetails?.price){
+
+      setPrice(contractorDetails?.price)
+    }
+  },[contractorDetails])
+const profile = async () =>{
+  navigation.navigate(navigationString.CONTRACTORDETAILS, {
+    id: userData.id,
+  });
+}
+
 
   return (
     <>
-      <Provider>
-        <TouchableWithoutFeedback onPress={dismissKeyboard}>
+      
+       
           <ScrollView style={styles.container}>
             <View className="min-h-screen ">
-              <View className="bg-white justify-center py-6">
+              <View className="bg-white justify-center py-6 px-5">
                 <Text className="text-xl font-[Poppins-SemiBold] text-center  text-purple-700 ">
-                  Contractor Registration
+                  {language ? "ठेकेदार पंजीकरण" : "Contractor Registration"}
                 </Text>
                 <Text className="text-sm font-[Poppins-Regular] text-center  text-gray-500 ">
-                  Join us as a service provider to expand your reach, manage
-                  clients easily, and grow your business effortlessly.
+                {language ? "अपनी पहुंच बढ़ाने, ग्राहकों को आसानी से प्रबंधित करने और अपने व्यवसाय को सहजता से बढ़ाने के लिए एक सेवा प्रदाता के रूप में हमसे जुड़ें।" :"Join us as a service provider to expand your reach, manage clients easily, and grow your business effortlessly."}
                 </Text>
               </View>
               <Card style={styles.card}>
@@ -139,7 +172,7 @@ const WorkDetailsInput = ({navigation}: any) => {
                       selectedValue={service}
                       onValueChange={itemValue => setService(itemValue)}
                       style={styles.picker}>
-                      <Picker.Item label="Select Service" value="" />
+                      <Picker.Item label={userData.isContractor ? contractorDetails?.service:"Select Service"} value="" />
                       {services.map((item, index) => (
                         <Picker.Item
                           key={index}
@@ -149,47 +182,49 @@ const WorkDetailsInput = ({navigation}: any) => {
                       ))}
                     </Picker>
                   </View>
-                  {subServices[0] && (
-                    <View style={styles.multiSelectContainer}>
-                      <MultiSelect
-                        items={subServices[0]?.subservices}
-                        uniqueKey="english"
-                        onSelectedItemsChange={selectedItems => {
-                          console.log(selectedItems, 'selected items');
-                          setSelectedSubServices(selectedItems);
-                        }}
-                        selectedItems={selectedSubServices}
-                        selectText="Select Sub-Services"
-                        searchInputPlaceholderText="Search Sub-Services..."
-                        onChangeInput={text => console.log(text, '>>>>')}
-                        displayKey={language ? 'english' : 'english'}
-                        submitButtonText="Add"
-                        styleMainWrapper={styles.multiSelect}
-                        styleListContainer={styles.multiSelectList}
-                        styleDropdownMenuSubsection={styles.multiSelectDropdown}
-                        styleTextDropdown={styles.multiSelectTextDropdown}
-                        styleSelectorContainer={
-                          styles.multiSelectSelectorContainer
-                        }
-                        submitButtonColor="#822BFF"
-                      />
-                      {/* <View style={styles.selectedItemsContainer}>
-                                    {selectedSubServices.map((serviceId) => {
-                                        const service = subServices.find(s => s.id === serviceId);
-                                        return (
-                                            <View key={serviceId} style={styles.selectedItem}>
-                                                <Text style={styles.selectedItemText}>{service?.name}</Text>
-                                                <TouchableOpacity onPress={() => deselectSubService(serviceId)}>
-                                                    <Icon ico size={20} source="delete-outline" />
-                                                </TouchableOpacity>
-                                            </View>
-                                        );
-                                    })}
-                                </View> */}
-                    </View>
-                  )}
+                  {
+                  // subServices[0] && (
+                    // <View style={styles.multiSelectContainer}>
+                    //   <MultiSelect
+                    //     items={subServices[0]?.subservices}
+                    //     uniqueKey="english"
+                    //     onSelectedItemsChange={selectedItems => {
+                    //       console.log(selectedItems, 'selected items');
+                    //       setSelectedSubServices(selectedItems);
+                    //     }}
+                    //     selectedItems={selectedSubServices}
+                    //     selectText="Select Sub-Services"
+                    //     searchInputPlaceholderText="Search Sub-Services..."
+                    //     onChangeInput={text => console.log(text, '>>>>')}
+                    //     displayKey={language ? 'english' : 'english'}
+                    //     submitButtonText="Add"
+                    //     styleMainWrapper={styles.multiSelect}
+                    //     styleListContainer={styles.multiSelectList}
+                    //     styleDropdownMenuSubsection={styles.multiSelectDropdown}
+                    //     styleTextDropdown={styles.multiSelectTextDropdown}
+                    //     styleSelectorContainer={
+                    //       styles.multiSelectSelectorContainer
+                    //     }
+                    //     submitButtonColor="#822BFF"
+                    //   />
+                    //   {/* <View style={styles.selectedItemsContainer}>
+                    //                 {selectedSubServices.map((serviceId) => {
+                    //                     const service = subServices.find(s => s.id === serviceId);
+                    //                     return (
+                    //                         <View key={serviceId} style={styles.selectedItem}>
+                    //                             <Text style={styles.selectedItemText}>{service?.name}</Text>
+                    //                             <TouchableOpacity onPress={() => deselectSubService(serviceId)}>
+                    //                                 <Icon ico size={20} source="delete-outline" />
+                    //                             </TouchableOpacity>
+                    //                         </View>
+                    //                     );
+                    //                 })}
+                    //             </View> */}
+                    // </View>
+                  // )
+                  }
                   <TextInput
-                    label="Price"
+                    label={ "Price"}
                     textColor="#28282B"
                     mode="outlined"
                     value={price}
@@ -202,7 +237,7 @@ const WorkDetailsInput = ({navigation}: any) => {
                       selectedValue={unit}
                       onValueChange={itemValue => setUnit(itemValue)}
                       style={styles.picker}>
-                      <Picker.Item label="Select Unit" value={unit} />
+                      <Picker.Item label={userData.isContractor ? contractorDetails?.unit :"Select Unit"} value={unit} />
                       {units.map((item, index) => (
                         <Picker.Item
                           key={index}
@@ -214,7 +249,7 @@ const WorkDetailsInput = ({navigation}: any) => {
                   </View>
 
                   <TextInput
-                    label="About"
+                    label={userData.isContractor ? contractorDetails?.about : "About"}
                     textColor="#28282B"
                     mode="outlined"
                     value={about}
@@ -230,13 +265,21 @@ const WorkDetailsInput = ({navigation}: any) => {
                       Continue
                     </Text>
                   </TouchableOpacity>
+                  {userData.isContractor && <TouchableOpacity
+                    onPress={profile}
+                    className="bg-[#822BFF]  py-3 rounded-full my-2">
+                    <Text className="text-white font-[Poppins-Medium] tracking-widest text-center text-lg ">
+                      View Profile
+                    </Text>
+                  </TouchableOpacity>}
                 </Card.Content>
               </Card>
             </View>
             {isLoading && <ActivityIndicatorComponent />}
           </ScrollView>
-        </TouchableWithoutFeedback>
-      </Provider>
+        {phoneModal &&  <PhoneWarning navigation={navigation} setModal={setPhoneModal}/>}
+        
+      
     </>
   );
 };

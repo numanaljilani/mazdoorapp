@@ -66,10 +66,18 @@ const Profile = ({navigation}: any) => {
   const [isEnabled, setIsEnabled] = useState<boolean>(language);
   const [isEnabledDark, setIsEnabledDark] = useState(false);
 
-  const toggleSwitch = () => {
+  const toggleSwitch = async () => {
     // setIsEnabled(previousState => !previousState);
     dispatch(setLanguage(!language))
+    const jsonValue = JSON.stringify(!language);
+    await AsyncStorage.setItem('lang', jsonValue);
+   const lang  =  await AsyncStorage.getItem('lang')
+   console.log(JSON.parse(lang!) , ">>>>>>")
+   console.log(typeof(JSON.parse(lang!) ), ">>>>>>")
+    
   };
+
+
   const toggleDark = () => {
     setIsEnabledDark(previousState => !previousState);
   };
@@ -245,7 +253,7 @@ const Profile = ({navigation}: any) => {
           {userData?.image ? (
             <Image
               source={{
-                uri: `${env.storage}${userData?.image}`,
+                uri: userData.image.includes('googleusercontent')? userData.image :`${env.storage}${userData?.image}`,
               }}
               className="w-full h-full"
             />

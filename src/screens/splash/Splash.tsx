@@ -25,21 +25,20 @@ const Splash = ({navigation}: {navigation: any}) => {
   const navigateToAutorizedScreen = async () => {
     // navigation.navigate(navigationString.ONBOARDINGSCREEN);
     const token: string | null = await AsyncStorage.getItem('accessToken');
+    const lang  =  await AsyncStorage.getItem('lang')
+    
 
-    const language = await AsyncStorage.getItem('language');
-    JSON.parse(language!)
-      ? dispatch(setLanguage(true))
-      : dispatch(setLanguage(false));
+    dispatch(setLanguage(JSON.parse(lang!))) 
+
       const onboarding: string | null = await AsyncStorage.getItem(
         'onboarding',
       );
       console.log(onboarding , "onboarding")
     if (!token) {
 
+      const checkOnBoarding = JSON.parse(onboarding!);
       if (onboarding) {
-        const checkOnBoarding = JSON.parse(onboarding);
-
-        checkOnBoarding.onboardin
+        !checkOnBoarding.onboarding
           ? navigation.navigate(navigationString.ONBOARDINGSCREEN)
           : navigation.navigate(navigationString.LOGINSCREEN);
       } else {
@@ -74,8 +73,6 @@ const Splash = ({navigation}: {navigation: any}) => {
       navigation.navigate(navigationString.LOGINSCREEN);
     }
   };
-
-  useEffect(()=>{},[])
   useEffect(() => {
     navigateToAutorizedScreen();
   }, []);

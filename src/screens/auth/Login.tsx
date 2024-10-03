@@ -118,7 +118,7 @@ const Login = ({navigation}: {navigation: any}) => {
         />
 
         <TouchableOpacity
-          // onPress={() => navigation.navigate('ForgetPassword')}
+          onPress={() => navigation.navigate('ForgetPassword')}
           className=" justify-center items-center py-4">
           <Text className="text-[#822BFF] font-[Poppins-Medium]  tracking-wider">
             {language ? `पासवर्ड भूल गए` : `Forget the password ?`}

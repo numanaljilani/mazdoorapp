@@ -71,6 +71,10 @@ mutation sociaSignup($fullname : String! , $email : String! ,$socialAuthname : S
       image
       nikname
       isContractor
+              price
+        unit
+        about
+        service
     }
   }
 }

@@ -1,4 +1,9 @@
 {
   "name": "mazdoor",
-  "displayName": "mazdoor"
+  "displayName": "mazdoor",
+  
+    "react-native-google-mobile-ads": {
+      "android_app_id": "ca-app-pub-8403198178664119~6919907508"
+    }
+  
 }

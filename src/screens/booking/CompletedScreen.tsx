@@ -11,9 +11,11 @@ import env from '../../env';
 import { TouchableOpacity } from 'react-native';
 import navigationString from '../../constants/navigation';
 import { formatedDateFunction } from '../../utils/dateFinction';
+import ListLoading from '../../components/loading/ListLoading';
 
 const CompletedScreen = ({navigation } : any) => {
     const [bookings, setBookings] = useState<any>([]);
+    const [skLoading, setSkLoading] = useState<boolean>(false);
 
     const {userData, token, language} = useSelector((state: any) => state?.user);
   
@@ -24,6 +26,7 @@ const CompletedScreen = ({navigation } : any) => {
   
     const completedAppointments = async () => {
       console.log('inside upcomingAppointments');
+      setSkLoading(true)
       const res = await my_appointment({
         variables: {take: 20, skip: 0, status: 'completed'},
         context: {headers},
@@ -32,6 +35,7 @@ const CompletedScreen = ({navigation } : any) => {
       if (res?.data?.myAppointment) {
         setBookings(res?.data?.myAppointment);
       }
+      setSkLoading(false)
     };
 console.log(`${env.storage}${bookings[0]?.contractor?.image}`)
     useEffect(() => {
@@ -45,15 +49,16 @@ console.log(`${env.storage}${bookings[0]?.contractor?.image}`)
       completedAppointments();
       setRefreshing(false);
     }, []);
+
   
 
     return (
       <ScrollView          refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       } style={styles.scrollView}>
-        {bookings.length > 0 ? (
+        { skLoading ? <ListLoading/>:bookings.length > 0 ? (
           bookings.map((booking: any, index: any) => (
-            <Card className="bg-white" key={index} style={styles.card}>
+            <Card className="bg-white " key={index} style={styles.card}>
               <Card.Content style={styles.cardContent}>
                 <Image source={{uri : `${env.storage}${booking?.contractor?.image}`}} style={styles.cardImage} />
                 <View style={styles.cardDetails}>
@@ -101,7 +106,7 @@ console.log(`${env.storage}${bookings[0]?.contractor?.image}`)
               <View className=" flex-row justify-end px-4">
                 {/* <IconButton size={35} icon="chevron-down" /> */}
                 <TouchableOpacity
-                // onPress={()=>navigation.navigate(navigationString.CONTRACTORDETAILS,{ id : booking?.contractor.id, canPost : true})}
+                onPress={()=>navigation.navigate(navigationString.CONTRACTORDETAILS,{ id : booking?.contractor.id, canPost : true})}
                   className="px-6 py-3 my-2 rounded-lg bg-purple-200">
                   <Text className="text-xs text-purple-600 font-[Poppins-SemiBold]">
                     View Profile

@@ -39,6 +39,7 @@
     "react-native-fbsdk-next": "^13.0.0",
     "react-native-flash-message": "^0.4.2",
     "react-native-gesture-handler": "^2.14.1",
+    "react-native-google-mobile-ads": "^14.2.1",
     "react-native-image-picker": "^7.1.2",
     "react-native-multi-slider": "^0.3.6",
     "react-native-multiple-select": "^0.5.12",

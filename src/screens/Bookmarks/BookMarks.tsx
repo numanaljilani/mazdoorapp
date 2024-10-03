@@ -11,11 +11,14 @@ import {useMutation} from '@apollo/client';
 import {services} from '../../constants/services';
 import ServicesList from '../../components/Lists/ServicesList';
 import NotFoundBooking from '../../components/common/NotFoundBookings';
+import ListLoading from '../../components/loading/ListLoading';
 
 const BookMarks = ({navigation}: any) => {
   const {userData, token, language} = useSelector((state: any) => state?.user);
   const [service, setService] = useState<any>('Electrician');
   const [myBookmarkList, setMyBookmarList] = useState<any>([]);
+  const [skLoading , setSkLoading] = useState<boolean>(true)
+  const [skip , setSkip] = useState(0)
 
   const headers = {
     authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
@@ -24,10 +27,12 @@ const BookMarks = ({navigation}: any) => {
   const [myBookmarks, {loading, error, data}] = useMutation(MYBOOKMARK);
 
   const getBookmarks = async () => {
+    if(skip < 20) setSkLoading(true)
     const res = await myBookmarks({
       variables: {service, take: 20, skip: 0},
       context: {headers},
     });
+    setSkLoading(false)
     console.log(res.data)
     if (res?.data?.myBookmark) {
       setMyBookmarList(res?.data?.myBookmark);
@@ -85,7 +90,7 @@ const BookMarks = ({navigation}: any) => {
           </View>
         </View>
         {/* <WorkerList /> */}
-       { myBookmarkList.length > 0 ?  <FlatList
+       {skLoading ? <ListLoading/> : myBookmarkList.length > 0 ?  <FlatList
         data={myBookmarkList}
         keyExtractor={(item , index) => index.toString()}
         renderItem={(item)=><WorkerList item={item.item} navigation={navigation} contractors ={myBookmarkList} setContractors={setMyBookmarList} fromBookmark ={true} funct={getBookmarks}/>}

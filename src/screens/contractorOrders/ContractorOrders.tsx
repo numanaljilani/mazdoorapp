@@ -37,6 +37,8 @@ import RejectOrderModal from '../../components/OrdersModals/RejectOrderModal';
 import OrderSuccessfullModal from '../../components/worker/OrderSuccessfullModal';
 import ActivityIndicatorComponent from '../../components/common/ActivityIndicatorComponent';
 import icons from '../../constants/icons';
+import { Linking } from 'react-native';
+import ListLoading from '../../components/loading/ListLoading';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -92,9 +94,11 @@ const Upcoming = () => {
   };
   const [my_appointment, {error, data}] = useMutation(CONTRACTORAPPOITMENTS);
   const [reject_appointment] = useMutation(REJECTCONTRACTORAPPOITMENTS);
+  const [skip , setSkip] = useState(0)
 
   const upcomingAppointments = async () => {
     console.log('inside upcomingAppointments');
+    if(skip < 20) setSkLoading(true)
     const res = await my_appointment({
       variables: {take: 20, skip: 0, status: 'upcoming'},
       context: {headers},
@@ -103,6 +107,7 @@ const Upcoming = () => {
     if (res?.data?.contractorAppointment) {
       setBookings(res?.data?.contractorAppointment);
     }
+    setSkLoading(false)
   };
 
   useEffect(() => {
@@ -113,6 +118,7 @@ const Upcoming = () => {
   const [order, setOrder] = useState<any>();
   const [success, setSuccess] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [skLoading, setSkLoading] = useState<boolean>(false);
 
   const RejectBooking = async () => {
     setModal(false);
@@ -138,17 +144,21 @@ const Upcoming = () => {
     upcomingAppointments();
     setRefreshing(false);
   }, []);
-
+  const handleCall = (phone : any) => {
+    Linking.openURL(`tel:${phone}`);
+  };
 
   return (
     <ScrollView          refreshControl={
       <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
     } style={styles.scrollView}>
-      {bookings.length > 0 ? (
+      {skLoading? <ListLoading/> :
+      
+      bookings.length > 0 ? (
         bookings.map((booking: any, index: any) => (
           <Card className="bg-white mx-2 mt-3" key={index} style={styles.card}>
             <Card.Content style={styles.cardContent}>
-              <Image source={{uri : `${env.storage}${booking?.user?.image}`}} style={styles.cardImage} />
+              <Image source={{uri :booking?.user?.image?.includes('google') ?booking?.user?.image :`${env.storage}${booking?.user?.image}`}} style={styles.cardImage} />
               <View style={styles.cardDetails}>
                 <View>
                   <Title className="text-black font-extrabold">
@@ -188,10 +198,7 @@ const Upcoming = () => {
             <View className=" flex-row justify-end gap-x-5 px-4">
               {/* <IconButton size={35} icon="chevron-down" /> */}
               <TouchableOpacity
-                onPress={() => {
-                  setModal(true);
-                  setOrder(booking);
-                }}
+                onPress={()=>handleCall(booking?.user?.phone)}
                 // onPress={()=>navigation.navigate(navigationString.CONTRACTORDETAILS,{ id : booking?.contractor.id, canPost : true})}
                 className="px-6 py-3 my-2 rounded-lg flex-row  items-center justify-center bg-green-200">
                   <Image source={icons.phone} className='w-5 h-5 mr-2' tintColor={'#16a34a'}/>
@@ -243,9 +250,11 @@ const Completed = () => {
   const [my_appointment, {loading, error, data}] = useMutation(
     CONTRACTORAPPOITMENTS,
   );
+  const [skLoading, setSkLoading] = useState<boolean>(false);
 
   const completedAppointments = async () => {
     console.log('inside upcomingAppointments');
+    setSkLoading(true)
     const res = await my_appointment({
       variables: {take: 20, skip: 0, status: 'completed'},
       context: {headers},
@@ -254,6 +263,7 @@ const Completed = () => {
     if (res?.data?.myAppointment) {
       setBookings(res?.data?.myAppointment);
     }
+    setSkLoading(false)
   };
 
   useEffect(() => {
@@ -272,7 +282,7 @@ const Completed = () => {
     <ScrollView          refreshControl={
       <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
     } style={styles.scrollView}>
-      {bookings.length > 0 ? (
+      {skLoading ? <ListLoading/>:bookings.length > 0 ? (
         bookings.map((booking: any, index: any) => (
           <Card className="bg-white" key={index} style={styles.card}>
             <Card.Content style={styles.cardContent}>
@@ -327,9 +337,11 @@ const Cancelled = () => {
   };
   const [my_appointment, {loading, error, data}] = useMutation(MYAPPOINTMENT);
   const [bookings, setBookings] = useState<any>([]);
+  const [skLoading, setSkLoading] = useState<boolean>(false);
 
   const cancelAppointments = async () => {
     console.log('inside upcomingAppointments');
+    setSkLoading(true)
     const res = await my_appointment({
       variables: {take: 20, skip: 0, status: 'reject'},
       context: {headers},
@@ -339,6 +351,7 @@ const Cancelled = () => {
       setBookings(res?.data?.myAppointment);
       console.log(res?.data?.myAppointment);
     }
+    setSkLoading(false)
   };
 
   useEffect(() => {
@@ -357,7 +370,7 @@ const Cancelled = () => {
     <ScrollView          refreshControl={
       <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
     } style={styles.scrollView}>
-      {bookings.length > 0 ? (
+      {skLoading ? <ListLoading/>: bookings.length > 0 ? (
         bookings.map((booking: any, index: any) => (
           <Card className="bg-white" key={index} style={styles.card}>
             <Card.Content style={styles.cardContent}>

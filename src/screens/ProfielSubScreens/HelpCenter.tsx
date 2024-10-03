@@ -1,4 +1,4 @@
-import {View, Text, ScrollView, TouchableOpacity} from 'react-native';
+import {View, Text, ScrollView, TouchableOpacity, Linking} from 'react-native';
 import React from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ContactUsBtn from '../../components/profile/ContactUsBtn';
@@ -41,7 +41,9 @@ const HelpCenter = () => {
           </TouchableOpacity>
         </View>
         <View>
-          <ContactUsBtn text="Customer Service" icon={'headset'} />
+          <ContactUsBtn text="Customer Service" icon={'headset'}  onPress={()=>{
+            Linking.openURL('https://www.mazdur.in/contact');
+          }}/>
           <ContactUsBtn text="WhatsApp" icon={'logo-whatsapp'} />
           <ContactUsBtn text="Website" icon={'planet-outline'} />
           <ContactUsBtn text="Facebook" icon={'logo-facebook'} />
@@ -54,3 +56,6 @@ const HelpCenter = () => {
 };
 
 export default HelpCenter;
+
+
+// mazdur@123

@@ -24,6 +24,7 @@ import {retry} from '@reduxjs/toolkit/query';
 import OrderSuccessfullModal from '../../components/worker/OrderSuccessfullModal';
 import ActivityIndicatorComponent from '../../components/common/ActivityIndicatorComponent';
 import navigationString from '../../constants/navigation';
+import ListLoading from '../../components/loading/ListLoading';
 
 const UpcomingScreen = ({navigation}: any) => {
   const {userData, token, language} = useSelector((state: any) => state?.user);
@@ -31,6 +32,7 @@ const UpcomingScreen = ({navigation}: any) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [bookings, setBookings] = useState<any>([]);
   const [order, setOrder] = useState<any>({});
+  const [skLoading, setSkLoading] = useState<boolean>(false);
 
   const [cancellSuccessfull, setCancellSuccessfull] = useState<boolean>(false);
   const focused = useIsFocused();
@@ -41,6 +43,7 @@ const UpcomingScreen = ({navigation}: any) => {
   const [cancel_appointment] = useMutation(CANCELAPPOINTMENT);
   const upcomingAppointments = async () => {
     console.log('inside upcomingAppointments hello');
+    setSkLoading(true)
     const res = await my_appointment({
       variables: {take: 20, skip: 0, status: 'pending'},
       context: {headers},
@@ -49,6 +52,7 @@ const UpcomingScreen = ({navigation}: any) => {
     if (res?.data?.myAppointment) {
       setBookings(res?.data?.myAppointment);
     }
+    setSkLoading(false)
   };
 
   useEffect(() => {
@@ -87,22 +91,25 @@ const UpcomingScreen = ({navigation}: any) => {
 
   return (
     <>
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        style={styles.scrollView}>
-        {bookings.length > 0 ? (
-          bookings.map((booking: any, index: any) => (
+      <View
+>
+        { skLoading ? <ListLoading/>: bookings.length > 0 ? (
+               <ScrollView
+               refreshControl={
+                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+               }
+               contentContainerStyle={{paddingBottom : 20}}
+               style={styles.scrollView}>
+          {bookings.map((booking: any, index: any) => (
             <TouchableOpacity
               key={index}
-              className="bg-white"
+              className="mt-2"
               onPress={() =>
                 navigation.navigate(navigationString.CONTRACTORDETAILS, {
                   id: booking.contractor.id,
                 })
               }>
-              <Card className="bg-white" style={styles.card}>
+              <TouchableOpacity className="bg-white rounded-xl shadow-xl shadow-white" style={styles.card}>
                 <Card.Content style={styles.cardContent}>
                   <Image
                     source={{
@@ -158,13 +165,13 @@ const UpcomingScreen = ({navigation}: any) => {
                     </Text>
                   </TouchableOpacity>
                 </View>
-              </Card>
+              </TouchableOpacity>
             </TouchableOpacity>
-          ))
-        ) : (
+          ))}
+          </ScrollView>) : (
           <NotFoundBooking desc={'No scheduled orders currently.'} />
         )}
-      </ScrollView>
+      </View>
       <CancelOrderModal
         setModal={setModal}
         cancelBooking={cancelBooking}
@@ -202,6 +209,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     padding: 10,
+    paddingBottom:50
   },
   card: {
     // marginBottom: 20,

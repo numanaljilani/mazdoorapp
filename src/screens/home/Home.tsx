@@ -27,11 +27,15 @@ import {GET_CONTRACTOR_BY_SERVICE} from '../../graphql/mutation/getContractor';
 import SearchModal from '../../components/search/SearchModal';
 import {useIsFocused} from '@react-navigation/native';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import ListLoading from '../../components/loading/ListLoading';
+import PhoneWarning from '../../components/updateModal/PhoneWarning';
 
 const Home = ({navigation}: any) => {
   const [contractors, setContractors] = useState([]);
   const [service, setService] = useState<string>('Electrician');
   const [searchModal, setSearchModal] = useState<boolean>(false);
+  const [skLoading , setSkLoading] = useState<boolean>(true)
+  const [skip , setSkip] = useState(0)
 
   const isFocused = useIsFocused();
 
@@ -46,10 +50,12 @@ const Home = ({navigation}: any) => {
   );
 
   const getContractorsByService = async () => {
+    if(skip < 20) setSkLoading(true)
     await get_contractor_by_service({
       variables: {service, take: 20, skip: 0},
       context: {headers},
     });
+    setSkLoading(false)
   };
 
   useEffect(() => {
@@ -61,6 +67,7 @@ const Home = ({navigation}: any) => {
   useEffect(() => {
     if (loading) return;
     if (data) {
+      console.log(data?.getContractor)
       setContractors(data?.getContractor);
     }
   }, [data]);
@@ -78,7 +85,9 @@ const Home = ({navigation}: any) => {
       // You can also refresh your data here
     }, 2000);
   }, []);
-  // console.log(`${env.storage}${userData.image}`)
+
+
+  console.log(`${userData.image}`)
   return (
     <ScrollView
       refreshControl={
@@ -90,7 +99,7 @@ const Home = ({navigation}: any) => {
             <View className="  rounded-full overflow-hidden">
               {userData.image ? (
                 <Image
-                  source={{uri: `${env.storage}${userData.image}`}}
+                  source={{uri: userData?.image?.includes('googleusercontent') ? `${userData?.image}`: `${env.storage}${userData.image}`}}
                   className="w-10 h-10 "
                   resizeMode="cover"
                 />
@@ -359,8 +368,8 @@ const Home = ({navigation}: any) => {
         </View>
         <View className=" ">
           {/* <WorkerList  navigation={navigation}/> */}
-          {contractors?.length > 0 ? (
-            contractors.map((item, index) => (
+          {skLoading ?  <ListLoading/> :   contractors?.length > 0 ? (
+           contractors.map((item, index) => (
               <WorkerList
                 key={index}
                 item={item}
@@ -377,6 +386,7 @@ const Home = ({navigation}: any) => {
               </Text>
             </View>
           )}
+       
         </View>
       </View>
       <SearchModal
@@ -385,6 +395,7 @@ const Home = ({navigation}: any) => {
         setModal={setSearchModal}
         search={search}
       />
+      {/* <PhoneWarning/> */}
     </ScrollView>
   );
 };

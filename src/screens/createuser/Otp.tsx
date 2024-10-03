@@ -3,7 +3,7 @@ import {
   View,
   Text,
   TextInput,
-  Button,
+
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
@@ -11,6 +11,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {useVerifyOtpMutation} from '../../service/api/userApi';
 import {useSelector} from 'react-redux';
 import ActivityIndicatorComponent from '../../components/common/ActivityIndicatorComponent';
+import Button from '../../components/common/Button'
+
 const Otp = ({navigation}: {navigation: any}) => {
   const {language , token} = useSelector((state: any) => state?.user);
   const [verifyOtp, {data, isSuccess, error, isError, isLoading}] =
@@ -55,7 +57,8 @@ const Otp = ({navigation}: {navigation: any}) => {
     const otp = otp1 + otp2 + otp3 + otp4;
     // Implement your OTP verification logic here
     console.log('Verifying OTP:', otp);
-    verifyOtp({token, body: {otp}});
+    // verifyOtp({token, body: {otp}});
+    navigation.navigate('ResetPassword');
   };
 
   useEffect(() => {
@@ -71,12 +74,12 @@ const Otp = ({navigation}: {navigation: any}) => {
   }, [isError]);
 
   return (
-    <View className=" flex-1 items-center px-4 my-5 py-5 bg-gray-100">
-      <MaterialIcons size={50} name="security" color={'#312651'} />
-      <Text style={styles.title} className="text-[#312651]">
+    <View className=" flex-1 items-center my-5 py-5 bg-gray-100 px-5">
+      <MaterialIcons size={60} name="security" color={'#822BFF'} />
+      <Text style={styles.title} className="text-[#822BFF] font-[Poppins-Medium]">
         {language ? `ओटीपी दर्ज करें`:`Enter OTP`}
       </Text>
-      <Text className="text-center my-3">
+      <Text className="text-center my-3 text-gray-800 text-lg">
         {language ? `कृपया वह ओटीपी दर्ज करें जिसे हमने अभी प्रक्रिया के लिए भेजा है` :`Please Enter the otp we just sent  to proced`}
       </Text>
       <View className="flex-row gap-4">
@@ -112,12 +115,24 @@ const Otp = ({navigation}: {navigation: any}) => {
           maxLength={1}
           ref={otp4Ref}
         />
+
       </View>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={handleVerifyOTP}
         className=" bg-[#312651]  w-3/4 mt-3 rounded-lg items-center py-3">
         <Text className="text-base font-semibold text-white">{language ? `जारी रखना`:`Continue`}</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
+
+      <View className='w-full'>
+      <Button
+      text={language ? `जारी रखना`:`Continue`}
+
+      onPressFunction={handleVerifyOTP}
+      />
+      </View>
+      <Text className="text-center my-3 text-gray-600 text-sm">
+        {language ? `हमने आपके जीमेल पर ओटीपी भेज दिया है। कृपया अपना इनबॉक्स जांचें. यदि आपको यह प्राप्त नहीं होता है, तो अपना स्पैम या प्रमोशन फ़ोल्डर जांचें।` :`We have sent the OTP to your Gmail. Please check your inbox. If you do not receive it, check your spam or promotions folder.`}
+      </Text>
 
       {isLoading && <ActivityIndicatorComponent />}
     </View>
@@ -127,7 +142,7 @@ const Otp = ({navigation}: {navigation: any}) => {
 const styles = StyleSheet.create({
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
+
     marginBottom: 20,
   },
   inputContainer: {
