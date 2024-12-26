@@ -58,23 +58,7 @@ mutation sociaSignup($fullname : String! , $email : String! ,$socialAuthname : S
       message
     }
     user{
-      fullname
-      email
       accessToken
-      refreshToken
-      phone
-      address
-      bio
-      createdAt
-      dob
-      id 
-      image
-      nikname
-      isContractor
-              price
-        unit
-        about
-        service
     }
   }
 }

@@ -12,9 +12,10 @@ import navigationString from '../../constants/navigation';
 import { useNavigation } from '@react-navigation/core';
 import { formatedDateFunction } from '../../utils/dateFinction';
 import ListLoading from '../../components/loading/ListLoading';
+import { bg_color2, secondary_text_color, text_color } from '../../constants/color';
 
 const CancelledScreen = ({ navigation } : { navigation : any}) => {
-    const {userData, token, language} = useSelector((state: any) => state?.user);
+    const {userData, token, language , dark} = useSelector((state: any) => state?.user);
     const [skLoading, setSkLoading] = useState<boolean>(false);
   
     const headers = {
@@ -54,14 +55,14 @@ const CancelledScreen = ({ navigation } : { navigation : any}) => {
     return (
       <ScrollView         refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      } style={styles.scrollView}>
+      } style={[styles.scrollView,{backgroundColor : dark ? "#1F1F1F" : "white"}]}>
         {bookings.length > 0 ? (
          <ScrollView>
           {skLoading ? <ListLoading/>:
 
              bookings.map((booking: any, index: any) => (
               <TouchableOpacity  className='' key={index} >
-              <TouchableOpacity className="bg-white py-4 rounded-lg" style={styles.card}>
+              <TouchableOpacity className={`${bg_color2(dark)} py-4 rounded-lg`} style={styles.card}>
                 <Card.Content style={styles.cardContent}>
                   <Image
                     source={{uri: `${env.storage}${booking?.contractor?.image}`}}
@@ -69,12 +70,12 @@ const CancelledScreen = ({ navigation } : { navigation : any}) => {
                   />
                   <View style={styles.cardDetails}>
                     <View>
-                      <Title className="text-black font-[Poppins-SemiBold]">
+                    <Title className={`${text_color(dark)} font-extrabold`}>
                         {booking?.contractor?.service
                           ? booking?.contractor?.service
                           : '-'}
                       </Title>
-                      <Paragraph className="mb-2 text-black font-[Poppins-Regular]">
+                      <Paragraph className={`mb-2 ${secondary_text_color(dark)} font-[Poppins-Regular]`}>
                         {booking?.contractor?.fullname
                           ? booking?.contractor?.fullname
                           : '-'}

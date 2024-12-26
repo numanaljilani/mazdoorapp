@@ -15,6 +15,7 @@ import {postMutation} from '../../graphql/posts';
 import images from '../../constants/images';
 import navigationString from '../../constants/navigation';
 import { ME } from '../../graphql/mutation/me';
+import { bg_color } from '../../constants/color';
 // import images from '../../constants/images';
 
 const Splash = ({navigation}: {navigation: any}) => {
@@ -66,18 +67,19 @@ const Splash = ({navigation}: {navigation: any}) => {
         });
         return;
       } else {
-        navigation.navigate(navigationString.LOGINSCREEN);
+        navigation.replace(navigationString.LOGINSCREEN);
       }
     } catch (error) {
       console.log(error, '>>>>>>> splash screen');
-      navigation.navigate(navigationString.LOGINSCREEN);
+      navigation.replace(navigationString.LOGINSCREEN);
     }
   };
   useEffect(() => {
     navigateToAutorizedScreen();
   }, []);
+  console.log(bg_color("dark"))
   return (
-    <View className="flex-1 bg-[#F3F4F8] items-center justify-center">
+    <View className={`flex-1 ${bg_color("dark")} items-center justify-center`}>
       <Image source={images.logo} className="w-20 h-20" resizeMode="contain" />
       <ActivityIndicator
         size="large"

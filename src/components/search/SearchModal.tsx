@@ -13,6 +13,7 @@ import {IconButton, Searchbar} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import icons from '../../constants/icons';
 import navigationString from '../../constants/navigation';
+import { bg_color, bg_color2, text_color } from '../../constants/color';
 
 const SearchModal = ({
   setModal,
@@ -25,7 +26,7 @@ const SearchModal = ({
   modal: boolean;
   navigation: any;
 }) => {
-  const {language} = useSelector((state: any) => state?.user);
+  const {language , dark} = useSelector((state: any) => state?.user);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const openFilterModal = () => setFilterModalVisible(true);
@@ -35,6 +36,7 @@ const SearchModal = ({
   const [recentItems, setRecentItems] = React.useState<string[]>([]);
 
   const searchServices = async () => {
+    
     if (!searchQuery) return;
     setRecentItems(items => [...items, searchQuery]);
     const jsonValue = await JSON.stringify(recentItems);
@@ -69,12 +71,12 @@ const SearchModal = ({
     >
       <View style={styles.modalBackground} className="flex-1 justify-end ">
         <ScrollView contentContainerStyle={{}}>
-          <View className="bg-white w-full mt-10 px-4 py-4 min-h-screen  rounded-3xl">
+          <View className={`${bg_color2(dark)} w-full mt-10 px-4 py-4 min-h-screen  rounded-3xl`}>
             <View className="py-2 px-4 flex-row justify-between">
               <TouchableOpacity onPress={() => setModal(false)} className="">
-                <Image source={icons.back} className="w-6 h-6" />
+                <Image source={icons.back} className="w-6 h-6" tintColor={dark ? "white" : "black"}/>
               </TouchableOpacity>
-              <Text className="text-xl text-black/70 font-[Poppins-SemiBold]">
+              <Text className={`text-xl ${text_color(dark)} font-[Poppins-SemiBold]`}>
                 {language ? 'खोज' : `Search`}
               </Text>
               <View />
@@ -85,6 +87,7 @@ const SearchModal = ({
               autoFocus={true}
               placeholder={language ? 'खोज' : `Search`}
               onChangeText={setSearchQuery}
+              className={`${bg_color2(dark)}`}
               value={searchQuery}
               right={() => (
                 <IconButton
@@ -96,7 +99,7 @@ const SearchModal = ({
               )}
             />
             <View className="flex-row justify-between">
-              <Text className="text-lg font-[Poppins-SemiBold] text-black/80 tracking-wider">
+              <Text className={`text-lg font-[Poppins-SemiBold] ${text_color(dark)} tracking-wider`}>
                 {language ? 'हाल ही का' : `Recent`}
               </Text>
               <TouchableOpacity className="">

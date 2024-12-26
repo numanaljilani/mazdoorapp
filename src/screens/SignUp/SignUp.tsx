@@ -10,10 +10,11 @@ import SocialAuth from '../../components/SocialAuth/SocialAuth';
 import ActivityIndicatorComponent from '../../components/common/ActivityIndicatorComponent';
 import navigationStrings from '../../constants/navigation';
 import {showMessage} from 'react-native-flash-message';
+import { bg_color, text_color } from '../../constants/color';
 
 const SignUp = ({navigation}: {navigation: any}) => {
   const colorScheme = useColorScheme();
-  const {language} = useSelector((state: any) => state?.user);
+  const {language , dark} = useSelector((state: any) => state?.user);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [secure, setSecure] = useState<boolean>(false);
@@ -60,8 +61,8 @@ const SignUp = ({navigation}: {navigation: any}) => {
   };
 
   return (
-    <View className="flex-1 justify-center bg-white  px-8 ">
-      <Text className="text-4xl font-semibold text-gray-900 leading-relaxed font-[Poppins-Medium]">
+    <View className={`flex-1 justify-center ${bg_color(dark)}   px-8 `}>
+      <Text className={`text-4xl font-semibold ${text_color(dark)} leading-relaxed font-[Poppins-Medium]`}>
         {language ? `अपने अकाउंट में लॉग इन करें` : `Create your Account`}
       </Text>
       <View className="w-full gap-y-4 mt-4">

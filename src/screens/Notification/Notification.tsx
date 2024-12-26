@@ -5,24 +5,26 @@ import { MYNOTIFICATIONS } from '../../graphql/mutation/notification';
 import { useMutation } from '@apollo/client';
 import { useSelector } from 'react-redux';
 import NotFoundBooking from '../../components/common/NotFoundBookings';
+import { bg_color, bg_color2, text_color } from '../../constants/color';
 
 const NotificationCard = ({ item } :any) => {
   console.log(item)
+   const {userData, token, language , dark} = useSelector((state: any) => state?.user);
   return (
-    <TouchableOpacity className='mx-3 mt-2 flex-row bg-white rounded-xl py-2 px-3'>
+    <TouchableOpacity className={`mx-3 mt-2 flex-row ${bg_color2(dark)} rounded-xl py-2 px-3`}>
       <View className="bg-[#822BFF]/20 p-4 w-16 h-16 rounded-full flex-row justify-center items-center">
         <Image source={icons.user} className="w-9 h-9" tintColor={"#822BFF"}/>
       </View>
       <View className='px-4  flex-1'>
-        <Text className="text-black font-[Poppins-Medium] text-sm">{item.title}</Text>
-        <Text className="text-black font-[Poppins-Regular] text-sm">{item.desc}</Text>
+        <Text className={`${text_color(dark)} font-[Poppins-Medium] text-sm"`}>{item.title}</Text>
+        <Text className={`${text_color(dark)} font-[Poppins-Regular] text-sm`}>{item.desc}</Text>
       </View>
     </TouchableOpacity>
   );
 };
 
 const Notification = ({navigation} : any) => {
-    const {userData, token, language} = useSelector((state: any) => state?.user);
+    const {userData, token, language , dark} = useSelector((state: any) => state?.user);
     const [notifications,setNotitfications] = useState([])
     const headers = {
         authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
@@ -56,13 +58,13 @@ const Notification = ({navigation} : any) => {
 
       }, []);
   return (
-    <View>
-      <View className="px-5 py-5 bg-white flex-row gap-x-3">
+    <View className={`${bg_color(dark)} min-h-screen`}>
+      <View className={`px-5 py-5 ${bg_color(dark)} flex-row gap-x-3`}>
         <TouchableOpacity onPress={()=> navigation.goBack()}>
 
-        <Image source={icons.back} className='h-6 w-6'/>
+        <Image source={icons.back} className='h-6 w-6' tintColor={!dark ? "#000000" : "#ffff"}/>
         </TouchableOpacity>
-        <Text className="text-black font-[Poppins-SemiBold] text-lg">
+        <Text className={`${text_color(dark)}  font-[Poppins-SemiBold] text-lg shadow-lg shadow-white`}>
           Notifications
         </Text>
       </View>

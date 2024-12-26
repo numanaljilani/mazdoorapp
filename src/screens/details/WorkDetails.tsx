@@ -34,6 +34,10 @@ import {ADDTOBOOKMARK} from '../../graphql/mutation/bookmark';
 import {showMessage} from 'react-native-flash-message';
 import {Linking} from 'react-native';
 import ProfileDetailsLoading from '../../components/loading/ProfileDetailsLoading';
+import { bg_color, secondary_text_color, text_color } from '../../constants/color';
+import Share from 'react-native-share';
+import { dynamicLink } from '../../utils/link';
+import dynamicLinks from '@react-native-firebase/dynamic-links';
 
 const WorkDetails = ({navigation, route}: any) => {
   const {id, bookmarked, canPost} = route?.params;
@@ -57,15 +61,15 @@ const WorkDetails = ({navigation, route}: any) => {
   const [postReviwApi] = useMutation(CREATEPOSTS);
   const [getAllReviewApi] = useMutation(GETPOSTS);
 
-  const {userData, token, language} = useSelector((state: any) => state?.user);
+  const {userData, token, language , dark} = useSelector((state: any) => state?.user);
   const [uploadPost] = useUploadPostMutation();
 
   const headers = {
     authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
   };
 
-  console.log(route.params?.canPost);
-  console.log(contractorDetails);
+  // console.log(route.params?.canPost);
+  // console.log(contractorDetails);
   const [bookmark] = useMutation(ADDTOBOOKMARK);
 
   const addToBookmarks = async () => {
@@ -90,7 +94,7 @@ const WorkDetails = ({navigation, route}: any) => {
     {
       id: 1,
       image: contractorDetails?.image
-        ? {uri: `${env.storage}${contractorDetails?.image}`}
+        ? {uri: contractorDetails.image?.includes('googleusercontent')?contractorDetails?.image : `${env.storage}${contractorDetails?.image}`}
         : images.OnBoardinImage2,
     },
     {
@@ -146,7 +150,7 @@ const WorkDetails = ({navigation, route}: any) => {
 
     return (
       <View>
-        <Text style={{color: '#3b3941', fontSize: 14}}>
+        <Text style={{color: dark ? 'white':'#3b3941', fontSize: 14}}>
           {isExpanded ? children : truncatedText}
         </Text>
         {children.length > maxChars && (
@@ -352,14 +356,42 @@ const WorkDetails = ({navigation, route}: any) => {
   useEffect(() => {
     getPosts();
   }, []);
+  useEffect(() => {
+    dynamicLinks()
+      .getInitialLink()
+      .then((link: any) => {
+        if (link.url === 'https://invertase.io/offer') {
+          // ...set initial route as offers screen
+     
+          
+        }
+        console.log("Link");
+      });
+  }, []);
 
   const handleCall = () => {
     Linking.openURL(`tel:${contractorDetails?.phone}`);
   };
 
+  const shearProfile =async  () =>{
+    const link = await dynamicLink({userId : 10})
+ 
+    
+    // Use Share API to share the link
+    try {
+      Share.open({
+        message: `Check out this profile: ${link}`,
+      });
+    } catch (error) {
+      console.log(error , "SHEARING");
+      
+    }
+
+  }
+
   return (
    <ScrollView>
-      {skLoading ? <ProfileDetailsLoading/> :<View style={{flex: 1, marginTop: -1, backgroundColor: 'white'}}>
+      {skLoading ? <ProfileDetailsLoading/> :<View style={{flex: 1, marginTop: -1,}} className={`${bg_color(dark)}`}>
         <View style={{position: 'absolute', top: 10, left: 10, zIndex: 1}}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <IconButton icon={icons.back} iconColor="black" />
@@ -385,7 +417,7 @@ const WorkDetails = ({navigation, route}: any) => {
 
         <ScrollView className="px-5">
           <View className="flex-row justify-between items-center ">
-            <Text className="text-black text-3xl font-[Poppins-Medium]">
+            <Text className={`${text_color(dark)} text-3xl font-[Poppins-Medium]`}>
               {contractorDetails ? contractorDetails?.service : '-'}
             </Text>
             <TouchableOpacity onPress={addToBookmarks}>
@@ -402,7 +434,7 @@ const WorkDetails = ({navigation, route}: any) => {
             </Text>
             <View className="flex-row items-center gap-2">
               <Image className="h-6 w-6" source={icons.star} />
-              <Text className="text-[#3b3941] font-[Poppins-Regular]">
+              <Text className={`${secondary_text_color(dark)}  font-[Poppins-Regular]`}>
                 {contractorDetails?.rating ? contractorDetails?.rating : 5} ({contractorDetails?.rewies ? contractorDetails?.rewies : 0 } reviews)
               </Text>
             </View>
@@ -413,19 +445,25 @@ const WorkDetails = ({navigation, route}: any) => {
             </Text>
             <View className="flex-row items-center">
               <IconButton iconColor="#822BFF" size={20} icon={icons.location} />
-              <Text className="text-[#3b3941] text-xs font-[Poppins-Regular]">
+              <Text className={`${secondary_text_color(dark)}  text-xs font-[Poppins-Regular]`}>
                 {contractorDetails ? contractorDetails?.address : '-'}
               </Text>
             </View>
           </View>
 
+          <View className="flex-row justify-between px-4">
           <View className="flex-row items-center gap-2">
-            <Text className="text-[#8d51e1] text-4xl font-[Poppins-SemiBold]">
+                        <Text className="text-[#8d51e1] text-4xl font-[Poppins-SemiBold]">
               ₹ {contractorDetails ? contractorDetails?.price : ''}
             </Text>
-            <Text className="text-sm text-[#3b3941] font-[Poppins-Regular]">
+            <Text className={`text-sm ${secondary_text_color(dark)} font-[Poppins-Regular]`}>
               ({contractorDetails ? contractorDetails?.unit : ''})
             </Text>
+</View>
+<TouchableOpacity onPress={shearProfile}>
+<Image source={icons.share} style={{width : 30 , height : 30}} tintColor={"#8d51e1"} resizeMode='contain'/>
+</TouchableOpacity>
+           
           </View>
 
           <View
@@ -435,7 +473,7 @@ const WorkDetails = ({navigation, route}: any) => {
           {/* About */}
 
           <View className="py-2">
-            <Text className="text-[#3b3941] text-lg mb-2 font-[Poppins-SemiBold]">
+            <Text className={`${secondary_text_color(dark)}  text-lg mb-2 font-[Poppins-SemiBold]`}>
               About me
             </Text>
             <View>
@@ -449,7 +487,7 @@ const WorkDetails = ({navigation, route}: any) => {
 
           <View className="py-2">
             <View className=" flex-row justify-between items-center">
-              <Text className="text-[#3b3941]  text-lg mb-2 font-[Poppins-SemiBold]">
+              <Text className={`${text_color(dark)}  text-lg mb-2 font-[Poppins-SemiBold]`}>
                 Photos & Videos
               </Text>
               {posts.length > 0 && (
@@ -511,7 +549,7 @@ const WorkDetails = ({navigation, route}: any) => {
             <View className=" flex-row justify-between items-center">
               <View className="flex-row items-center gap-1">
                 <Image className="h-8 w-8 mb-2" source={icons.star} />
-                <Text className="text-[#3b3941] font-[Poppins-SemiBold] text-lg mb-2">
+                <Text className={`${secondary_text_color(dark)}  font-[Poppins-SemiBold] text-lg mb-2`}>
                 {contractorDetails?.rating ? contractorDetails?.rating : 5} ({contractorDetails?.rewies ? contractorDetails?.rewies : 0} reviews)
                 </Text>
               </View>
@@ -597,7 +635,7 @@ const WorkDetails = ({navigation, route}: any) => {
                             : icons.avatar
                         }
                       />
-                      <Text className="text-black font-[Poppins-Regular]">
+                      <Text className={`${text_color(dark)} font-[Poppins-Regular]`}>
                         {item?.user?.fullname}
                       </Text>
                     </View>
@@ -614,7 +652,7 @@ const WorkDetails = ({navigation, route}: any) => {
                       {/* <IconButton iconColor='black' icon="dots-horizontal-circle-outline" ></IconButton> */}
                     </View>
                   </View>
-                  <Text className="text-black">{item.text}</Text>
+                  <Text className={`${text_color(dark)}`}>{item.text}</Text>
                   <View className="flex-row items-center gap-5">
                     {/* <View className="flex-row items-center">
                     <IconButton
@@ -643,7 +681,7 @@ const WorkDetails = ({navigation, route}: any) => {
               }}></View>
           </View>
         </ScrollView>
-        <View className="py-5 justify-center absolute w-full bottom-0 px-4 bg-white mt-2">
+        <View className={`py-5 justify-center absolute w-full bottom-0 px-4 ${bg_color(dark)} mt-2`}>
           <View
             style={{
               flexDirection: 'row',

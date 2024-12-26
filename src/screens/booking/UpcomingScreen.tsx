@@ -25,9 +25,10 @@ import OrderSuccessfullModal from '../../components/worker/OrderSuccessfullModal
 import ActivityIndicatorComponent from '../../components/common/ActivityIndicatorComponent';
 import navigationString from '../../constants/navigation';
 import ListLoading from '../../components/loading/ListLoading';
+import { bg_color, bg_color2, text_color } from '../../constants/color';
 
 const UpcomingScreen = ({navigation}: any) => {
-  const {userData, token, language} = useSelector((state: any) => state?.user);
+  const {userData, token, language ,dark} = useSelector((state: any) => state?.user);
   const [modal, setModal] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [bookings, setBookings] = useState<any>([]);
@@ -92,13 +93,14 @@ const UpcomingScreen = ({navigation}: any) => {
   return (
     <>
       <View
+      className={`${bg_color(dark)}`}
 >
         { skLoading ? <ListLoading/>: bookings.length > 0 ? (
                <ScrollView
                refreshControl={
                  <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                }
-               contentContainerStyle={{paddingBottom : 20}}
+               contentContainerStyle={{paddingBottom : 20 , backgroundColor : dark ? "#1F1F1F" : "white"}}
                style={styles.scrollView}>
           {bookings.map((booking: any, index: any) => (
             <TouchableOpacity
@@ -109,7 +111,7 @@ const UpcomingScreen = ({navigation}: any) => {
                   id: booking.contractor.id,
                 })
               }>
-              <TouchableOpacity className="bg-white rounded-xl shadow-xl shadow-white" style={styles.card}>
+              <TouchableOpacity className={`${bg_color2(dark)} mx-2 rounded-xl shadow-lg mt-1 shadow-white`} style={styles.card}>
                 <Card.Content style={styles.cardContent}>
                   <Image
                     source={{
@@ -120,12 +122,12 @@ const UpcomingScreen = ({navigation}: any) => {
 
                   <View style={styles.cardDetails}>
                     <View>
-                      <Title className="text-black font-[Poppins-SemiBold]">
+                      <Title className={`${text_color(dark)} font-[Poppins-SemiBold]`}>
                         {booking?.contractor?.service
                           ? booking?.contractor?.service
                           : '-'}
                       </Title>
-                      <Paragraph className="mb-2 text-black font-[Poppins-Regular]">
+                      <Paragraph className={`mb-2 ${text_color(dark)} font-[Poppins-Regular]`}>
                         {booking?.contractor?.fullname
                           ? booking?.contractor?.fullname
                           : '-'}
@@ -223,6 +225,7 @@ const styles = StyleSheet.create({
     height: 100,
     marginRight: 10,
     borderRadius: 20,
+    marginTop : 4
   },
   cardDetails: {
     flex: 1,

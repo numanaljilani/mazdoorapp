@@ -7,48 +7,82 @@ import {
 } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
 import {LoginManager, AccessToken} from 'react-native-fbsdk-next';
-import { SOCIALLOGINMUTATION, SOCIALSIGNUPMUTATION } from '../../graphql/auth';
-import { useMutation } from '@apollo/client';
-import { showMessage } from 'react-native-flash-message';
-import { setToken, setUser } from '../../service/slice/userSlice';
+import {SOCIALLOGINMUTATION, SOCIALSIGNUPMUTATION} from '../../graphql/auth';
+import {useMutation} from '@apollo/client';
+import {showMessage} from 'react-native-flash-message';
+import {setToken, setUser} from '../../service/slice/userSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import navigationsString from '../../constants/navigation'
-import { useDispatch } from 'react-redux';
+import navigationsString from '../../constants/navigation';
+import {useDispatch, useSelector} from 'react-redux';
 import messenging from '@react-native-firebase/messaging';
+import {bg_color, bg_color2, border_color} from '../../constants/color';
+import {ME} from '../../graphql/mutation/me';
 
-const SocialAuth = ({ navigation , login ,setLoading } : any) => {
+const SocialAuth = ({navigation, login, setLoading}: any) => {
+  const {dark} = useSelector((state: any) => state?.user);
   useEffect(() => {
     GoogleSignin.configure();
   }, []);
 
   const [socialLogin] = useMutation(SOCIALLOGINMUTATION);
   const [socialSignup] = useMutation(SOCIALSIGNUPMUTATION);
+  const [me] = useMutation(ME);
   const dispatch = useDispatch();
-
 
   const signIn = async () => {
     try {
       await GoogleSignin.signOut();
       await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
       const userInfo = await GoogleSignin.signIn();
-      console.log(userInfo)
-      if(userInfo?.user){
-        const res = await socialSignup({variables : { email : userInfo.user.email,fullname : userInfo.user.familyName , socialAuthname : "gmail" , image : userInfo.user.photo}});
-        console.log(res?.data)
-        if(res?.data?.sociaSignup?.user){
-          dispatch(setUser(res?.data?.sociaSignup?.user));
-          dispatch(setToken(res?.data?.sociaSignup?.user?.accessToken));
-          const jsonValue = JSON.stringify(res?.data?.sociaSignup?.user.accessToken);
-          await AsyncStorage.setItem('accessToken', jsonValue);
-          navigation.replace(navigationsString.BOTTOMTABS);
-        }else{
-          showMessage({
-            message : res?.data?.sociaSignup?.error?.message || "Something went wrong in google auth.",
-            type : 'danger',
-            animated : true,
-            icon : 'warning',
+      console.log(userInfo);
+      if (userInfo?.user) {
+        const res = await socialSignup({
+          variables: {
+            email: userInfo.user.email,
+            fullname: userInfo.user.familyName,
+            socialAuthname: 'gmail',
+            image: userInfo.user.photo,
+          },
+        });
+        console.log(res?.data?.sociaSignup?.user.accessToken);
+        if (res?.data?.sociaSignup?.user.accessToken) {
+          const headers: any = {
+            authorization: `Bearer ${res?.data?.sociaSignup?.user.accessToken}`,
+          };
+          const res2 = await me({context: {headers}});
+          if (res2.data?.me.user) {
+            dispatch(setUser(res2.data.me.user));
+            dispatch(
+              setToken(res?.data?.sociaSignup?.user.accessToken),
+            );
+            // const jsonValue = JSON.stringify(
+            //   res?.data?.sociaSignup?.user.accessToken,
+            // )
+            await AsyncStorage.setItem('accessToken', res?.data?.sociaSignup?.user.accessToken);
+            navigation.replace(navigationsString.BOTTOMTABS);
+            showMessage({
+              type: 'success',
+              message: 'Welcom back',
+              // description: 'Welcome to mazdoor',
+              icon: 'success',
+            });
+            return;
+          }
 
-          })
+          // dispatch(setUser(res?.data?.sociaSignup?.user));
+          // dispatch(setToken(res?.data?.sociaSignup?.user?.accessToken));
+          // const jsonValue = JSON.stringify(res?.data?.sociaSignup?.user.accessToken);
+          // await AsyncStorage.setItem('accessToken', jsonValue);
+          // navigation.replace(navigationsString.BOTTOMTABS);
+        } else {
+          showMessage({
+            message:
+              res?.data?.sociaSignup?.error?.message ||
+              'Something went wrong in google auth.',
+            type: 'danger',
+            animated: true,
+            icon: 'warning',
+          });
         }
       }
       // console.log(userInfo.user.email);
@@ -71,28 +105,37 @@ const SocialAuth = ({ navigation , login ,setLoading } : any) => {
       await GoogleSignin.signOut();
       await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
       const userInfo = await GoogleSignin.signIn();
-      console.log(userInfo.user)
-      if(userInfo?.user){
-        setLoading(true)
-        const res = await socialLogin({variables : { email : userInfo.user.email , socialAuthName : "gmail" , fcmtoken : await messenging().getToken() }});
-        console.log(res.data?.socialLogin?.user )
-        if(res?.data?.socialLogin?.user){
+      console.log(userInfo.user);
+      if (userInfo?.user) {
+        setLoading(true);
+        const res = await socialLogin({
+          variables: {
+            email: userInfo.user.email,
+            socialAuthName: 'gmail',
+            fcmtoken: await messenging().getToken(),
+          },
+        });
+        console.log(res.data?.socialLogin?.user);
+        if (res?.data?.socialLogin?.user) {
           dispatch(setUser(res?.data?.socialLogin?.user));
           dispatch(setToken(res?.data?.socialLogin?.user?.accessToken));
-          const jsonValue = JSON.stringify(res?.data?.socialLogin?.user.accessToken);
+          const jsonValue = JSON.stringify(
+            res?.data?.socialLogin?.user.accessToken,
+          );
           await AsyncStorage.setItem('accessToken', jsonValue);
           navigation.replace(navigationsString.BOTTOMTABS);
-          setLoading(false)
-        }else{
+          setLoading(false);
+        } else {
           showMessage({
-            message : res?.data?.socialLogin?.error?.message || "Something went wrong in google auth.",
-            type : 'danger',
-            animated : true,
-            icon : 'warning',
-
-          })
+            message:
+              res?.data?.socialLogin?.error?.message ||
+              'Something went wrong in google auth.',
+            type: 'danger',
+            animated: true,
+            icon: 'warning',
+          });
         }
-        setLoading(false)
+        setLoading(false);
       }
 
       // console.log(userInfo.user.email);
@@ -116,7 +159,7 @@ const SocialAuth = ({ navigation , login ,setLoading } : any) => {
       'public_profile',
       'email',
     ]);
-    console.log(result , "facebook result")
+    console.log(result, 'facebook result');
 
     if (result.isCancelled) {
       throw 'User cancelled the login process';
@@ -124,7 +167,7 @@ const SocialAuth = ({ navigation , login ,setLoading } : any) => {
 
     // Once signed in, get the users AccessToken
     const data = await AccessToken.getCurrentAccessToken();
-    console.log(data , "facebook token")
+    console.log(data, 'facebook token');
 
     if (!data) {
       throw 'Something went wrong obtaining access token';
@@ -134,7 +177,7 @@ const SocialAuth = ({ navigation , login ,setLoading } : any) => {
     const facebookCredential = auth.FacebookAuthProvider.credential(
       data.accessToken,
     );
-    console.log(facebookCredential , "facebook Credential")
+    console.log(facebookCredential, 'facebook Credential');
     // Sign-in the user with the credential
     return auth().signInWithCredential(facebookCredential);
   }
@@ -147,15 +190,19 @@ const SocialAuth = ({ navigation , login ,setLoading } : any) => {
     }
   };
   return (
-    <View className=" flex-row px-4 gap-x-4 mt-4">
+    <View className=" flex-row px-4 gap-x-4 mt-4 ">
       <TouchableOpacity
-        onPress={ login ? logIn:signIn}
-        className="border border-gray-200 rounded-lg flex-1 py-3 justify-center items-center">
+        onPress={login ? logIn : signIn}
+        className={`border ${border_color(dark)} ${bg_color2(
+          dark,
+        )} rounded-lg flex-1 py-3 justify-center items-center`}>
         <Image source={images.Google} className="w-9 h-9" />
       </TouchableOpacity>
       <TouchableOpacity
         onPress={onFacebookButtonPress}
-        className="border border-gray-200 rounded-lg flex-1 py-3 justify-center items-center">
+        className={`border  ${border_color(dark)} ${bg_color2(
+          dark,
+        )} rounded-lg flex-1 py-3 justify-center items-center`}>
         <Image source={images.Facebook} className="w-9 h-9" />
       </TouchableOpacity>
     </View>

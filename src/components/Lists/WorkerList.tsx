@@ -9,9 +9,10 @@ import {useSelector} from 'react-redux';
 import {ADDTOBOOKMARK} from '../../graphql/mutation/bookmark';
 import {useMutation} from '@apollo/client';
 import {showMessage} from 'react-native-flash-message';
+import { bg_color2, text_color } from '../../constants/color';
 
 const WorkerList = ({item, navigation, contractors , setContractors , fromBookmark , funct}: any) => {
-  const {userData, token, language} = useSelector((state: any) => state?.user);
+  const {userData, token, language , dark} = useSelector((state: any) => state?.user);
 console.log(userData , ">>>")
   const headers = {
     authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
@@ -51,7 +52,7 @@ console.log(userData , ">>>")
 console.log(item,"id")
   return (
     <TouchableOpacity
-      className="shadow  shadow-black bg-white p-3 mt-3 rounded-3xl flex-row mb-1"
+      className={`shadow  shadow-white ${bg_color2(dark)} p-3 mt-3 rounded-3xl flex-row mb-1`}
       onPress={() =>
         navigation.navigate(navigationString.CONTRACTORDETAILS, {
           id: fromBookmark? item.contractorId: item.id,
@@ -92,7 +93,7 @@ console.log(item,"id")
           />
         </TouchableOpacity>
         <View>
-          <Text className="text-black font-semibold text-lg">
+          <Text className={`${text_color(dark)} font-semibold text-lg`}>
             {item?.service ? item?.service : 'Electrician'}
           </Text>
           <Text className="text-[#822BFF] font-bold text-xl">

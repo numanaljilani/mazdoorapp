@@ -10,6 +10,7 @@ import {useMutation} from '@apollo/client';
 import navigationString from '../../constants/navigation';
 import ActivityIndicatorComponent from '../../components/common/ActivityIndicatorComponent';
 import PhoneWarning from '../../components/updateModal/PhoneWarning';
+import {bg_color, text_color} from '../../constants/color';
 
 const BookingDetails = ({navigation, route}: any) => {
   const [date, setDate] = React.useState(new Date());
@@ -19,7 +20,9 @@ const BookingDetails = ({navigation, route}: any) => {
   const [phoneModal, setPhoneModal] = useState<boolean>(false);
   const [text, setText] = React.useState('');
   console.log(route.params, 'Navigation Data');
-  const {userData, token, language} = useSelector((state: any) => state?.user);
+  const {userData, token, language, dark} = useSelector(
+    (state: any) => state?.user,
+  );
   // console.log(time)
   const headers = {
     authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
@@ -131,7 +134,13 @@ const BookingDetails = ({navigation, route}: any) => {
           <Button
             key={value}
             mode="outlined"
-            style={[styles.button, isPressed === value && styles.activeButton]}
+            style={[
+              styles.button, {
+                backgroundColor: dark && isPressed !== value ? 'gray' : '#fff',
+              },
+              isPressed === value && styles.activeButton,
+             
+            ]}
             onPress={() => handleClick(value)}>
             <Text
               className="text-xs"
@@ -150,19 +159,20 @@ const BookingDetails = ({navigation, route}: any) => {
   return (
     <>
       <View className=" h-full">
-        <Appbar.Header className="bg-transparent">
+        <Appbar.Header className={`${bg_color(dark)}`}>
           <Appbar.BackAction onPress={() => navigation.goBack()} />
           <Appbar.Content title="Booking" color="black" />
         </Appbar.Header>
 
-        <View className="  h-full  relative">
+        <View className={`${bg_color(dark)} h-full  relative`}>
           {/* Calender */}
 
           <View className="pb-2 px-4 ">
-            <Text className="text-black font-extrabold mb-5 text-base">
+            <Text
+              className={`${text_color(dark)} font-extrabold mb-5 text-base"`}>
               Select Date
             </Text>
-            <MyCalender date={date} setDate={setDate} />
+            <MyCalender date={date} setDate={setDate} dark={dark}/>
           </View>
 
           {/* Working Hours */}
@@ -198,7 +208,8 @@ const BookingDetails = ({navigation, route}: any) => {
           {/* Start Time */}
 
           <View className="mb-2">
-            <Text className="text-black mx-4 font-extrabold text-base">
+            <Text
+              className={`${text_color(dark)} mx-4 font-extrabold text-base"`}>
               Choose Start Time
             </Text>
             <ButtonGroup
@@ -263,7 +274,6 @@ const styles = StyleSheet.create({
   },
   button: {
     borderRadius: 20,
-    backgroundColor: '#fff',
     marginRight: 10,
     borderColor: 'blue',
     borderWidth: 2,

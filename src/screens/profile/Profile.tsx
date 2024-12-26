@@ -17,7 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ActivityIndicatorComponent from '../../components/common/ActivityIndicatorComponent';
 import {useMutation} from '@apollo/client';
 import {availablityStatus} from '../../graphql/workerProfile';
-import {setLanguage, setPosts, setUser} from '../../service/slice/userSlice';
+import {setDarkMode, setLanguage, setPosts, setUser} from '../../service/slice/userSlice';
 import {showMessage} from 'react-native-flash-message';
 import {
   ImageLibraryOptions,
@@ -33,12 +33,15 @@ import ProfileButton from '../../components/profile/ProfileButton';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Logout from '../../components/profile/Logout';
 import navigationString from '../../constants/navigation';
+import { bg_color, bg_color2, text_color } from '../../constants/color';
+import Share from 'react-native-share';
+
+
 const Profile = ({navigation}: any) => {
-  const {userData, token, posts, language} = useSelector(
+  const {userData, token, posts, language , dark} = useSelector(
     (state: any) => state?.user,
   );
   const [optionModal, setOptionModal] = useState<boolean>(false);
-  const [mode, setMode] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>('');
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
@@ -63,8 +66,6 @@ const Profile = ({navigation}: any) => {
     setOptionModal(false);
   };
 
-  const [isEnabled, setIsEnabled] = useState<boolean>(language);
-  const [isEnabledDark, setIsEnabledDark] = useState(false);
 
   const toggleSwitch = async () => {
     // setIsEnabled(previousState => !previousState);
@@ -76,10 +77,15 @@ const Profile = ({navigation}: any) => {
    console.log(typeof(JSON.parse(lang!) ), ">>>>>>")
     
   };
-
-
-  const toggleDark = () => {
-    setIsEnabledDark(previousState => !previousState);
+  const toggleModeSwitch = async () => {
+    // setIsEnabled(previousState => !previousState);
+    console.log(dark)
+    dispatch(setDarkMode(!dark))
+    const jsonValue0 = JSON.stringify(!dark);
+    await AsyncStorage.setItem('mode', jsonValue0);
+   const mode  =  await AsyncStorage.getItem('mode')
+   console.log(JSON.parse(mode!) , ">>>>>>")
+    
   };
 
   const logout = async () => {
@@ -233,12 +239,24 @@ const Profile = ({navigation}: any) => {
 
   const becomeContractor = () =>     navigation.navigate(navigationString.CREATECONTRACTOR);
 
+  const shearapp = () =>{
+    const options ={
+      message : `${userData.fullname} shearing this message ...`
+    }
+    Share.open(options)
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      err && console.log(err);
+    });
+  }
   return (
-    <ScrollView className="bg-white px-4">
+    <ScrollView className={`${bg_color2(dark)} px-4`}>
       <View className="py-5 px-4 flex-row justify-between">
         <TouchableOpacity className="flex-row gap-x-3" onPress={()=> navigation.navigate(navigationString.UPDATEPROFILE)}>
           <Image source={images.logo} className="w-6 h-6" />
-          <Text className="text-2xl font-[Poppins-Medium] text-black">
+          <Text className={`text-2xl font-[Poppins-Medium] ${text_color(dark)}`}>
             {!language ? `Profile` : `प्रोफ़ाइल`}
           </Text>
         </TouchableOpacity>
@@ -266,10 +284,10 @@ const Profile = ({navigation}: any) => {
           )}
         </View>
         <View>
-          <Text className="text-black text-center  font-[Poppins-Medium] ">
+          <Text className={`${text_color(dark)} text-center  font-[Poppins-Medium]`}>
             {userData?.fullname ? userData?.fullname : "Miran Ahmed"}
           </Text>
-          <Text className="text-black text-center  font-[Poppins-Medium] ">
+          <Text className={`${text_color(dark)} text-center  font-[Poppins-Medium]`}>
             {userData?.email ? userData?.email : "mazdoor@gmail.com"}
           </Text>
         </View>
@@ -285,9 +303,9 @@ const Profile = ({navigation}: any) => {
             <Image
               source={icons.language}
               className="w-8 h-8"
-              tintColor={'#181818'}
+              tintColor={'#A4A4A4'}
             />
-            <Text className=" text-black font-[Poppins-Medium] text-base">
+            <Text className={`${text_color(dark)} font-[Poppins-Medium] text-base`}>
               {!language ? `Language` : `भाषा`}
             </Text>
           </View>
@@ -299,32 +317,33 @@ const Profile = ({navigation}: any) => {
             value={language}
           />
         </View>
-        {/* <View className=" flex-row gap-x-3 justify-between items-center">
+        <View className=" flex-row gap-x-3 justify-between items-center">
           <View className=" flex-row gap-x-3 items-end py-2">
             <Image
-              source={icons.show}
+              source={icons.language}
               className="w-8 h-8"
-              tintColor={'#181818'}
+              tintColor={'#A4A4A4'}
             />
-            <Text className=" text-black font-[Poppins-Medium] text-base">
-             {!language ?` Dark Mode` : `डार्क मोड`}
+            <Text className={`${text_color(dark)} font-[Poppins-Medium] text-base`}>
+              {!language ? `Dark Mode` : `भाषा`}
             </Text>
           </View>
           <Switch
             trackColor={{false: '#767577', true: '#e6d4ff'}}
-            thumbColor={isEnabledDark ? '#822BFF' : '#f4f3f4'}
+            thumbColor={dark ? '#822BFF' : '#f4f3f4'}
             ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleDark}
-            value={isEnabledDark}
+            onValueChange={toggleModeSwitch}
+            value={dark}
           />
-        </View> */}
+        </View>
+      
         <ProfileButton text={!language ?'Privacy':'गोपनीयता'} icon={icons.password} onPress={PrivacyPolicy}/>
         <ProfileButton
           text={!language ? 'Help Center':`सहायता केंद्र`}
           icon={icons.notification}
           onPress={navigateToHelpCenter}
         />
-        <ProfileButton text={!language ?'Invite Friends':'मित्रों को आमंत्रित करें'} icon={icons.people} />
+        <ProfileButton text={!language ?'Invite Friends':'मित्रों को आमंत्रित करें'} icon={icons.people} onPress={shearapp}/>
         <TouchableOpacity
           onPress={showModal}
           className=" flex-row gap-x-3 justify-between items-center">

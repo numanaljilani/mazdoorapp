@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const GET_CONTRACTOR_BY_SERVICE = gql`
-mutation($service : String! ,$skip :Float ,$take :Float  ){
-    getContractor(getContractorInput :{service : $service , skip : $skip , take : $take}){
+mutation($service : String! ,$skip :Float ,$take :Float , $subService :  String!  ){
+    getContractor(getContractorInput :{service : $service , skip : $skip , take : $take , subService : , $subService}){
       fullname
       image
       service
@@ -10,8 +10,7 @@ mutation($service : String! ,$skip :Float ,$take :Float  ){
       id
       isBookmark
       rewies
-      rating
-      
+      rating   
     }
   }
 `;

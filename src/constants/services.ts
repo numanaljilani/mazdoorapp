@@ -1,7 +1,7 @@
 export const services = [
   {
     id: 1,
-    english: 'Electrician',
+    english: 'Electrician', 
     hindi: 'बिजलीवाला',
     subservices: [
       {english: 'Wiring', hindi: 'वायरिंग'},
@@ -20,6 +20,12 @@ export const services = [
     english: 'Maid',
     hindi: 'नौकरानी',
     subservices: [{english: 'Maid', hindi: 'नौकरानी'}],
+  },
+  {
+    id: 23,
+    english: 'Laundery',
+    hindi: 'नौकरानी',
+    subservices: [{english: 'Laundery', hindi: 'धोबी'}],
   },
   {
     id: 2,
@@ -133,7 +139,7 @@ export const services = [
   },
   {
     id: 13,
-    english: 'Appliance',
+    english: 'Appliances',
     hindi: 'उपकरण',
     subservices: [
       {english: 'Refrigerator Repair', hindi: 'रेफ्रिजरेटर मरम्मत'},

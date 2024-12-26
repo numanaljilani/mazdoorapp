@@ -34,4 +34,23 @@ export default {
   star: require('../assets/icons/star.png'),
   message: require('../assets/icons/messenger.png'),
   text: require('../assets/icons/text.png'),
+  share : require('../assets/icons/share.png'),
+
+
+
+  electrical : require('../assets/services/electrical.png'),
+  carpenter : require('../assets/services/carpenter.png'),
+  hvac : require('../assets/services/hvac.png'),
+  gardener : require('../assets/services/gardener.png'),
+  roofing : require('../assets/services/roof.png'),
+  flooring : require('../assets/services/flooring.png'),
+  locksmith : require('../assets/services/locksmith.png'),
+  pest : require('../assets/services/pest.png'),
+  Interior : require('../assets/services/Interior.png'),
+  guard : require('../assets/services/guard.png'),
+  renovation : require('../assets/services/renovation.png'),
+  brickwork : require('../assets/services/brickwork.png'),
+  door : require('../assets/services/door.png'),
+  pool : require('../assets/services/pool.png'),
+
 };

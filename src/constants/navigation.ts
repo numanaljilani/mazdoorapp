@@ -21,5 +21,6 @@ export default {
   BOOK :'Book',
   CREATECONTRACTOR : 'WorkDetailsInput',
   NOTIFICATION : 'Notifications',
-  CHANGEPASSWORD : 'ChangePassword'
+  CHANGEPASSWORD : 'ChangePassword',
+  SUBCATEGORIES : 'SubCategories'
 };

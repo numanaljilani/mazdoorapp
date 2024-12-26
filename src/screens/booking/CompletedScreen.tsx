@@ -12,12 +12,13 @@ import { TouchableOpacity } from 'react-native';
 import navigationString from '../../constants/navigation';
 import { formatedDateFunction } from '../../utils/dateFinction';
 import ListLoading from '../../components/loading/ListLoading';
+import { bg_color, bg_color2, secondary_text_color, text_color } from '../../constants/color';
 
 const CompletedScreen = ({navigation } : any) => {
     const [bookings, setBookings] = useState<any>([]);
     const [skLoading, setSkLoading] = useState<boolean>(false);
 
-    const {userData, token, language} = useSelector((state: any) => state?.user);
+    const {userData, token, language , dark} = useSelector((state: any) => state?.user);
   
     const headers = {
       authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
@@ -55,20 +56,20 @@ console.log(`${env.storage}${bookings[0]?.contractor?.image}`)
     return (
       <ScrollView          refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      } style={styles.scrollView}>
+      } style={[styles.scrollView,{backgroundColor : dark ? "#1F1F1F" : "white"}]}>
         { skLoading ? <ListLoading/>:bookings.length > 0 ? (
           bookings.map((booking: any, index: any) => (
-            <Card className="bg-white " key={index} style={styles.card}>
+            <Card className={`${bg_color2(dark)}`} key={index} style={styles.card}>
               <Card.Content style={styles.cardContent}>
                 <Image source={{uri : `${env.storage}${booking?.contractor?.image}`}} style={styles.cardImage} />
                 <View style={styles.cardDetails}>
                   <View>
-                    <Title className="text-black font-extrabold">
+                    <Title className={`${text_color(dark)} font-extrabold`}>
                       {booking?.contractor?.service
                         ? booking?.contractor?.service
                         : '-'}
                     </Title>
-                    <Paragraph className="mb-2 text-black">
+                    <Paragraph className={`mb-2 ${secondary_text_color(dark)}`}>
                       {booking?.contractor?.fullname
                         ? booking?.contractor?.fullname
                         : '-'}

@@ -21,8 +21,9 @@ import ActivityIndicatorComponent from '../../components/common/ActivityIndicato
 import { ME } from '../../graphql/mutation/me';
 import { useMutation } from '@apollo/client';
 import { setUser } from '../../service/slice/userSlice';
+import { bg_color, text_color } from '../../constants/color';
 const UpdateProfile = ({navigation}: any) => {
-  const {language, token, userData} = useSelector((state: any) => state?.user);
+  const {language, token, userData , dark} = useSelector((state: any) => state?.user);
   console.log(userData)
   const [me] = useMutation(ME);
   const route: any = useRoute();
@@ -154,16 +155,17 @@ const UpdateProfile = ({navigation}: any) => {
 
   return (
     <ScrollView contentContainerStyle={{}}>
-      <View className="py-3 bg-white">
+      <View className={`py-3 ${bg_color(dark)}`}>
         <View className="px-5 flex-row gap-5 my-3">
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image
               source={icons.back}
               className="w-8 h-8"
               resizeMode="contain"
+              tintColor={dark ? "black" : "white"}
             />
           </TouchableOpacity>
-          <Text className="text-2xl font-semibold text-center  text-black">
+          <Text className={`text-2xl font-semibold text-center  ${text_color(dark)}`}>
             {language ? `प्रोफ़ाइल पूर्ण क्र` : `Fill Your Profile`}
           </Text>
           <View />

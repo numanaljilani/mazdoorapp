@@ -11,6 +11,7 @@ import {
   import {useDispatch, useSelector} from 'react-redux';
   import {setLanguage} from '../../service/slice/userSlice';
   import AsyncStorage from '@react-native-async-storage/async-storage';
+import { bg_color, bg_color2 } from '../../constants/color';
 
 const RejectOrderModal = ({
     setModal,
@@ -21,7 +22,7 @@ const RejectOrderModal = ({
     cancelBooking: any;
     modal: boolean;
   }) => {
-    const {language} = useSelector((state: any) => state?.user);
+    const {language , dark} = useSelector((state: any) => state?.user);
     const dispatch = useDispatch();
   
     return (
@@ -37,7 +38,7 @@ const RejectOrderModal = ({
         >
         <View style={styles.modalBackground} className="flex-1 justify-end ">
           <View />
-          <View className="bg-white w-full mt-10 px-4 justify-between rounded-t-3xl">
+          <View className={`${bg_color2(dark)} w-full mt-10 px-4 justify-between rounded-t-3xl`}>
           <View className="border-2 rounded-full  mt-3 w-10 mx-auto border-gray-200 " />
             <View className='pb-7'>
              

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Login from '../screens/auth/Login';
 import { createStackNavigator } from '@react-navigation/stack';
 import Splash from '../screens/splash/Splash';
@@ -27,17 +27,40 @@ import Notification from '../screens/Notification/Notification';
 import Security from '../screens/security/Security';
 import OtpScreen from '../screens/otp/Otp';
 import ResetPassword from '../screens/resetpassword/ResetPassword';
+import SubCategories from '../screens/subCategories/SubCategories';
+import { useNavigation } from '@react-navigation/native';
 
+import dynamicLinks from '@react-native-firebase/dynamic-links';
 
 const Stack = createStackNavigator();
 
-const Route = () => {
+
+
+const Route = ({}) => {
+
+  const HandleDeepLinking = () => {
+    const {navigate} : any = useNavigation()
+    const handleDynamicLinks = async (link : any ) => {
+      console.log('Foreground link handling:', link)
+      let productId = link.url.split('=').pop()
+      console.log('productId:', productId,)
+        navigate('WorkDetails', { productId: productId })
+    }
+    useEffect(() => {
+      const unsubscribe = dynamicLinks().onLink(handleDynamicLinks)
+      return () => unsubscribe()
+    }, [])
+
+    return null
+  }
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName="Splash">
+      initialRouteName="Splash"
+      
+      >
       {/* new */}
       <Stack.Screen name={navigationString.CONTRACTORDETAILS} component={WorkDetails} />
       <Stack.Screen name="MyBooking" component={MyBooking} />
@@ -64,6 +87,7 @@ const Route = () => {
       <Stack.Screen name={navigationString.MORESERVICES} component={MoreSerices} />
       <Stack.Screen name={navigationString.UPDATEPROFILE} component={UpdateProfile} />
       <Stack.Screen name={navigationString.PRIVACY} component={Privacy} />
+      <Stack.Screen name={navigationString.SUBCATEGORIES} component={SubCategories} />
       <Stack.Screen name={navigationString.BOOK} component={Booking} />
       <Stack.Screen name={navigationString.NOTIFICATION} component={Notification} />
       <Stack.Screen name={navigationString.CHANGEPASSWORD} component={Security} />

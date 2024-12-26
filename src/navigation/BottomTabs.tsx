@@ -5,7 +5,6 @@ import Home from '../screens/home/Home';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Profile from '../screens/profile/Profile';
-import Liked from '../screens/liked/Liked';
 import icons from '../constants/icons';
 import MyBooking from '../screens/booking/MyBooking';
 import { IconButton } from 'react-native-paper';
@@ -19,14 +18,19 @@ import MyCalenderBookings from '../screens/CalenderBookings/MyCalenderBookings';
 const Tab = createBottomTabNavigator();
 
 const BottomTabs = ({navigation}: any) => {
-  const {userData} = useSelector((state: any) => state?.user);
+  const {userData , dark} = useSelector((state: any) => state?.user);
   return (
     <Tab.Navigator
  
     screenOptions={
      (route)=>( {
       headerShown :false,
-      tabBarLabel : () => null,     
+      tabBarLabel : () => null,  
+      tabBarStyle:{
+        // backgroundColor : "#2E2E2E"
+        borderTopColor : "",
+        backgroundColor : dark ? "#1F1F1F" : "white"
+      }   
     })
     }
     >
@@ -42,7 +46,7 @@ const BottomTabs = ({navigation}: any) => {
           },
           // tabBarLabel: 'Home',
           // tabBarStyle : {
-          //   borderTopWidth :5
+          //   borderTopWidth :0
           // }
         }}
         initialParams={{ tabIndex: 0 }}

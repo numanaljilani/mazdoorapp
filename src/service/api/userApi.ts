@@ -6,59 +6,18 @@ import env from '../../env';
 // Define a service using a base URL and expected endpoints
 export const userzApi = createApi({
   reducerPath: 'userzApi',
-  baseQuery: fetchBaseQuery({ baseUrl: `${env.server}/` }),
+  baseQuery: fetchBaseQuery({ baseUrl: `${env.server}/user` }),
   // baseQuery: fetchBaseQuery({ baseUrl: 'https://mazdoor-server.onrender.com/' }),
   endpoints: (builder) => ({
 
-    registerPhoneNumber : builder.mutation({
-      query: (args) => {
-        console.log(args , ">>>>>>>")
-        return {
-          url: "user/phone",
-          method: "POST",
-          body: args,
-          headers: {
-            "Content-type": "application/json; charset=UTF-8",
-          },
-        };
-      },
-    }),
-    verifyOtp : builder.mutation({
-      query: (args) => {
-        console.log(args.body , ">>>>>>>")
-        console.log(args.token , ">>>>>>> token")
-        return {
-          url: "user/verify",
-          method: "POST",
-          body: args.body,
-          headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            "Authorization": `Bearer ${args.token}`,
-          },
-        };
-      },
-    }),
-    uploadProfile : builder.mutation({
-      query: (args) => {
-        console.log(args.body , ">>>>>>>")
-        console.log(args.token , ">>>>>>> token")
-        return {
-          url: "user/update",
-          method: "POST",
-          body: args.body,
-          headers: {
-            'Content-type': 'multipart/form-data; charset=UTF-8',
-            "Authorization": `Bearer ${args.token}`,
-          },
-        };
-      },
-    }),
+ 
+
     becomeWorker : builder.mutation({
       query: (args) => {
         console.log(args.body , ">>>>>>>")
         console.log(args.token , ">>>>>>> token")
         return {
-          url: "user/create-worker",
+          url: "/create-worker",
           method: "POST",
           body: args.body,
           headers: {
@@ -72,7 +31,7 @@ export const userzApi = createApi({
       query: (args) => {
         console.log(args.body , ">>>>>>>")
         return {
-          url: "user",
+          url: "/",
           method: "POST",
           body: args.body,
           headers: {
@@ -85,7 +44,7 @@ export const userzApi = createApi({
       query: (args) => {
         console.log(args.body , ">>>>>>>")
         return {
-          url: "user/register-contractor",
+          url: "/register-contractor",
           method: "POST",
           body: args.body,
           headers: {
@@ -100,7 +59,7 @@ export const userzApi = createApi({
         console.log(args.body , ">>>>>>>")
         console.log(args.token , ">>>>>>> token")
         return {
-          url: "user/update",
+          url: "/update",
           method: "POST",
           body: args.body,
           headers: {
@@ -115,7 +74,7 @@ export const userzApi = createApi({
         console.log(args.body , ">>>>>>>")
         console.log(args.token , ">>>>>>> token")
         return {
-          url: "user/postimage",
+          url: "/postimage",
           method: "POST",
           body: args.body,
           headers: {
@@ -130,4 +89,4 @@ export const userzApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const {useRegisterPhoneNumberMutation , useVerifyOtpMutation, useUpdateProfileMutation , useUploadProfileMutation , useCompleteProfileMutation , useBecomeWorkerMutation , useUploadPostMutation , useCompleteContractorRegistrationMutation} = userzApi
+export const {  useUpdateProfileMutation  , useCompleteProfileMutation , useBecomeWorkerMutation , useUploadPostMutation , useCompleteContractorRegistrationMutation} = userzApi

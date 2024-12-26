@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import images from '../../constants/images';
+import { bg_color } from '../../constants/color';
+import { useSelector } from 'react-redux';
 
 const NotFoundBooking = ({des} : any) => {
     const [searchQuery, setSearchQuery] = useState('');
+    const {userData, token, language , dark} = useSelector((state: any) => state?.user);
 
     return (
-        <View style={styles.container} className='min-h-screen -m-4 -z-20'>
+        <View style={styles.container} className={`${bg_color(dark)} min-h-screen -m-4 -z-20`}>
             {/* <Searchbar
                 style={styles.searchBar}
                 placeholder="Search"
@@ -22,7 +25,7 @@ const NotFoundBooking = ({des} : any) => {
                 <Text style={styles.resultCount}>0 found</Text>
             </View> */}
 
-            <View style={styles.notFoundContainer}>
+            <View style={[styles.notFoundContainer ,]} className={`${bg_color(dark)}`}>
                 <View style={styles.imageContainer}>
                     <Image style={styles.image} source={images.notfound} />
                 </View>
@@ -38,7 +41,7 @@ const NotFoundBooking = ({des} : any) => {
 const styles = StyleSheet.create({
     container: {
  
-        backgroundColor: 'white',
+       
         padding: 20,
     },
     searchBar: {

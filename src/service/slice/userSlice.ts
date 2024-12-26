@@ -6,7 +6,8 @@ const authSlice = createSlice({
     userData: {},
     token : "",
     posts : [],
-    language : false
+    language : false,
+    dark : false
   },
   reducers: {
     setUser: (state, action) => {
@@ -21,8 +22,11 @@ const authSlice = createSlice({
     setLanguage : (state, action) => {
       state.language = action.payload;
     },
+    setDarkMode : (state, action) => {
+      state.dark = action.payload;
+    },
   },
 });
 
-export const {setUser , setToken ,setPosts , setLanguage } = authSlice.actions;
+export const {setUser , setToken ,setPosts , setLanguage , setDarkMode } = authSlice.actions;
 export default authSlice.reducer;

@@ -29,6 +29,7 @@ import {useIsFocused} from '@react-navigation/native';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import ListLoading from '../../components/loading/ListLoading';
 import PhoneWarning from '../../components/updateModal/PhoneWarning';
+import { bg_color, bg_color2, secondary_text_color, text_color } from '../../constants/color';
 
 const Home = ({navigation}: any) => {
   const [contractors, setContractors] = useState([]);
@@ -39,7 +40,7 @@ const Home = ({navigation}: any) => {
 
   const isFocused = useIsFocused();
 
-  const {userData, token, language} = useSelector((state: any) => state?.user);
+  const {userData, token, language , dark} = useSelector((state: any) => state?.user);
 
   const headers = {
     authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
@@ -52,7 +53,7 @@ const Home = ({navigation}: any) => {
   const getContractorsByService = async () => {
     if(skip < 20) setSkLoading(true)
     await get_contractor_by_service({
-      variables: {service, take: 20, skip: 0},
+      variables: {service, subService : service, take: 20, skip: 0},
       context: {headers},
     });
     setSkLoading(false)
@@ -93,7 +94,7 @@ const Home = ({navigation}: any) => {
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>
-      <View className=" bg-white px-4 py-5 min-h-screen">
+      <View className={`px-4 py-5 min-h-screen ${bg_color(dark)}`}>
         <View className="flex-row justify-between">
           <View className=" flex-row items-center gap-3">
             <View className="  rounded-full overflow-hidden">
@@ -113,10 +114,10 @@ const Home = ({navigation}: any) => {
               )}
             </View>
             <View className="">
-              <Text className="text-black font-[Poppins-Regular]">
+              <Text className={`${text_color(dark)} font-[Poppins-Regular]"`}>
                 {!language ? `Hello` : `नमस्ते`}
               </Text>
-              <Text className="text-black font-[Poppins-SemiBold] tracking-wider text-base">
+              <Text className={`${text_color(dark)} font-[Poppins-SemiBold] tracking-wider text-base`}>
                 {userData?.fullname ? userData?.fullname : 'Miran Ahmed'}
               </Text>
             </View>
@@ -127,12 +128,12 @@ const Home = ({navigation}: any) => {
               onPress={() =>
                 navigation.navigate(navigationString.NOTIFICATION)
               }>
-              <Image source={icons.notification} className="w-full h-full" />
+              <Image source={icons.notification} className="w-full h-full" tintColor={"#822BFF"} />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => navigation.navigate(navigationString.MYBOOKMARKS)}
               className="w-8 h-8">
-              <Image source={icons.bookmark1} className="w-full h-full" />
+              <Image source={icons.bookmark1} className="w-full h-full" tintColor={"#822BFF"} />
             </TouchableOpacity>
           </View>
         </View>
@@ -141,39 +142,22 @@ const Home = ({navigation}: any) => {
             onPress={() => {
               setSearchModal(true);
             }}
-            className="bg-gray-100 flex-row  px-5 py-2 rounded-lg">
-            <AntDesign size={25} color={'#312651'} name="search1" />
-            <Text className="text-lg font-[Poppins-Regular] text-gray-600 ml-4">
+            className={`${bg_color2(dark)} flex-row  px-5 py-2 rounded-lg`}>
+            <AntDesign size={25} color={dark ? "white":'#312651'} name="search1" />
+            <Text className={`text-lg font-[Poppins-Regular] ${secondary_text_color(dark)} ml-4`}>
               Search
             </Text>
           </TouchableOpacity>
         </View>
-
-        {/* <View className="">
-          <Text className="text-lg text-black font-[Poppins-Medium]">
-            {!language ? `Special Offers` : `खास पेशकश`}
-          </Text>
-          <View className="rounded-xl p-4 w-full  bg-[#822BFF]/90  shadow-black shadow-lg">
-            <Text className="text-4xl   text-white font-[Poppins-SemiBold]">
-              30%
-            </Text>
-            <Text className="text-lg  text-white font-[Poppins-Medium]">
-              Todays Special!
-            </Text>
-            <Text className="text-sm  text-white font-[Poppins-Medium]">
-              Get discount for every order only valid for today
-            </Text>
-          </View>
-        </View> */}
         <View className="mt-3">
-          <Text className="text-lg text-black font-[Poppins-Medium]">
+          <Text className={`text-lg ${text_color(dark)} font-[Poppins-Medium]`}>
             {!language ? `Services` : `सेवाएं`}
           </Text>
           <View className="flex-row gap-x-3 gap-y-3 flex-wrap justify-center">
             <View className=" w-1/5 aspect-w-1 aspect-h-1">
               <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate(navigationString.CONTRACTORLIST, {
+                  navigation.navigate(navigationString.SUBCATEGORIES, {
                     service: 'Helper',
                   })
                 }
@@ -184,7 +168,7 @@ const Home = ({navigation}: any) => {
                   name="boxes"
                 />
               </TouchableOpacity>
-              <Text className="text-black font-[Poppins-Medium] text-center text-medium">
+              <Text className={`${text_color(dark)} font-[Poppins-Medium] text-center text-medium`}>
                 {!language ?  "Helper" : "सहायक"}
               </Text>
             </View>
@@ -192,14 +176,14 @@ const Home = ({navigation}: any) => {
             <View className=" w-1/5 aspect-w-1 aspect-h-1">
               <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate(navigationString.CONTRACTORLIST, {
+                  navigation.navigate(navigationString.SUBCATEGORIES, {
                     service: 'Plumbing',
                   })
                 }
                 className="bg-[#4CAC58]/10  w-16 h-16 justify-center items-center rounded-full">
                 <MaterialCommunityIcons size={40} color={'#4CAC58'} name="face-woman-shimmer-outline" />
               </TouchableOpacity>
-              <Text className="text-black font-[Poppins-Medium] text-center text-medium">
+              <Text className={`${text_color(dark)} font-[Poppins-Medium] text-center text-medium`}>
                 {!language ? "Maid" : "नौकरानी"}
               </Text>
             </View>
@@ -207,7 +191,7 @@ const Home = ({navigation}: any) => {
             <View className=" w-1/5 aspect-w-1 aspect-h-1">
               <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate(navigationString.CONTRACTORLIST, {
+                  navigation.navigate(navigationString.SUBCATEGORIES, {
                     service: 'Cleaning',
                   })
                 }
@@ -218,14 +202,14 @@ const Home = ({navigation}: any) => {
                   name="cleaning-services"
                 />
               </TouchableOpacity>
-              <Text className="text-black font-[Poppins-Medium] text-center text-medium">
+              <Text className={`${text_color(dark)} font-[Poppins-Medium] text-center text-medium`}>
                 {!language ? "Cleaning" : "सफाई"}
               </Text>
             </View>
             <View className=" w-1/5 aspect-w-1 aspect-h-1">
               <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate(navigationString.CONTRACTORLIST, {
+                  navigation.navigate(navigationString.SUBCATEGORIES, {
                     service: 'Repairing',
                   })
                 }
@@ -236,7 +220,7 @@ const Home = ({navigation}: any) => {
                   name="hammer-screwdriver"
                 />
               </TouchableOpacity>
-              <Text className="text-black font-[Poppins-Medium] text-center text-medium">
+              <Text className={`${text_color(dark)} font-[Poppins-Medium] text-center text-medium`}>
                 {!language ?"Repairing" : "मरम्मत"}
               </Text>
             </View>
@@ -244,7 +228,7 @@ const Home = ({navigation}: any) => {
             <View className=" w-1/5 aspect-w-1 aspect-h-1">
               <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate(navigationString.CONTRACTORLIST, {
+                  navigation.navigate(navigationString.SUBCATEGORIES, {
                     service: 'Painting',
                   })
                 }
@@ -255,7 +239,7 @@ const Home = ({navigation}: any) => {
                   name="format-paint"
                 />
               </TouchableOpacity>
-              <Text className="text-black font-[Poppins-Medium] text-center text-medium">
+              <Text className={`${text_color(dark)} font-[Poppins-Medium] text-center text-medium`}>
                 {!language ?"Painting" :"चित्रकारी"}
               </Text>
             </View>
@@ -263,7 +247,7 @@ const Home = ({navigation}: any) => {
             <View className=" w-1/5 aspect-w-1 aspect-h-1">
               <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate(navigationString.CONTRACTORLIST, {
+                  navigation.navigate(navigationString.SUBCATEGORIES, {
                     service: 'Laundery',
                   })
                 }
@@ -274,14 +258,14 @@ const Home = ({navigation}: any) => {
                   name="washing-machine"
                 />
               </TouchableOpacity>
-              <Text className="text-black font-[Poppins-Medium] text-center text-medium">
+              <Text className={`${text_color(dark)} font-[Poppins-Medium] text-center text-medium`}>
                 {!language ?"Laundery" : " कपड़े धोन"}
               </Text>
             </View>
             <View className=" w-1/5 aspect-w-1 aspect-h-1">
               <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate(navigationString.CONTRACTORLIST, {
+                  navigation.navigate(navigationString.SUBCATEGORIES, {
                     service: 'Appliances',
                   })
                 }
@@ -292,7 +276,7 @@ const Home = ({navigation}: any) => {
                   name="microwave"
                 />
               </TouchableOpacity>
-              <Text className="text-black font-[Poppins-Medium] text-center text-medium">
+              <Text className={`${text_color(dark)} font-[Poppins-Medium] text-center text-medium`}>
                 {!language ? "Appliances" : "उपकरण"}
               </Text>
             </View>
@@ -300,7 +284,7 @@ const Home = ({navigation}: any) => {
             <View className=" w-1/5 aspect-w-1 aspect-h-1">
               <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate(navigationString.CONTRACTORLIST, {
+                  navigation.navigate(navigationString.SUBCATEGORIES, {
                     service: 'Shifting',
                   })
                 }
@@ -311,7 +295,7 @@ const Home = ({navigation}: any) => {
                   name="truck"
                 />
               </TouchableOpacity>
-              <Text className="text-black font-[Poppins-Medium] text-center text-medium">
+              <Text className={`${text_color(dark)} font-[Poppins-Medium] text-center text-medium`}>
                 {!language ? "Shifting" : "स्थानांतरण"}
               </Text>
             </View>
@@ -319,14 +303,14 @@ const Home = ({navigation}: any) => {
             <View className=" w-1/5 aspect-w-1 aspect-h-1">
               <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate(navigationString.CONTRACTORLIST, {
+                  navigation.navigate(navigationString.SUBCATEGORIES, {
                     service: 'Plumbing',
                   })
                 }
                 className="bg-[#4CAC58]/10  w-16 h-16 justify-center items-center rounded-full">
                 <MaterialIcons size={40} color={'#4CAC58'} name="plumbing" />
               </TouchableOpacity>
-              <Text className="text-black font-[Poppins-Medium] text-center text-medium">
+              <Text className={`${text_color(dark)} font-[Poppins-Medium] text-center text-medium`}>
                 {!language ? "Plumbing" : "नलकारी"}
               </Text>
             </View>
@@ -339,14 +323,14 @@ const Home = ({navigation}: any) => {
                 className="bg-[#822BFF]/10 w-16 h-16 justify-center items-center rounded-full">
                 <Feather size={40} color={'#822BFF'} name="more-horizontal" />
               </TouchableOpacity>
-              <Text className="text-black font-[Poppins-Medium] text-center text-medium">
+              <Text className={`${text_color(dark)} font-[Poppins-Medium] text-center text-medium`}>
                 {!language ? "More" : "अधिक"}
               </Text>
             </View>
           </View>
         </View>
         <View>
-          <Text className="text-lg text-black font-[Poppins-Medium]">
+          <Text className={`text-lg ${text_color(dark)} font-[Poppins-Medium]`}>
             {!language ? `Most Popular Services` : `सर्वाधिक लोकप्रिय सेवाएँ`}
           </Text>
           <View>

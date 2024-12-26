@@ -21,16 +21,16 @@ import Button from '../../components/common/Button';
 import SocialAuth from '../../components/SocialAuth/SocialAuth';
 import navigationsString from '../../constants/navigation';
 import messenging from '@react-native-firebase/messaging';
+import { bg_color, text_color } from '../../constants/color';
 
 const Login = ({navigation}: {navigation: any}) => {
   const colorScheme = useColorScheme();
-
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [secure, setSecure] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
-  const {language} = useSelector((state: any) => state?.user);
+  const {language , dark} = useSelector((state: any) => state?.user);
   const [login] = useMutation(loginMutation);
 
   const securePass = async () => {
@@ -88,8 +88,8 @@ const Login = ({navigation}: {navigation: any}) => {
   };
 
   return (
-    <View className="flex-1 justify-center bg-white  px-8 border-2">
-      <Text className="font-[Poppins-Medium]  text-4xl  text-gray-900 leading-relaxed ">
+    <View className={`flex-1 justify-center ${bg_color(dark)}  px-8 `}>
+      <Text className={`font-[Poppins-Medium]  text-4xl  text-gray-900 ${text_color(dark)} leading-relaxed`}>
         {language ? `अपने अकाउंट में लॉग इन करें` : `Login to your account`}
       </Text>
       <View className="w-full gap-y-4 ">

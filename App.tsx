@@ -6,26 +6,13 @@
  */
 import 'react-native-gesture-handler';
 import React, { useEffect } from 'react';
-// import type {PropsWithChildren} from 'react';
-import // ActivityIndicator,
-  // SafeAreaView,
-  // ScrollView,
-  // StatusBar,
-  // StyleSheet,
-  // useColorScheme,
+
 
   'react-native';
 import { PaperProvider } from 'react-native-paper';
 
-// import {
-//   Colors,
-//   DebugInstructions,
-//   Header,
-//   LearnMoreLinks,
-//   ReloadInstructions,
-// } from 'react-native/Libraries/NewAppScreen';
 import Route from './src/navigation/Route';
-import { NavigationContainer } from '@react-navigation/native';
+import { createNavigationContainerRef, NavigationContainer, useNavigation } from '@react-navigation/native';
 import {
   ApolloProvider,
 } from '@apollo/client';
@@ -33,56 +20,23 @@ import { Provider } from 'react-redux';
 import { store } from './src/service/store';
 import FlashMessage from 'react-native-flash-message';
 import { client } from './src/utils/apolloclient';
-import { PermissionsAndroid, Platform } from 'react-native';
+import { Linking, PermissionsAndroid, Platform } from 'react-native';
 import { notificationListeners, requestUserPermission } from './src/utils/notificationservice';
+import dynamicLinks from '@react-native-firebase/dynamic-links';
 
-// import {PaperProvider} from 'react-native-paper';
 
-// type SectionProps = PropsWithChildren<{
-//   title: string;
-// }>;
-
-// function Section({children, title}: SectionProps): React.JSX.Element {
-//   const isDarkMode = useColorScheme() === 'dark';
-//   return (
-//     <View style={styles.sectionContainer}>
-//       <Text
-//         style={[
-//           styles.sectionTitle,
-//           {
-//             color: isDarkMode ? Colors.white : Colors.black,
-//           },
-//         ]}>
-//         {title}
-//       </Text>
-//       <Text
-//         style={[
-//           styles.sectionDescription,
-//           {
-//             color: isDarkMode ? Colors.light : Colors.dark,
-//           },
-//         ]}>
-//         {children}
-//       </Text>
-//     </View>
-//   );
-// }
-
-// keytool -list -v \ -alias androiddebugkey -keystore %USERPROFILE%\.android\debug.keystore
-
-// const client = new ApolloClient({
-//   // uri: 'http://192.168.52.213:3000/graphql',
-//   uri: `${env.server}/graphql`,
-//   cache: new InMemoryCache(),
-//   // link: createUploadLink()
-// });
-
+export const navigationRef = createNavigationContainerRef();
 function App(): React.JSX.Element {
-  // const isDarkMode = useColorScheme() === 'dark';
 
-  // const backgroundStyle = {
-  //   backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  // };
+
+  const linking = {
+    prefixes: ['https://mazdur.com','mazdoor://'],
+    config: {
+      screens: {
+        Profile: 'WorkDetails/:id', // The "id" will be extracted from the URL
+      },
+    },
+  };
 
   useEffect(()=>{
 
@@ -102,11 +56,46 @@ function App(): React.JSX.Element {
     }
   
   },[])
+
+  // useEffect(() => {
+  //   const handleDeepLink = (event: { url: string }) => {
+  //     const route = event.url.match(/WorkDetails\/(\w+)/);
+  //     if (route) {
+  //       const userId = route[1];
+  //       navigationRef.current?.navigate('WorkDetails', { id: userId });
+  //     }
+  //   };
+
+  //   Linking.getInitialURL().then((url) => {
+  //     if (url) handleDeepLink({ url });
+  //   });
+
+  //   const subscription = Linking.addEventListener('url', handleDeepLink);
+
+  //   return () => {
+  //     subscription.remove();
+  //   };
+  // }, []);
+
+
+  // const handleDynamicLink = (link:any) => {
+  //   // Handle dynamic link inside your own application
+  //   if (link.url === 'https://invertase.io/offer') {
+  //     // ...navigate to your offers screen
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
+  //   // When the component is unmounted, remove the listener
+  //   return () => unsubscribe();
+  // }, []);
+
   return (
     <Provider store={store}>
       <ApolloProvider client={client}>
         <PaperProvider>
-          <NavigationContainer>
+          <NavigationContainer linking={linking}>
             <Route />
             <FlashMessage position="bottom" />
           </NavigationContainer>

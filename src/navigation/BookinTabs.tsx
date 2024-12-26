@@ -10,25 +10,26 @@ import CompletedScreen from '../screens/booking/CompletedScreen';
 import CancelledScreen from '../screens/booking/CancelledScreen';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useSelector } from 'react-redux';
+import { bg_color } from '../constants/color';
 
 
 const Tab = createMaterialTopTabNavigator();
 // const Tab = createBottomTabNavigator();
 const BookinTabs = ({ navigation } : any) => {
-  const {language} = useSelector((state: any) => state?.user);
+  const {language , dark} = useSelector((state: any) => state?.user);
   return (
-    <View style={styles.container}>
-      <Appbar.Header style={styles.appbarHeader}>
+    <View style={styles.container} className={`${bg_color(dark)}`}>
+      <Appbar.Header style={styles.appbarHeader} className={`${bg_color(dark)}`}>
         <Appbar.Action
           icon={() => <Image source={images.logo} style={styles.logo} />}
           onPress={() => {}}
         />
-        <Appbar.Content title={<Text style={styles.title}>{language ? "मेरी बुकिंग":"My Bookings"}</Text>} />
-        <Appbar.Action icon="magnify" onPress={() => {}} />
-        <Appbar.Action
+        <Appbar.Content title={<Text style={[styles.title , {color : dark ? "white" : "black"}]}>{language ? "मेरी बुकिंग":"My Bookings"}</Text>} />
+        {/* <Appbar.Action icon="magnify" onPress={() => {}} /> */}
+        {/* <Appbar.Action
           icon="dots-horizontal-circle-outline"
           onPress={() => {}}
-        />
+        /> */}
       </Appbar.Header>
 
       {/* <NavigationContainer independent={false}> */}
@@ -36,14 +37,22 @@ const BookinTabs = ({ navigation } : any) => {
           screenOptions={({route}) => ({
             tabBarActiveTintColor: '#822BFF', // Change to your desired focused color
             tabBarInactiveTintColor: 'gray',
+            tabBarContentContainerStyle : {
+              backgroundColor : dark ? "#1F1F1F" : "white",
+       
+            },
             tabBarIndicatorStyle: {
-              backgroundColor: '#822BFF',
+              backgroundColor: dark ? "black":'#822BFF',
               borderWidth: 2,
               borderColor: '#822BFF',
               borderCurve: 'circular',
             },
+           
+            
+            
             tabBarLabelStyle: {
               fontFamily: 'Poppins-SemiBold',
+              // backgroundColor : dark ? "#1F1F1F" : "white"
             },
           })}>
           <Tab.Screen name={language ?"आगामी": "Upcoming" } component={UpcomingScreen} />
@@ -59,7 +68,7 @@ export default BookinTabs
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,    backgroundColor: 'white',
+      flex: 1
     },
     appbarHeader: {
       backgroundColor: 'transparent',

@@ -39,19 +39,22 @@ import ActivityIndicatorComponent from '../../components/common/ActivityIndicato
 import icons from '../../constants/icons';
 import { Linking } from 'react-native';
 import ListLoading from '../../components/loading/ListLoading';
+import { bg_color, bg_color2, secondary_text_color, text_color } from '../../constants/color';
+import { color } from 'react-native-elements/dist/helpers';
 
 const Tab = createMaterialTopTabNavigator();
 
 const ContractorOrders = () => {
+  const {userData, token, language , dark} = useSelector((state: any) => state?.user);
   return (
-    <View style={styles.container}>
-      <Appbar.Header style={styles.appbarHeader}>
+    <View style={styles.container}  className={`${bg_color(dark)}`}>
+      <Appbar.Header style={styles.appbarHeader} className={`${bg_color(dark)}`} >
         <Appbar.Action
           icon={() => <Image source={images.logo} style={styles.logo} />}
           onPress={() => {}}
         />
         <Appbar.Content
-          title={<Text style={styles.title}>My Contracts</Text>}
+          title={<Text style={styles.title} className={`${text_color(dark)} font-[Poppins-SemiBold]`}>My Contracts</Text>}
         />
         {/* <Appbar.Action icon="magnify" onPress={() => {}} /> */}
         {/* <Appbar.Action
@@ -73,7 +76,13 @@ const ContractorOrders = () => {
             },
             tabBarLabelStyle: {
               fontFamily: 'Poppins-SemiBold',
+              backgroundColor : dark ? "#1F1F1F" : "white",
+              flex : 1
             },
+            tabBarContentContainerStyle : {
+              backgroundColor : dark ? "#1F1F1F" : "white",
+       
+            }
           })}>
           <Tab.Screen name="Pending" component={Upcoming} />
           <Tab.Screen name="Completed" component={Completed} />
@@ -87,7 +96,7 @@ const ContractorOrders = () => {
 export default ContractorOrders;
 
 const Upcoming = () => {
-  const {userData, token, language} = useSelector((state: any) => state?.user);
+  const {userData, token, language , dark} = useSelector((state: any) => state?.user);
 
   const headers = {
     authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
@@ -151,17 +160,17 @@ const Upcoming = () => {
   return (
     <ScrollView          refreshControl={
       <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-    } style={styles.scrollView}>
+    } style={[styles.scrollView]}  className={`${bg_color(dark)}`}>
       {skLoading? <ListLoading/> :
       
       bookings.length > 0 ? (
         bookings.map((booking: any, index: any) => (
-          <Card className="bg-white mx-2 mt-3" key={index} style={styles.card}>
+          <Card className={`${bg_color2(dark)} mx-2 mt-3`} key={index} style={styles.card}>
             <Card.Content style={styles.cardContent}>
               <Image source={{uri :booking?.user?.image?.includes('google') ?booking?.user?.image :`${env.storage}${booking?.user?.image}`}} style={styles.cardImage} />
               <View style={styles.cardDetails}>
                 <View>
-                  <Title className="text-black font-extrabold">
+                  <Title className={`${text_color(dark)} font-extrabold`}>
                     {/* {booking?.contractor?.service
                       ? booking?.contractor?.service
                       : '-'} */}
@@ -242,7 +251,7 @@ const Upcoming = () => {
 const Completed = () => {
   const [bookings, setBookings] = useState<any>([]);
 
-  const {userData, token, language} = useSelector((state: any) => state?.user);
+  const {userData, token, language , dark} = useSelector((state: any) => state?.user);
 
   const headers = {
     authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
@@ -281,20 +290,20 @@ const Completed = () => {
   return (
     <ScrollView          refreshControl={
       <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-    } style={styles.scrollView}>
+    } style={styles.scrollView}  className={`${bg_color(dark)}`}>
       {skLoading ? <ListLoading/>:bookings.length > 0 ? (
         bookings.map((booking: any, index: any) => (
-          <Card className="bg-white" key={index} style={styles.card}>
+          <Card className={`${bg_color2(dark)}`} key={index} style={styles.card}>
             <Card.Content style={styles.cardContent}>
               <Image source={booking.image} style={styles.cardImage} />
               <View style={styles.cardDetails}>
                 <View>
-                  <Title className="text-black font-extrabold">
+                  <Title className={`${text_color(dark)} font-extrabold`}>
                     {booking?.contractor?.service
                       ? booking?.contractor?.service
                       : '-'}
                   </Title>
-                  <Paragraph className="mb-2 text-black">
+                  <Paragraph className={`mb-2 ${secondary_text_color(dark)}`}>
                     {booking?.contractor?.fullname
                       ? booking?.contractor?.fullname
                       : '-'}
@@ -330,7 +339,7 @@ const Completed = () => {
 };
 
 const Cancelled = () => {
-  const {userData, token, language} = useSelector((state: any) => state?.user);
+  const {userData, token, language , dark} = useSelector((state: any) => state?.user);
 
   const headers = {
     authorization: userData.accessToken ? `Bearer ${userData.accessToken}` : '',
@@ -369,20 +378,20 @@ const Cancelled = () => {
   return (
     <ScrollView          refreshControl={
       <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-    } style={styles.scrollView}>
+    } style={[styles.scrollView]} className={`${bg_color(dark)}`}>
       {skLoading ? <ListLoading/>: bookings.length > 0 ? (
         bookings.map((booking: any, index: any) => (
-          <Card className="bg-white" key={index} style={styles.card}>
+          <Card className={`${bg_color2(dark)}`} key={index} style={styles.card}>
             <Card.Content style={styles.cardContent}>
               {/* <Image source={booking.image} style={styles.cardImage} /> */}
               <View style={styles.cardDetails}>
                 <View>
-                  <Title className="text-black font-extrabold">
+                  <Title className={`${text_color(dark)} font-extrabold`}>
                     {booking?.contractor?.service
                       ? booking?.contractor?.service
                       : '-'}
                   </Title>
-                  <Paragraph className="mb-2 text-black">
+                  <Paragraph className={`mb-2 ${secondary_text_color(dark)}`}>
                     {booking?.contractor?.fullname
                       ? booking?.contractor?.fullname
                       : '-'}
@@ -419,7 +428,6 @@ const Cancelled = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
   },
   appbarHeader: {
     backgroundColor: 'transparent',
@@ -431,10 +439,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'black',
   },
   scrollView: {
     // padding: 20,
+    paddingHorizontal : 4,
+    paddingVertical : 10
   },
   card: {
     marginBottom: 20,

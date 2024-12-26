@@ -11,6 +11,7 @@ import {
   import {useDispatch, useSelector} from 'react-redux';
   import {setLanguage} from '../../service/slice/userSlice';
   import AsyncStorage from '@react-native-async-storage/async-storage';
+import { bg_color, bg_color2, secondary_text_color } from '../../constants/color';
 
 const CancelOrderModal = ({
     setModal,
@@ -21,7 +22,7 @@ const CancelOrderModal = ({
     cancelBooking: any;
     modal: boolean;
   }) => {
-    const {language} = useSelector((state: any) => state?.user);
+    const {language , dark} = useSelector((state: any) => state?.user);
     const dispatch = useDispatch();
   
     return (
@@ -34,9 +35,9 @@ const CancelOrderModal = ({
         className=""
         // onRequestClose={}
         >
-        <View style={styles.modalBackground} className="flex-1 justify-end ">
+        <View style={[styles.modalBackground]} className="flex-1 justify-end ">
           <View />
-          <View className="bg-white w-full mt-10 px-4 justify-between rounded-t-3xl">
+          <View className={`${bg_color2(dark)} w-full mt-10 px-4 justify-between rounded-t-3xl`}>
           <View className="border-2 rounded-full  mt-3 w-10 mx-auto border-gray-200 " />
             <View className='pb-7'>
              
@@ -44,7 +45,7 @@ const CancelOrderModal = ({
                 Cancel Booking
               </Text>
               <View className="border-t border-gray-200  mx-10 mt-3" />
-              <Text className="text-lg   text-center my-4 text-gray-500 font-[Poppins-Meduim]">
+              <Text className={`text-lg   text-center my-4 ${secondary_text_color(dark)} font-[Poppins-Meduim]`}>
                 Are you sure you want to cancel your service booking?
               </Text>
               <View className="flex-row">

@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { IconButton, Searchbar } from 'react-native-paper';
 import images from '../../constants/images';
+import { bg_color } from '../../constants/color';
+import { useSelector } from 'react-redux';
 
 const NotFound = () => {
-    const [searchQuery, setSearchQuery] = useState('');
-
+    const {userData, token, language, dark} = useSelector(
+        (state: any) => state?.user,
+      );
     return (
-        <View style={styles.container}>
+        <View style={[styles.container]} className={`${bg_color(dark)}`}>
             {/* <Searchbar
                 style={styles.searchBar}
                 placeholder="Search"
@@ -39,7 +42,6 @@ const NotFound = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'white',
         padding: 20,
     },
     searchBar: {

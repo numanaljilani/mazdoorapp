@@ -37,17 +37,6 @@ const CompleteProfileScreen = ({navigation}: any) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [calenderModal, setCalenderModal] = useState<boolean>(false);
 
-  const dispatch = useDispatch();
-
-  const dataFromScreenA = route.params?.data;
-  // console.log(dataFromScreenA);
-
-  // const [register, {data, error}] = useMutation(REGISTER_USER, {
-  //   onError: err => {
-  //     console.log(err);
-  //   },
-  // });
-
   const {language, token} = useSelector((state: any) => state?.user);
   const [completeProfileApi, {data, isError, isSuccess, error, isLoading}] =
     useCompleteProfileMutation();
@@ -109,12 +98,13 @@ const CompleteProfileScreen = ({navigation}: any) => {
       date && inputFormData.append('dob', date);
 
       const res : any = await completeProfileApi({body: inputFormData});
-
-    
-        navigation.navigate(navigationString.LOGIN);
-      
-      console.log(res, '>>>>>>>>>>');
+      // navigation.navigate(navigationString.LOGIN)
+      // showMessage({
+      //   message : "User Created Successfully Please login.",
+      //   type : "success"
+      // })
       setLoading(false);
+
     } catch (error) {
       console.log(error, 'catch');
       setLoading(false);

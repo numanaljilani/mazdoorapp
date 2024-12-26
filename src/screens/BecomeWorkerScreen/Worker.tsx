@@ -14,6 +14,7 @@ import ActivityIndicatorComponent from '../../components/common/ActivityIndicato
 import {setUser} from '../../service/slice/userSlice';
 import ServiceModal from '../../components/worker/ServiceModal';
 import {services} from '../../constants/services';
+import { bg_color } from '../../constants/color';
 
 const Worker = ({navigation}: any) => {
   const [service, setServcie] = useState<{
@@ -44,7 +45,7 @@ const Worker = ({navigation}: any) => {
     {english: 'Yard', hindi: 'गज'},
     // Add more units as needed...
   ];
-  const {userData, token, posts, language} = useSelector(
+  const {userData, token, posts, language , dark} = useSelector(
     (state: any) => state?.user,
   );
   const [unit, setUnit] = useState<{english: string; hindi: string}>({
@@ -142,8 +143,8 @@ const Worker = ({navigation}: any) => {
   };
 
   return (
-    <ScrollView>
-      <View className=" py-3 flex-1 ">
+    <ScrollView className={`${bg_color(dark)}`}>
+      <View className={`${bg_color(dark)} py-3 flex-1`}>
         <Image
           source={icons.service}
           className="w-32 h-32 mx-auto"
